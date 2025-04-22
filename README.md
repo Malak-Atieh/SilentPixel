@@ -5,9 +5,7 @@
 <!-- project overview -->
 <img src="./readme/title2.svg"/>
 
-> Description here.
->
-> Description here.
+> system that allows users to hide and retrieve secret messages within images shared on popular social media platforms using steganography techniques.
 
 <br><br>
 
