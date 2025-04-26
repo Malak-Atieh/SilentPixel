@@ -1,0 +1,18 @@
+# Web Framework
+Flask==3.0.2
+
+# Image Uploads
+python-multipart==0.0.6
+
+# Image Processing
+opencv-python==4.9.0.80
+Pillow==10.1.0
+numpy==1.26.
+
+# Steganography & Encryption
+stegano==0.11.3
+pycryptodome==3.20.0
+
+
+# Advanced ML 
+scikit-image==0.22.0  # Useful for DCT-based watermarking (Discrete Cosine Transform)
