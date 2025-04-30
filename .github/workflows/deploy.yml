@@ -42,11 +42,11 @@ jobs:
           host: ${{ secrets.EC2_HOST_STAGE }}
           username: ${{ secrets.EC2_USER  }}
           key: ${{ secrets.EC2_KEY }}
-          script: |
-            rsync -avz --delete --exclude='.git/' \
-            -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" \
+        script: |
+          rsync -avz --delete --exclude='.git/' \
+            -e "ssh -o StrictHostKeyChecking=no" \
             $GITHUB_WORKSPACE/ ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST_STAGE }}:~/silentPixel/
-            
+      
       - name: Deploy App
         uses: appleboy/ssh-action@v0.1.10
         with:
