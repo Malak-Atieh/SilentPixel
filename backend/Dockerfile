@@ -1,16 +1,18 @@
-FROM node:22-bullseye-slim
+#building stage
+FROM node:20-bullseye-slim AS builder
 
 WORKDIR /app
 
 COPY  package*.json ./
-RUN npm install 
+RUN npm install ci --omit=dev
+
+#runtime stage
+FROM node:20-bullseye-slim
+
+WORKDIR /app
+COPY --from=builder /app/node_modules ./node_modules
 
 COPY . .
-
-RUN apt-get update && apt-get install -y \
-    python3 \
-    build-essential \
-    && rm -rf /var/lib/apt/lists/*
 
 EXPOSE 5000
 

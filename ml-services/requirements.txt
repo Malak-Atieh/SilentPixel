@@ -1,13 +1,11 @@
-# Web Framework
+# Core
 Flask==3.0.2
-
-# Image Uploads
 python-multipart==0.0.6
 
 # Image Processing
 opencv-python==4.9.0.80
 Pillow==10.1.0
-numpy==1.26.
+numpy==1.26.4 
 
 # Steganography & Encryption
 stegano==0.11.3
