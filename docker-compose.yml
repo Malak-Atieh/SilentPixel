@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    ports: 
+      - "5000:5000"
+    environment:
+      - MONGO_URI=mongodb://admin:${DB_PASSWORD}@mongodb:27017/silentPixel?authSource=admin
+      - ML_SERVICE_URL=http://ml-service:6000
+      - NODE_ENV=production
+    depends_on:
+      - mongodb
+      - ml-service
+    networks:
+      - silent_net
+
+  ml-service:
+    build: ./ml-service
+    ports: 
+      - "6000:6000"
+    networks:
+      - silent_net
+
+
+  mongodb:  
+    image: mongo:6.0
+    ports: 
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=${DB_PASSWORD}
+    networks:
+      - silent_net
+
+networks:
+  silent_net:
+
+volumes:
+  mongodb_data:
