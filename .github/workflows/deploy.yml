@@ -1,0 +1,59 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.EC2_KEY }}
+          known_hosts: 'placeholder'
+
+      - name: Provision Docker 
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.EC2_HOST_STAGE }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            if ! command -v docker &> /dev/null; then
+              sudo apt update -y
+              sudo apt install -y docker.io
+              sudo systemctl enable docker
+              sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+              sudo chmod +x /usr/local/bin/docker-compose
+              sudo usermod -aG docker $USER
+            fi
+            mkdir -p ~/silentPixel
+
+      - name: Sync Files
+        uses: burnett01/rsync-deployments@5.2.3
+        with:
+          switches: -avz --delete --exclude='.git/'
+          path: ./
+          remote_path: ~/silentPixel/
+          remote_host: ${{ secrets.EC2_HOST_STAGE }}
+          remote_user: ${{ secrets.EC2_USER  }}
+          remote_key: ${{ secrets.EC2_KEY }}
+
+      - name: Deploy App
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.EC2_HOST_STAGE}}
+          username: ${{ secrets.EC2_USER  }}
+          key: ${{ secrets.EC2_KEY  }}
+          script: |
+            cd ~/silentPixel
+            export COMPOSE_HTTP_TIMEOUT=120  
+            docker-compose down  --remove-orphans || true
+            DB_PASSWORD=${{ secrets.DB_PASSWORD }} docker-compose up -d --build
+            docker image prune -f
