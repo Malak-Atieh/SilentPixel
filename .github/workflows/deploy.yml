@@ -46,7 +46,6 @@ jobs:
           rsync -avz --delete --exclude='.git/' \
             -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" \
             $GITHUB_WORKSPACE/ ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST_STAGE }}:~/silentPixel/
-            
       - name: Deploy App
         uses: appleboy/ssh-action@v0.1.10
         with:
