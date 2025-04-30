@@ -26,6 +26,7 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           script: |
             if ! command -v docker &> /dev/null; then
+              export DEBIAN_FRONTEND=noninteractive
               sudo apt update -y
               sudo apt install -y docker.io
               sudo systemctl enable docker
@@ -39,7 +40,7 @@ jobs:
         uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.EC2_HOST_STAGE }}
-          user: ${{ secrets.EC2_USER  }}
+          username: ${{ secrets.EC2_USER  }}
           key: ${{ secrets.EC2_KEY }}
           script: |
             rsync -avz --delete --exclude='.git/' \
