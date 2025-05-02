@@ -5,30 +5,29 @@ const app = require('../../app');
 const User = require('../../app/models/User');
 const StegoImage = require('../../app/models/StegoImage');
 
-let token;
-let testImageBuffer;
-
-beforeAll(async () => {
-  await User.deleteMany();
-  const user = await User.create({ 
-    username: 'user', 
-    email: 'user@e.com', 
-    password: await User.hashPassword('pass') 
-  });
-  const res = await request(app)
-    .post('/api/login')
-    .send({ email: 'user@e.com', password: 'pass' });
-  token = res.body.token;
-  testImageBuffer = fs.readFileSync(path.join(__dirname, '../images/test.png'));
-});
-
-afterEach(async () => {
-  await StegoImage.deleteMany();
-  await User.deleteMany(); 
-});
-
 describe('StegoImage Feature Tests', () => {
-  
+    let token;
+    let testImageBuffer;
+
+    beforeAll(async () => {
+    await User.deleteMany();
+    const user = await User.create({ 
+        username: 'user', 
+        email: 'user@e.com', 
+        password: await User.hashPassword('pass') 
+    });
+    const res = await request(app)
+        .post('/api/login')
+        .send({ email: 'user@e.com', password: 'pass' });
+    token = res.body.token;
+    testImageBuffer = fs.readFileSync(path.join(__dirname, '../images/test.png'));
+    });
+
+    afterEach(async () => {
+    await StegoImage.deleteMany();
+    await User.deleteMany(); 
+    });
+
   //success watermark hide
   it('Can encode an image with watermark', async () => {
     const res = await request(app)
