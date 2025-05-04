@@ -17,18 +17,17 @@ class SteganoController {
       if (!password) {
         return createResponse(res, 400, 'Password is required');
       }
-      if (watermark){
-        // default watermark: email + timestamp if user checks watermark
-        const defaultWatermark = `Watermarked for ${user.email} at ${new Date().toISOString()}`;
-      }
-      
+      const finalWatermark = watermark
+        ? `Watermarked for ${user.email} at ${new Date().toISOString()}`
+        : null;
+
       const result = await SteganoService.encode({
-        userId: user.id,
+        user.id,
         imageFile,
         message,
         password,
+        finalWatermark,
         generateQR,
-        watermark:  defaultWatermark ? defaultWatermark : null, 
       });
 
       return createResponse(res, 200, 'Image encoded successfully', result);
