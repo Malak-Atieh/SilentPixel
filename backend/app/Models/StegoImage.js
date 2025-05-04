@@ -2,15 +2,21 @@ const mongoose = require("mongoose");
 
 
 const stegoImage = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  userId: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: "User", 
+    required: true 
+  },
   originalUrl: { type: String, required: true },
   encodedUrl: { type: String, required: true },
-  watermark: {
-    text: { type: String, default: "" },
-    position: { type: String, enum: ["top", "bottom", "center"], default: "bottom" }
+  watermarkText: { type: String },
+  generateQR: { type: Boolean, default: false },
+  message: { type: String, required: true },
+  type: { 
+    type: String, 
+    enum: ['encode', 'decode'], 
+    required: true 
   },
-  qrCode: { type: Boolean, default: false },
-  secretMessage: { type: String, required: true },
   createdAt: { type: Date, default: Date.now }
 });
 
