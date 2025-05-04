@@ -2,12 +2,14 @@ const StegoImage = require('../Models/StegoImage');
 const { callPythonML } = require('./MLService');
 
 class SteganoService {
-  static async encode(userId, imageFile, message, password = null) {
+  static async encode(userId, imageFile, message, userId, imageFile, message, password, watermark, generateQR) {
     // Call Python ML microservice
-    const { encodedPath, watermarkId } = await callPythonML({
+    const { encodedPath, watermarkId, qrPath  } = await callPythonML({
       image: imageFile.buffer,
       message,
-      password
+      password,
+      watermark,
+      generateQR
     });
 
     // Save it to my database
@@ -15,10 +17,11 @@ class SteganoService {
       userId,
       originalPath: imageFile.originalname,
       encodedPath,
-      watermarkId
+      watermarkId,
+      qrPath: qrPath || null,
     });
 
-    return { encodedPath, watermarkId };
+    return { encodedPath, watermarkId, qrPath  };
   }
 
   static async decode(userId, imageFile, password = null) {
