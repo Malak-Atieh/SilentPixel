@@ -7,7 +7,16 @@ class SteganoController {
       const { message, password, generateQR, watermark } = req.body;
       const user = req.user;
       const imageFile = req.file; 
-
+  
+      if (!imageFile) {
+        return createResponse(res, 400, 'Image file is required');
+      }
+      if (!message) {
+        return createResponse(res, 400, 'Message is required');
+      }
+      if (!password) {
+        return createResponse(res, 400, 'Password is required');
+      }
       if (watermark){
         // default watermark: email + timestamp if user checks watermark
         const defaultWatermark = `Watermarked for ${user.email} at ${new Date().toISOString()}`;
@@ -19,7 +28,7 @@ class SteganoController {
         message,
         password,
         generateQR,
-        watermark:  defaultWatermark ? defaultWatermark: watermark, 
+        watermark:  defaultWatermark ? defaultWatermark : null, 
       });
 
       return createResponse(res, 200, 'Image encoded successfully', result);
