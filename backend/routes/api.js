@@ -8,10 +8,8 @@ const {
   loginSchema, 
   registerSchema, 
 } = require('../app/Requests/Auth');
-const { 
-  encodeSchema, 
-  decodeSchema, 
-} = require('../app/Requests');
+const encodeSchema= require('../app/Requests/EncodeRequest'); 
+const decodeSchema = require('../app/Requests/DecodeRequest');
 
 // Auth Routes
 router.post('/register', validate(registerSchema), AuthController.register);
