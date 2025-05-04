@@ -4,7 +4,7 @@ const { callPythonML } = require('./MLService');
 class SteganoService {
   static async encode(userId, imageFile, message, password, watermark, generateQR) {
     // Call Python ML microservice
-    const { encodedPath, watermarkId, qrPath  } = await callPythonML({
+    const { encodedUrl, watermark, qrPath  } = await callPythonML({
       image: imageFile.buffer,
       message,
       password,
@@ -16,13 +16,15 @@ class SteganoService {
     // Save it to my database
     const stegoImage = await StegoImage.create({
       userId,
-      originalPath: imageFile.originalname,
-      encodedPath,
-      watermarkId,
+      type: 'encode',
+      originalUrl: imageFile.originalname,
+      encodedUrl,
+      watermark,
       qrPath: qrPath || null,
+      message
     });
 
-    return { encodedPath, watermarkId, qrPath  };
+    return { encodedUrl, watermark, qrPath  };
   }
 
   static async decode(userId, imageFile, password = null) {
