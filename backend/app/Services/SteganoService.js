@@ -9,7 +9,8 @@ class SteganoService {
       message,
       password,
       watermark,
-      generateQR
+      generateQR,
+      type: 'encode',
     });
 
     // Save it to my database
@@ -27,7 +28,6 @@ class SteganoService {
   static async decode(userId, imageFile, password = null) {
     // Call Python ML microservice for decoding
     const { message, watermarkId } = await callPythonML({
-        action: 'decode',
         image: imageFile.buffer,
         password
     });
