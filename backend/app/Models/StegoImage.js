@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 
-const stegoImageSchema = new mongoose.Schema({
+const stegoImage = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   originalUrl: { type: String, required: true },
   encodedUrl: { type: String, required: true },
@@ -14,4 +14,4 @@ const stegoImageSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model("StegoImage", stegoImageSchema);
+module.exports = mongoose.model("StegoImage", stegoImage);
