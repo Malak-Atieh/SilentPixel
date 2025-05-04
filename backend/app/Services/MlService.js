@@ -6,7 +6,7 @@ async function callPythonML({ action, image, message, password, watermark, gener
   if (message) formData.append('message', message);
   if (password) formData.append('password', password);
   if (watermark) formData.append('watermark', watermark);
-  if (generateQr) formData.append('generateQr', generateQr);
+  if (generateQR !== undefined) formData.append('generateQR', generateQR.toString());
 
   const endpoint = action === 'encode' ? '/encode' : '/decode';
 

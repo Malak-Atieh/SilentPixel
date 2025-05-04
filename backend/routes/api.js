@@ -8,6 +8,8 @@ const {
   loginSchema, 
   registerSchema, 
 } = require('../app/Requests/Auth');
+const multer = require('multer');
+const upload = multer();
 const encodeSchema= require('../app/Requests/EncodeRequest'); 
 const decodeSchema = require('../app/Requests/DecodeRequest');
 
@@ -19,6 +21,7 @@ router.post('/login', validate(loginSchema), AuthController.login);
 router.post(
   '/encode', 
   auth, 
+  upload.single('image'), 
   validate(encodeSchema), 
   SteganoController.encode
 );
