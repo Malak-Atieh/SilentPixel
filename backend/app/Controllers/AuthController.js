@@ -1,6 +1,6 @@
 const { registerUser, authenticateUser } = require('../Services/UserService');
 const { generateToken } = require('../utils/jwt');
-const { createResponse } = require('../utils/apiResponse');
+const { createResponse } = require('../Traits/response');
 
 class AuthController {
   static async register(req, res) {
