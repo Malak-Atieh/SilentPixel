@@ -1,5 +1,5 @@
 const SteganoService = require('../Services/SteganoService');
-const { createResponse } = require('../Utils/apiResponse');
+const { createResponse } = require('../Traits/response');
 
 class SteganoController {
   static async encode(req, res) {
