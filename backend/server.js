@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
-const connectDB = require('./config/database');
+const connectDB = require('./database/connection');
 const cors = require('cors');
 const fileUpload = require('express-fileupload');
 
@@ -18,9 +18,6 @@ connectDB();
 
 // Routes
 app.use('/api', require('./routes/api'));
-
-// Error handling
-app.use(require('./app/Utils/errorHandler'));
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
