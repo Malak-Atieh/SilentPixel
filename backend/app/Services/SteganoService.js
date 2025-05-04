@@ -27,23 +27,27 @@ class SteganoService {
     return { encodedUrl, watermark, qrPath  };
   }
 
-  static async decode(userId, imageFile, password = null) {
+  static async decode(userId, imageFile, qrFile=null, password ) {
     // Call Python ML microservice for decoding
     const { message, watermarkId } = await callPythonML({
         image: imageFile.buffer,
+        qrImage: qrFile?.buffer,
+        type: 'decode',
         password
     });
 
     //  log the decoding
     await StegoImage.create({
         userId,
+        type: 'decode',
         originalPath: imageFile.originalname,
         encodedPath: null,
-        watermarkId,
-        decoded: true
+        Watermark,
+        qrPath: qrFile?.originalname || null,
+        message
     });
 
-    return { message, watermarkId };  
+    return { message, watermark };  
     }
 }
 
