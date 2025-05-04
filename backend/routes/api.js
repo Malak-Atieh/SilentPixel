@@ -6,8 +6,11 @@ const { validate } = require('../app/Middlewares/validate');
 const { auth } = require('../app/Middlewares/auth');
 const { 
   loginSchema, 
-  registerSchema,
-  encodeSchema 
+  registerSchema, 
+} = require('../app/Requests/Auth');
+const { 
+  encodeSchema, 
+  decodeSchema, 
 } = require('../app/Requests');
 
 // Auth Routes
