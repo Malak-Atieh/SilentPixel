@@ -40,9 +40,10 @@ class SteganoController {
     try {
       const { password } = req.body;
       const imageFile = req.file;
+      const qrFile = req.files?.qr || null;
       const userId = req.user.id;
 
-      const result = await SteganoService.decode(userId, imageFile, password);
+      const result = await SteganoService.decode(userId, imageFile, qrFile, password);
       return createResponse(res, 200, 'Message decoded successfully', result);
     } catch (err) {
       return createResponse(res, 500, err.message);
