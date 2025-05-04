@@ -4,11 +4,24 @@ const { createResponse } = require('../Traits/response');
 class SteganoController {
   static async encode(req, res) {
     try {
-      const { message, password } = req.body;
+      const { message, password, generateQR, watermark } = req.body;
+      const user = req.user;
       const imageFile = req.file; 
-      const userId = req.user.id; 
 
-      const result = await SteganoService.encode(userId, imageFile, message, password);
+      if (watermark){
+        // default watermark: email + timestamp if user checks watermark
+        const defaultWatermark = `Watermarked for ${user.email} at ${new Date().toISOString()}`;
+      }
+      
+      const result = await SteganoService.encode({
+        userId: user.id,
+        imageFile,
+        message,
+        password,
+        generateQR,
+        watermark:  defaultWatermark ? defaultWatermark: watermark, 
+      });
+
       return createResponse(res, 200, 'Image encoded successfully', result);
     } catch (err) {
       return createResponse(res, 500, err.message);
