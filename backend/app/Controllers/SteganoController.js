@@ -10,7 +10,7 @@ class SteganoController {
   static async encode(req, res) {
     
     try {
-      const { message, password, addWatermark, addQRCode} = req.body;
+      const { message, password, addWatermark, addQRCode, busyAreas} = req.body;
       const user = req.user;
 
       if (!req.file) {
@@ -21,22 +21,15 @@ class SteganoController {
         return createResponse(res, 400, 'Message is required');
       }
 
-      if (!password) {  
-        return createResponse(res, 400, 'Password is required');
-      }
-
       //image buffer
       const imageBuffer = req.file.buffer;  
 
-      // Use ML service to detect busy areas for optimal hiding
-      const busyAreas = await MLService.detectBusyAreas(imageBuffer);
-      
       // Core steganography operation
-      let processedImage = await StegoService.embedMessage(
+      let processedImage = await SteganoService.embedMessage(
         imageBuffer,
         message,
         password,
-        busyAreas
+        JSON.parse(busyAreas || '[]')
       );
       
       // Add watermark if requested
@@ -51,7 +44,7 @@ class SteganoController {
       // Add QR code if requested
       if (addQRCode === 'true') {
         processedImage = await QRService.addQRCode(processedImage, { 
-          messageHash: StegoService.generateMessageHash(message, password),
+          messageHash: SteganoService.generateMessageHash(message, password),
           timestamp: new Date().toISOString()
         });
       }
@@ -111,26 +104,31 @@ class SteganoController {
   async analyzeImage(req, res) {
     try {
       if (!req.file) {
-        return res.status(400).json({ error: 'No image uploaded' });
+        return createResponse(res, 400, 'Image is required');
       }
       
+      const imageBuffer = req.file.buffer;
+
       // Use ML to detect if image likely contains hidden data
-      const analysis = await MLService.detectSteganography(req.file.buffer);
+      const analysis = await MLService.detectSteganography(imageBuffer);
       
       // Extract watermark if present
       let watermarkData = null;
       try {
-        watermarkData = await WatermarkService.extractWatermark(req.file.buffer);
-      } catch (watermarkError) {
-        // No watermark or extraction failed
+        watermarkData = await WatermarkService.extractWatermark(imageBuffer);
+      } catch (error) {
+        watermarkData = null; // No watermark found or error in extraction
       }
       
-      return res.json({
+      // Final recommendation
+      const response = {
         likelyContainsHiddenData: analysis.hiddenDataProbability > 0.7,
         hiddenDataProbability: analysis.hiddenDataProbability,
-        watermarkData: watermarkData,
-        recommendedAreas: analysis.busyAreas.slice(0, 3) // Top 3 areas for hiding
-      });
+        watermarkData,
+        recommendedBusyAreas: analysis.busyAreas || []
+      };
+
+      return createResponse(res, 200, 'Image analysis complete', response);
     } catch (error) {
       return errorHandler(error, res);
     }
