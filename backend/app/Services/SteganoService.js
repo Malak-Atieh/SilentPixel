@@ -4,7 +4,7 @@ const { createCanvas, loadImage } = require('canvas');
 const fs = require('fs').promises;
 class steganoService {
 
-  static   async embedMessage(imageBuffer, message, password, busyAreas = []) {
+  static async embedMessage(imageBuffer, message, password, busyAreas = []) {
     try {
       // Load the image
       const image = await loadImage(imageBuffer);
@@ -61,16 +61,46 @@ class steganoService {
 
   }
 
-  static async decodeMessage(imageFile, password ) {
+  static async decodeMessage(imageBuffer, password ) {
     try{
-      const decode = new LSBDecoder();
-      const result = await decode.decode(imageFile, password);
-
-      return {
-        message: result.message,
-        watermark: result.watermark || null,
-        qrCodeData: result.qrCodeData || null,
+      // Load the image
+      const image = await loadImage(imageBuffer);
+            
+      // Create canvas
+      const canvas = createCanvas(image.width, image.height);
+      const ctx = canvas.getContext('2d');
+      
+      // Draw image on canvas
+      ctx.drawImage(image, 0, 0);
+      
+      // Get image data
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const pixels = imageData.data;
+      
+      // Extract header (first 32 bits)
+      let binaryHeader = '';
+      for (let i = 0; i < 32; i++) {
+        const pixelIndex = i * 4;
+        binaryHeader += (pixels[pixelIndex + 2] & 1).toString();
       }
+      
+      // Get message length from header
+      const messageLength = parseInt(binaryHeader, 2);
+      
+      // Extract binary message
+      let binaryMsg = '';
+      for (let i = 0; i < messageLength; i++) {
+        const pixelIndex = (i + 32) * 4;
+        binaryMsg += (pixels[pixelIndex + 2] & 1).toString();
+      }
+      
+      // Convert binary to text
+      const encryptedMsg = this._binaryToText(binaryMsg);
+      
+      // Decrypt the message
+      const message = this.decryptMessage(encryptedMsg, password);
+      
+      return message;
     } catch (error) {
       throw new Error(`Decoding failed: ${error.message}`);
     }
