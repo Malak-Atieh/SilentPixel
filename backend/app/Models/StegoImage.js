@@ -19,7 +19,7 @@ const stegoImageSchema = new mongoose.Schema({
     type: Boolean,
     default: false 
   },
-  hasQeCode: { 
+  hasQrCode: { 
     type: Boolean, 
     default: false 
   },
