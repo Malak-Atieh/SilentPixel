@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 
-const stegoImageSchema = new mongoose.Schema({
+const Image= new mongoose.Schema({
   userId: { 
     type: mongoose.Schema.Types.ObjectId, 
     ref: "User", 
@@ -44,4 +44,4 @@ const stegoImageSchema = new mongoose.Schema({
   }
 });
 
-module.exports = mongoose.model("StegoImage", stegoImageSchema);
+module.exports = mongoose.model("Image", Image);

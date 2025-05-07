@@ -1,9 +1,9 @@
-const StegoImage = require('../Models/StegoImage');
+const StegoImage = require('../Models/Image');
 const MLService= require('./MLService');
 const fs = require('fs');
 const path = require('path');
 const {LSBEncoder, LSBDecoder} = require('../utils/steganography');
-class SteganoService {
+class steganoService {
 
   constructor() {
     this.MLService = new MLService();
@@ -114,4 +114,4 @@ class SteganoService {
   }
 }
 
-module.exports = SteganoService;
+module.exports = steganoService;
