@@ -8,6 +8,7 @@ class SteganoService {
   constructor() {
     this.MLService = new MLService();
   }
+
   async analyzeImage(imagePath, userId) {
     try{
       //call the ML service to analyze the image and detct the busy areas
@@ -103,7 +104,14 @@ class SteganoService {
     }
   }
 
-  
+  async detectSteganography(imagePath) {
+    try{
+      const detectionResult = this.MLService.detectHiddenData(imagePath);
+      return detectionResult;
+    }catch (error) {
+      throw new Error(`Steganography detection failed: ${error.message}`);
+    }
+  }
 }
 
 module.exports = SteganoService;
