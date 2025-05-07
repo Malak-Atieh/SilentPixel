@@ -31,9 +31,10 @@ class steganoService {
       const dataToHide = header + binaryMsg;
       
       // Check if image has enough capacity
-      const maxCapacity = Math.floor(pixels.length / 4);
-      if (dataToHide.length > maxCapacity) {
-        throw new Error(`Message too large. Max capacity: ${Math.floor(maxCapacity / 8)} bytes`);
+      const requiredCapacity = dataToHide.length;
+      const availablePixels = this._getPixelIndices(canvas.width, canvas.height, busyAreas, requiredCapacity);
+      if (availablePixels.length < requiredCapacity) {
+        throw new Error(`Insufficient capacity: need ${requiredCapacity} pixels, but only ${availablePixels.length} available.`);
       }
       
       // Determine pixel indices to modify based on busy areas
