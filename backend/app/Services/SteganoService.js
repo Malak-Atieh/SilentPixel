@@ -27,7 +27,7 @@ class steganoService {
       const binaryMsg = this._textToBinary(encryptedMsg);
       
       // Add header with message length
-      const header = this._numberToBinary(binaryMsg.length, 32);
+      const header = this._numberToBinary(binaryMsg.length, 32);// message byte length
       const dataToHide = header + binaryMsg;
       
       // Check if image has enough capacity
@@ -41,12 +41,13 @@ class steganoService {
       const pixelIndices = this._getPixelIndices(canvas.width, canvas.height, busyAreas, dataToHide.length);      
       
       // Embed data
+      const channels = [0, 1, 2]; // R, G, B
       for (let i = 0; i < dataToHide.length; i++) {
         const pixelIndex = pixelIndices[i] * 4; // Each pixel has 4 values (RGBA)
         
-        // Only modify the least significant bit of the blue channel (less noticeable)
+        const randomChannel = channels[Math.floor(Math.random() * 3)];
         const bit = parseInt(dataToHide[i]);
-        pixels[pixelIndex + 2] = (pixels[pixelIndex + 2] & 0xFE) | bit;
+        pixels[pixelIndex + randomChannel] = (pixels[pixelIndex + randomChannel] & 0xFE) | bit;
       }
       
       // Update canvas with modified pixels
@@ -87,10 +88,10 @@ class steganoService {
       
       // Get message length from header
       const messageLength = parseInt(binaryHeader, 2);
-      if (isNaN(messageLength) || messageLength > width * height) {
+      if (isNaN(messageLength) || messageLength > canvas.width * canvas.height) {
         throw new Error('Invalid or corrupted header detected.');
       }
-      
+
       // Extract binary message
       let binaryMsg = '';
       for (let i = 0; i < messageLength; i++) {
