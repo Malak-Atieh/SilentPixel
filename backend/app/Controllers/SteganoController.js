@@ -71,8 +71,7 @@ class SteganoController {
       
       // Return the processed image
       res.set('Content-Type', req.file.mimetype);
-      return res.send(processedImage);
-      return createResponse(res, 200, 'Image encoded successfully', result);
+      return createResponse(res, 200, 'Image encoded successfully', processedImage);
     } catch (err) {
       return createResponse(res, 500, err.message);
     }
@@ -81,14 +80,59 @@ class SteganoController {
   static async decode(req, res) {
     try {
       const { password } = req.body;
-      const imageFile = req.file;
-      const qrFile = req.files?.qr || null;
-      const userId = req.user.id;
-
-      const result = await SteganoService.decode(userId, imageFile, qrFile, password);
-      return createResponse(res, 200, 'Message decoded successfully', result);
+      
+      if (!req.file) {
+        return res.status(400).json({ error: 'No image uploaded' });
+      }
+      
+      // First try QR extraction if present
+      let message;
+      try {
+        const qrData = await QRService.extractQRData(req.file.buffer);
+        if (qrData) {
+          // Verify password against message hash in QR
+          message = await StegoService.extractMessageWithQR(req.file.buffer, password, qrData);
+        }
+      } catch (qrError) {
+        // QR extraction failed or not present, continue with standard extraction
+      }
+      
+      // If QR extraction didn't work, try standard extraction
+      if (!message) {
+        message = await StegoService.extractMessage(req.file.buffer, password);
+      }
+      
+      return createResponse(res, 200, 'Message decoded successfully', message);
     } catch (err) {
       return createResponse(res, 500, err.message);
+    }
+  }
+
+  async analyzeImage(req, res) {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: 'No image uploaded' });
+      }
+      
+      // Use ML to detect if image likely contains hidden data
+      const analysis = await MLService.detectSteganography(req.file.buffer);
+      
+      // Extract watermark if present
+      let watermarkData = null;
+      try {
+        watermarkData = await WatermarkService.extractWatermark(req.file.buffer);
+      } catch (watermarkError) {
+        // No watermark or extraction failed
+      }
+      
+      return res.json({
+        likelyContainsHiddenData: analysis.hiddenDataProbability > 0.7,
+        hiddenDataProbability: analysis.hiddenDataProbability,
+        watermarkData: watermarkData,
+        recommendedAreas: analysis.busyAreas.slice(0, 3) // Top 3 areas for hiding
+      });
+    } catch (error) {
+      return errorHandler(error, res);
     }
   }
 }
