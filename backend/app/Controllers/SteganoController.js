@@ -35,7 +35,7 @@ class SteganoController {
       // Add watermark if requested
       if (addWatermark === 'true') {
         const watermarkData = {
-          email: req.user.email,
+          email: user.email,
           timestamp: new Date().toISOString()
         };
         processedImage = await WatermarkService.addWatermark(processedImage, watermarkData);
@@ -51,7 +51,7 @@ class SteganoController {
       
       // Save metadata in database
       const imageDoc = new Image({
-        userId: req.user._id,
+        userId: user._id,
         filename: req.file.originalname,
         contentType: req.file.mimetype,
         hasWatermark: addWatermark === 'true',
@@ -84,15 +84,16 @@ class SteganoController {
         const qrData = await QRService.extractQRData(req.file.buffer);
         if (qrData) {
           // Verify password against message hash in QR
-          message = await StegoService.extractMessageWithQR(req.file.buffer, password, qrData);
+          message = await SteganoService.extractMessageWithQR(req.file.buffer, password, qrData);
         }
-      } catch (qrError) {
-        // QR extraction failed or not present, continue with standard extraction
+      } catch (Error) {
+        // QR extraction failed, proceed to standard extraction
+        message = null;
       }
       
       // If QR extraction didn't work, try standard extraction
       if (!message) {
-        message = await StegoService.extractMessage(req.file.buffer, password);
+        message = await SteganoService.extractMessage(req.file.buffer, password);
       }
       
       return createResponse(res, 200, 'Message decoded successfully', message);
