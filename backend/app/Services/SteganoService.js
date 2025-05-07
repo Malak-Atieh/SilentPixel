@@ -135,6 +135,30 @@ class steganoService {
     // Combine IV and encrypted message
     return iv.toString('hex') + ':' + encrypted;
   }
+
+  decryptMessage(encryptedMsg, password) {
+    try {
+      // Split IV and encrypted message
+      const parts = encryptedMsg.split(':');
+      const iv = Buffer.from(parts[0], 'hex');
+      const encryptedText = parts[1];
+      
+      // Generate key from password
+      const key = crypto.scryptSync(password, 'salt', 32);
+      
+      // Create decipher
+      const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
+      
+      // Decrypt message
+      let decrypted = decipher.update(encryptedText, 'hex', 'utf8');
+      decrypted += decipher.final('utf8');
+      
+      return decrypted;
+    } catch (error) {
+      throw new Error('Decryption failed. Check if the password is correct.');
+    }
+  }
+  
 }
 
 module.exports = steganoService;
