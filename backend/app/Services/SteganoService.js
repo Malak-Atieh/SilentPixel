@@ -120,7 +120,21 @@ class steganoService {
     return message;
   }
   
-  
+  encryptMessage(message, password) {
+    // Generate a key and IV from the password
+    const key = crypto.scryptSync(password, 'salt', 32);
+    const iv = crypto.randomBytes(16);
+    
+    // Create cipher
+    const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
+    
+    // Encrypt message
+    let encrypted = cipher.update(message, 'utf8', 'hex');
+    encrypted += cipher.final('hex');
+    
+    // Combine IV and encrypted message
+    return iv.toString('hex') + ':' + encrypted;
+  }
 }
 
 module.exports = steganoService;
