@@ -7,15 +7,18 @@ const stegoImageSchema = new mongoose.Schema({
     ref: "User", 
     required: true 
   },
-  originalImageUrl: { 
+  originalImagePath: { 
     type: String, 
     required: true 
   },
-  encodedUrl: { 
+  encodedImagePath: { 
     type: String, 
-    required: true 
+    required: false 
   },
-  watermarkText: { type: String },
+  hasWatermark: { 
+    type: Boolean,
+    required: false 
+  },
   generateQR: { type: Boolean, default: false },
   message: { type: String, required: true },
   type: { 
