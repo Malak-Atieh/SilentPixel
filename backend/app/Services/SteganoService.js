@@ -88,28 +88,22 @@ class SteganoService {
 
   }
 
-  static async decode(userId, imageFile, qrFile=null, password ) {
-    // Call Python ML microservice for decoding
-    const { message, watermark } = await callPythonML({
-        image: imageFile.buffer,
-        qrImage: qrFile?.buffer,
-        type: 'decode',
-        password
-    });
+  static async decodeMessage(imageFile, password ) {
+    try{
+      const decode = new LSBDecoder();
+      const result = await decode.decode(imageFile, password);
 
-    //  log the decoding
-    await StegoImage.create({
-        userId,
-        type: 'decode',
-        originalPath: imageFile.originalname,
-        encodedPath: null,
-        watermark,
-        qrPath: qrFile?.originalname || null,
-        message
-    });
-
-    return { message, watermark };  
+      return {
+        message: result.message,
+        watermark: result.watermark || null,
+        qrCodeData: result.qrCodeData || null,
+      }
+    } catch (error) {
+      throw new Error(`Decoding failed: ${error.message}`);
     }
+  }
+
+  
 }
 
 module.exports = SteganoService;
