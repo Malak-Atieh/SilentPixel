@@ -165,6 +165,55 @@ class steganoService {
       .digest('hex');
   }
   
+  _getPixelIndices(width, height, busyAreas, dataLength) {
+    const indices = [];
+    
+    // If we have busy areas, prioritize those pixels
+    if (busyAreas && busyAreas.length > 0) {
+      // Create a map of all busy area pixels
+      const busyPixels = new Set();
+      
+      for (const area of busyAreas) {
+        for (let y = area.y; y < area.y + area.height; y++) {
+          for (let x = area.x; x < area.x + area.width; x++) {
+            if (x < width && y < height) {
+              const index = y * width + x;
+              busyPixels.add(index);
+            }
+          }
+        }
+      }
+      
+      // Convert set to array and shuffle for better distribution
+      const busyIndices = Array.from(busyPixels);
+      this._shuffleArray(busyIndices);
+      
+      // Use busy pixels first
+      for (let i = 0; i < Math.min(dataLength, busyIndices.length); i++) {
+        indices.push(busyIndices[i]);
+      }
+      
+      // If we need more pixels, use sequential pixels for the rest
+      if (dataLength > busyIndices.length) {
+        let currentIndex = 0;
+        while (indices.length < dataLength) {
+          if (!busyPixels.has(currentIndex)) {
+            indices.push(currentIndex);
+          }
+          currentIndex++;
+        }
+      }
+    } else {
+      // No busy areas defined, use sequential pixels
+      for (let i = 0; i < dataLength; i++) {
+        indices.push(i);
+      }
+    }
+    
+    return indices;
+  }
+
+  
 }
 
 module.exports = steganoService;
