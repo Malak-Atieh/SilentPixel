@@ -213,7 +213,15 @@ class steganoService {
     return indices;
   }
 
-  
+  _textToBinary(text) {
+    let binary = '';
+    for (let i = 0; i < text.length; i++) {
+      const charCode = text.charCodeAt(i);
+      const binChar = charCode.toString(2).padStart(8, '0');
+      binary += binChar;
+    }
+    return binary;
+  }
 }
 
 module.exports = steganoService;
