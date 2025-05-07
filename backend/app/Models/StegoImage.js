@@ -32,7 +32,16 @@ const stegoImageSchema = new mongoose.Schema({
     enum: ['encode', 'decode'], 
     required: true 
   },
-  createdAt: { type: Date, default: Date.now }
+  metaData: {
+    encodingMethod: String,
+    messageLength: Number,
+    watermarkInfo: String,
+    qrCodeData: String
+  },
+  createdAt: { 
+    type: Date, 
+    default: Date.now 
+  }
 });
 
 module.exports = mongoose.model("StegoImage", stegoImageSchema);
