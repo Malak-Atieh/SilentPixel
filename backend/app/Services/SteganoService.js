@@ -2,7 +2,7 @@ const StegoImage = require('../Models/StegoImage');
 const MLService= require('./MLService');
 const fs = require('fs');
 const path = require('path');
-const {LSBEncode, LSBDecoder} = require('../utils/steganography');
+const {LSBEncoder, LSBDecoder} = require('../utils/steganography');
 class SteganoService {
 
   constructor() {
@@ -22,36 +22,70 @@ class SteganoService {
 
       await stegoImage.save();
       return stegoImage;
-    }catch(err){
+    }catch(error){
       throw new Error(`Image analysis failed: ${error.message}`)
     }
 
 
   }
 
-  static async encode(userId, imageFile, message, password, watermark, generateQR) {
-    // Call Python ML microservice
-    const { encodedUrl, watermark, qrPath  } = await callPythonML({
-      image: imageFile.buffer,
-      message,
-      password,
-      watermark,
-      generateQR,
-      type: 'encode',
-    });
+  static async encodeMessage(imageId, message, password, options={}) {
+    try{
+      const {
+        addWatermark = false, 
+        addQrCode= false
+      } = options;
+      
+      //get saved image from the database
+      const stegoImage = await StegoImage.findById(imageId);
+      if (!stegoImage) throw new Error('Image not found');
 
-    // Save it to my database
-    const stegoImage = await StegoImage.create({
-      userId,
-      type: 'encode',
-      originalUrl: imageFile.originalname,
-      encodedUrl,
-      watermark,
-      qrPath: qrPath || null,
-      message
-    });
+      //prepare the image for encoding
+      const encodingData = {
+        message,
+        password,
+        busyAreasMap: stegoImage.busyAreasMap,
+      };
 
-    return { encodedUrl, watermark, qrPath  };
+      //add watermark if asked
+      if (addWatermark){
+        const timestamp = new Date().toISOString();
+        encodingData.watermark = `${userEmail}/${timestamp}`;
+      }
+      if (addQrCode){
+        encodingData.qrCodeData = message;
+      }
+
+      //do encoding
+      const encoder = new LSBEncoder();
+      const encodedImagePath=path.join(
+        path.dirname(stegoImage.originalImagePath),
+        `encoded_${path.basename(stegoImage.originalImagePath)}`
+      );
+
+      await encoder.encode(
+        stegoImage.originalImagePath,
+        encodedImagePath,   
+        encodingData
+      );
+
+      //update db record
+      stegoImage.encodedImagePath = encodedImagePath;
+      stegoImage.hasWatermark = addWatermark;
+      stegoImage.hasQrCode = addQrCode;
+      stegoImage.metaData={
+        encodingMethod: 'LSB',
+        messageLength: message.length,
+        watermarkInfo: addWatermark ? `${userEmail}|timestamp` : null,
+        qrCodeData: addQrCode ? 'QR data embeded' : null,
+      }
+
+      await stegoImage.save();
+      return stegoImage;
+    } catch (error) {
+      throw new Error(`Encoding failed: ${error.message}`);
+    }   
+
   }
 
   static async decode(userId, imageFile, qrFile=null, password ) {
