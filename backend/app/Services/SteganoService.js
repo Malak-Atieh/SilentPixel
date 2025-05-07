@@ -36,7 +36,7 @@ class steganoService {
       if (availablePixels.length < requiredCapacity) {
         throw new Error(`Insufficient capacity: need ${requiredCapacity} pixels, but only ${availablePixels.length} available.`);
       }
-      
+
       // Determine pixel indices to modify based on busy areas
       const pixelIndices = this._getPixelIndices(canvas.width, canvas.height, busyAreas, dataToHide.length);      
       
@@ -197,11 +197,14 @@ class steganoService {
       // If we need more pixels, use sequential pixels for the rest
       if (dataLength > busyIndices.length) {
         let currentIndex = 0;
-        while (indices.length < dataLength) {
+        while (indices.length < dataLength && currentIndex < width * height) {
           if (!busyPixels.has(currentIndex)) {
             indices.push(currentIndex);
           }
           currentIndex++;
+        }
+        if (indices.length < dataLength) {
+          throw new Error('Not enough non-busy pixels to embed full message.');
         }
       }
     } else {
