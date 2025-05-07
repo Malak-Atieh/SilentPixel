@@ -222,6 +222,16 @@ class steganoService {
     }
     return binary;
   }
+
+  _binaryToText(binary) {
+    let text = '';
+    for (let i = 0; i < binary.length; i += 8) {
+      const byte = binary.substr(i, 8);
+      const charCode = parseInt(byte, 2);
+      text += String.fromCharCode(charCode);
+    }
+    return text;
+  }
 }
 
 module.exports = steganoService;
