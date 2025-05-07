@@ -11,7 +11,10 @@ const stegoImageSchema = new mongoose.Schema({
     type: String, 
     required: true 
   },
-  encodedUrl: { type: String, required: true },
+  encodedUrl: { 
+    type: String, 
+    required: true 
+  },
   watermarkText: { type: String },
   generateQR: { type: Boolean, default: false },
   message: { type: String, required: true },
