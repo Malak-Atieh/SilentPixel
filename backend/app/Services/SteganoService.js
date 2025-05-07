@@ -232,6 +232,10 @@ class steganoService {
     }
     return text;
   }
+
+  _numberToBinary(num, length) {
+    return num.toString(2).padStart(length, '0');
+  }
 }
 
 module.exports = steganoService;
