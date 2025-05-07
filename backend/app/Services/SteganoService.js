@@ -106,7 +106,21 @@ class steganoService {
     }
   }
 
-
+  async extractMessageWithQR(imageBuffer, password, qrData) {
+    // Extract message normally
+    const message = await this.extractMessage(imageBuffer, password);
+    
+    // Verify message hash from QR code
+    const calculatedHash = this.generateMessageHash(message, password);
+    
+    if (calculatedHash !== qrData.messageHash) {
+      throw new Error('Message integrity check failed. The image may have been tampered with.');
+    }
+    
+    return message;
+  }
+  
+  
 }
 
 module.exports = steganoService;
