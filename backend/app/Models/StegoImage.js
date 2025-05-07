@@ -23,7 +23,10 @@ const stegoImageSchema = new mongoose.Schema({
     type: Boolean, 
     default: false 
   },
-  message: { type: String, required: true },
+  busyAreasMap: {
+    type: Object,
+    default: null
+  },
   type: { 
     type: String, 
     enum: ['encode', 'decode'], 
