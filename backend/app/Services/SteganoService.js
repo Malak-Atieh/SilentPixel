@@ -1,6 +1,8 @@
 const StegoImage = require('../Models/StegoImage');
-const { callPythonML } = require('./MLService');
-
+const MLService= require('./MLService');
+const fs = require('fs');
+const path = require('path');
+const {LSBEncode, LSBDecoder} = require('../utils/steganography');
 class SteganoService {
   static async encode(userId, imageFile, message, password, watermark, generateQR) {
     // Call Python ML microservice
