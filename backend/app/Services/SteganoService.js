@@ -87,6 +87,9 @@ class steganoService {
       
       // Get message length from header
       const messageLength = parseInt(binaryHeader, 2);
+      if (isNaN(messageLength) || messageLength > width * height) {
+        throw new Error('Invalid or corrupted header detected.');
+      }
       
       // Extract binary message
       let binaryMsg = '';
