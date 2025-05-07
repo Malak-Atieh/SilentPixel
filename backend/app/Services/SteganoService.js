@@ -159,6 +159,12 @@ class steganoService {
     }
   }
   
+  generateMessageHash(message, password) {
+    return crypto.createHash('sha256')
+      .update(message + password)
+      .digest('hex');
+  }
+  
 }
 
 module.exports = steganoService;
