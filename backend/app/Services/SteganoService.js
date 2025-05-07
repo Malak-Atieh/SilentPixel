@@ -61,7 +61,7 @@ class steganoService {
 
   }
 
-  static async decodeMessage(imageBuffer, password ) {
+  static async extractMessage(imageBuffer, password ) {
     try{
       // Load the image
       const image = await loadImage(imageBuffer);
