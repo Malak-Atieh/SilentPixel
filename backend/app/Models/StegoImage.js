@@ -17,9 +17,12 @@ const stegoImageSchema = new mongoose.Schema({
   },
   hasWatermark: { 
     type: Boolean,
-    required: false 
+    default: false 
   },
-  generateQR: { type: Boolean, default: false },
+  hasQeCode: { 
+    type: Boolean, 
+    default: false 
+  },
   message: { type: String, required: true },
   type: { 
     type: String, 
