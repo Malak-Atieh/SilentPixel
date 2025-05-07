@@ -106,14 +106,7 @@ class steganoService {
     }
   }
 
-  async detectSteganography(imagePath) {
-    try{
-      const detectionResult = this.MLService.detectHiddenData(imagePath);
-      return detectionResult;
-    }catch (error) {
-      throw new Error(`Steganography detection failed: ${error.message}`);
-    }
-  }
+
 }
 
 module.exports = steganoService;
