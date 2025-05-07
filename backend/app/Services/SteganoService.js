@@ -4,6 +4,31 @@ const fs = require('fs');
 const path = require('path');
 const {LSBEncode, LSBDecoder} = require('../utils/steganography');
 class SteganoService {
+
+  constructor() {
+    this.MLService = new MLService();
+  }
+  async analyzeImage(imagePath, userId) {
+    try{
+      //call the ML service to analyze the image and detct the busy areas
+      const analysisResult = await this.MLService.analyzeBusyAreas(imagePath);
+      
+      // Save the analysis result to the database
+      const stegoImage = new StegoImage({
+        userId,
+        originalImagePath: imagePath,
+        busyAreasMap: analysisResult.busyAreasMap,
+      });
+
+      await stegoImage.save();
+      return stegoImage;
+    }catch(err){
+      throw new Error(`Image analysis failed: ${error.message}`)
+    }
+
+
+  }
+
   static async encode(userId, imageFile, message, password, watermark, generateQR) {
     // Call Python ML microservice
     const { encodedUrl, watermark, qrPath  } = await callPythonML({
