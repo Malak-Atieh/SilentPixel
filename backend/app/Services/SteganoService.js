@@ -1,88 +1,60 @@
-const StegoImage = require('../Models/Image');
-const MLService= require('./MLService');
-const fs = require('fs');
-const path = require('path');
-const {LSBEncoder, LSBDecoder} = require('../utils/steganography');
+const crypto = require('crypto');
+const sharp = require('sharp');
+const { createCanvas, loadImage } = require('canvas');
+const fs = require('fs').promises;
 class steganoService {
 
-  constructor() {
-    this.MLService = new MLService();
-  }
+  static   async embedMessage(imageBuffer, message, password, busyAreas = []) {
+    try {
+      // Load the image
+      const image = await loadImage(imageBuffer);
 
-  async analyzeImage(imagePath, userId) {
-    try{
-      //call the ML service to analyze the image and detct the busy areas
-      const analysisResult = await this.MLService.analyzeBusyAreas(imagePath);
+      // Create canvas with same dimensions
+      const canvas = createCanvas(image.width, image.height);
+      const ctx = canvas.getContext('2d');
       
-      // Save the analysis result to the database
-      const stegoImage = new StegoImage({
-        userId,
-        originalImagePath: imagePath,
-        busyAreasMap: analysisResult.busyAreasMap,
-      });
-
-      await stegoImage.save();
-      return stegoImage;
-    }catch(error){
-      throw new Error(`Image analysis failed: ${error.message}`)
-    }
-
-
-  }
-
-  static async encodeMessage(imageId, message, password, options={}) {
-    try{
-      const {
-        addWatermark = false, 
-        addQrCode= false
-      } = options;
+      // Draw image on canvas
+      ctx.drawImage(image, 0, 0);
       
-      //get saved image from the database
-      const stegoImage = await StegoImage.findById(imageId);
-      if (!stegoImage) throw new Error('Image not found');
-
-      //prepare the image for encoding
-      const encodingData = {
-        message,
-        password,
-        busyAreasMap: stegoImage.busyAreasMap,
-      };
-
-      //add watermark if asked
-      if (addWatermark){
-        const timestamp = new Date().toISOString();
-        encodingData.watermark = `${userEmail}/${timestamp}`;
+      // Get image data
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const pixels = imageData.data;
+      
+      // Encrypt the message with the password
+      const encryptedMsg = this.encryptMessage(message, password);
+      
+      // Convert message to binary
+      const binaryMsg = this._textToBinary(encryptedMsg);
+      
+      // Add header with message length
+      const header = this._numberToBinary(binaryMsg.length, 32);
+      const dataToHide = header + binaryMsg;
+      
+      // Check if image has enough capacity
+      const maxCapacity = Math.floor(pixels.length / 4);
+      if (dataToHide.length > maxCapacity) {
+        throw new Error(`Message too large. Max capacity: ${Math.floor(maxCapacity / 8)} bytes`);
       }
-      if (addQrCode){
-        encodingData.qrCodeData = message;
+      
+      // Determine pixel indices to modify based on busy areas
+      const pixelIndices = this._getPixelIndices(canvas.width, canvas.height, busyAreas, dataToHide.length);      
+      
+      // Embed data
+      for (let i = 0; i < dataToHide.length; i++) {
+        const pixelIndex = pixelIndices[i] * 4; // Each pixel has 4 values (RGBA)
+        
+        // Only modify the least significant bit of the blue channel (less noticeable)
+        const bit = parseInt(dataToHide[i]);
+        pixels[pixelIndex + 2] = (pixels[pixelIndex + 2] & 0xFE) | bit;
       }
-
-      //do encoding
-      const encoder = new LSBEncoder();
-      const encodedImagePath=path.join(
-        path.dirname(stegoImage.originalImagePath),
-        `encoded_${path.basename(stegoImage.originalImagePath)}`
-      );
-
-      await encoder.encode(
-        stegoImage.originalImagePath,
-        encodedImagePath,   
-        encodingData
-      );
-
-      //update db record
-      stegoImage.encodedImagePath = encodedImagePath;
-      stegoImage.hasWatermark = addWatermark;
-      stegoImage.hasQrCode = addQrCode;
-      stegoImage.metaData={
-        encodingMethod: 'LSB',
-        messageLength: message.length,
-        watermarkInfo: addWatermark ? `${userEmail}|timestamp` : null,
-        qrCodeData: addQrCode ? 'QR data embeded' : null,
-      }
-
-      await stegoImage.save();
-      return stegoImage;
+      
+      // Update canvas with modified pixels
+      ctx.putImageData(imageData, 0, 0);
+      
+      // Convert canvas to buffer
+      const modifiedBuffer = canvas.toBuffer('image/png');
+      
+      return modifiedBuffer;
     } catch (error) {
       throw new Error(`Encoding failed: ${error.message}`);
     }   
