@@ -17,7 +17,23 @@ class PixelSelector {
       
       return indices;
     }
-  
+    static _getBusyPixels(width, height, busyAreas) {
+        const busyPixels = new Set();
+        
+        for (const area of busyAreas) {
+          for (let y = area.y; y < area.y + area.height; y++) {
+            for (let x = area.x; x < area.x + area.width; x++) {
+              if (x < width && y < height) {
+                busyPixels.add(y * width + x);
+              }
+            }
+          }
+        }
+        
+        return busyPixels;
+      }
+    
+
 }
   
   module.exports = PixelSelector;
