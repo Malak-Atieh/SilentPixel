@@ -14,16 +14,21 @@ class EncryptionService {
   }
 
   static decrypt(encryptedMsg, password) {
-    const parts = encryptedMsg.split(':');
-    const iv = Buffer.from(parts[0], 'hex');
-    const encryptedText = parts[1];
-    const key = crypto.scryptSync(password, 'salt', 32);
+    try {
+    const salt = Buffer.from(encryptedMsg.substring(0, 32), 'hex');
+    const iv = Buffer.from(encryptedMsg.substring(32, 64), 'hex');
+    const ciphertext = encryptedMsg.substring(64);
+    const key = crypto.scryptSync(password, salt, 32);
+
     const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
-    
-    let decrypted = decipher.update(encryptedText, 'hex', 'utf8');
+    let decrypted = decipher.update(ciphertext, 'hex', 'utf8');
+
     decrypted += decipher.final('utf8');
     
     return decrypted;
+    } catch (error) {
+      throw new Error('Decryption failed. Invalid message or password.');
+    }
   }
 
   static generateHash(message, password) {
