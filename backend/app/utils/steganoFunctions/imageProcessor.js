@@ -13,6 +13,11 @@ class ImageProcessor {
     return ctx.getImageData(0, 0, width, height);
   }
 
+  static updateImageData(ctx, imageData) {
+    ctx.putImageData(imageData, 0, 0);
+  }
+
+
 }
 
 module.exports = ImageProcessor;
