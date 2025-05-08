@@ -17,7 +17,9 @@ class ImageProcessor {
     ctx.putImageData(imageData, 0, 0);
   }
 
-
+  static canvasToBuffer(canvas, format = 'image/png') {
+    return canvas.toBuffer(format);
+  }
 }
 
 module.exports = ImageProcessor;
