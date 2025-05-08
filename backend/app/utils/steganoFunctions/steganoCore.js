@@ -26,6 +26,16 @@ class SteganographyCore {
     return ImageProcessor.canvasToBuffer(canvas);
   }
 
+
+
+  static _extractBits(pixels, startIndex, length) {
+    let bits = '';
+    for (let i = 0; i < length; i++) {
+      const pixelIndex = (startIndex + i) * 4;
+      bits += (pixels[pixelIndex + 2] & 1).toString(); // Using blue channel
+    }
+    return bits;
+  }
 }
 
 module.exports = SteganographyCore;
