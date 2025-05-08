@@ -25,6 +25,18 @@ class SteganographyCore {
     ImageProcessor.updateImageData(ctx, imageData);
     return ImageProcessor.canvasToBuffer(canvas);
   }
+  static async extract(imageBuffer, password) {
+    const { canvas, ctx } = await ImageProcessor.loadImageToCanvas(imageBuffer);
+    const imageData = ImageProcessor.getImageData(ctx, canvas.width, canvas.height);
+    
+    const binaryHeader = this._extractBits(imageData.data, 0, 32);
+    const messageLength = parseInt(binaryHeader, 2);
+    
+    const binaryMsg = this._extractBits(imageData.data, 32, messageLength);
+    const encryptedMsg = BinaryConverter.binaryToText(binaryMsg);
+    
+    return EncryptionService.decrypt(encryptedMsg, password);
+  }
 
 
 
