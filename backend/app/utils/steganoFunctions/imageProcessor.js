@@ -9,6 +9,9 @@ class ImageProcessor {
     return { canvas, ctx };
   }
 
+  static getImageData(ctx, width, height) {
+    return ctx.getImageData(0, 0, width, height);
+  }
 
 }
 
