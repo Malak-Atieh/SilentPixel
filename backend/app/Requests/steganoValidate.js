@@ -1,4 +1,4 @@
-class ValidationService {
+class SteganoValidate {
     static validateCapacity(width, height, busyAreas, requiredBits) {
       const availablePixels = PixelSelector.getIndices(width, height, busyAreas, requiredBits);
       if (availablePixels.length < requiredBits) {
@@ -14,4 +14,4 @@ class ValidationService {
     }
   }
   
-  module.exports = ValidationService;
+  module.exports = SteganoValidate;
