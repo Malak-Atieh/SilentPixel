@@ -127,7 +127,8 @@ class steganoService {
   
   encryptMessage(message, password) {
     // Generate a key and IV from the password
-    const key = crypto.scryptSync(password, 'salt', 32);
+    const salt = crypto.randomBytes(16);
+    const key = crypto.scryptSync(password, salt, 32);
     const iv = crypto.randomBytes(16);
     
     // Create cipher
@@ -137,8 +138,8 @@ class steganoService {
     let encrypted = cipher.update(message, 'utf8', 'hex');
     encrypted += cipher.final('hex');
     
-    // Combine IV and encrypted message
-    return iv.toString('hex') + ':' + encrypted;
+    // Return salt + IV + ciphertext
+    return Buffer.concat([salt, iv, Buffer.from(encrypted, 'hex')]).toString('hex');
   }
 
   decryptMessage(encryptedMsg, password) {
@@ -149,7 +150,7 @@ class steganoService {
       const encryptedText = parts[1];
       
       // Generate key from password
-      const key = crypto.scryptSync(password, 'salt', 32);
+      const key = crypto.scryptSync(password, salt, 32);
       
       // Create decipher
       const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
