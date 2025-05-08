@@ -38,7 +38,16 @@ class SteganographyCore {
     return EncryptionService.decrypt(encryptedMsg, password);
   }
 
-
+  static _embedData(pixels, pixelIndices, binaryData) {
+    const channels = [0, 1, 2]; // R, G, B channels
+    
+    for (let i = 0; i < binaryData.length; i++) {
+      const pixelIndex = pixelIndices[i] * 4;
+      const channel = channels[Math.floor(Math.random() * 3)];
+      const bit = parseInt(binaryData[i]);
+      pixels[pixelIndex + channel] = (pixels[pixelIndex + channel] & 0xFE) | bit;
+    }
+  }
 
   static _extractBits(pixels, startIndex, length) {
     let bits = '';
