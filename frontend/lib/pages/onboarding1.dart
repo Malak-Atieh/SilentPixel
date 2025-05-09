@@ -41,9 +41,11 @@ class OnboardingScreen extends StatelessWidget {
                 const Text(
                   'Embed messages\ninside your images',
                   style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 36,
+                    fontWeight: FontWeight.w600,
                     color: Colors.white,
+                    fontFamily: 'Orbitron',
+
                   ),
                 ),
                 const SizedBox(height: 16),
