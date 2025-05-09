@@ -73,13 +73,21 @@ class OnboardingScreenSecond extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      'Skip',
-                      style: TextStyle(
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => Login()),
+                        );
+                      },
+                      child: const Text(
+                        'Skip',
+                        style: TextStyle(
                           fontFamily: 'Inter',
                           fontWeight: FontWeight.w500,
                           fontSize: 16,
                           color: Colors.white
+                        ),
                       ),
                     ),
                     Row(
