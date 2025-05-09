@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/pages/login.dart';
 
-class OnboardingScreenSecond extends StatelessWidget {
-  const OnboardingScreenSecond({super.key});
+class OnboardingScreenThird extends StatelessWidget {
+  const OnboardingScreenThird({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +12,7 @@ class OnboardingScreenSecond extends StatelessWidget {
           // Background image
           Positioned.fill(
             child: Image.asset(
-              'assets/images/picture4.png', 
+              'assets/images/picture1.png', 
               fit: BoxFit.cover,
             ),
           ),
