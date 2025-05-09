@@ -36,7 +36,11 @@ class OnboardingScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Spacer(),
-
+                const Spacer(),
+                const Spacer(),
+                const Spacer(),
+                const Spacer(),
+                const Spacer(),
                 // Title
                 const Text(
                   'Embed messages\ninside your images',
@@ -54,7 +58,9 @@ class OnboardingScreen extends StatelessWidget {
                 const Text(
                   'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
                   style: TextStyle(
-                    fontSize: 14,
+                    fontFamily: 'Inter',
+                    fontWeight: FontWeight.w500,
+                    fontSize: 16,
                     color: Colors.white70,
                   ),
                 ),
@@ -67,22 +73,36 @@ class OnboardingScreen extends StatelessWidget {
                   children: [
                     const Text(
                       'Skip',
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(
+                          fontFamily: 'Inter',
+                          fontWeight: FontWeight.w500,
+                          fontSize: 16,
+                          color: Colors.white
+                      ),
                     ),
                     Row(
                       children: [
                         Container(
-                          height: 6,
-                          width: 6,
+                          height: 8,
+                          width: 18,
                           margin: const EdgeInsets.symmetric(horizontal: 4),
                           decoration: BoxDecoration(
-                            shape: BoxShape.circle,
+                            borderRadius: BorderRadius.circular(10),
                             color: Colors.white60,
                           ),
                         ),
                         Container(
-                          height: 6,
-                          width: 6,
+                          height: 8,
+                          width: 8,
+                          margin: const EdgeInsets.symmetric(horizontal: 4),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.white30,
+                          ),
+                        ),
+                        Container(
+                          height: 8,
+                          width: 8,
                           margin: const EdgeInsets.symmetric(horizontal: 4),
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
