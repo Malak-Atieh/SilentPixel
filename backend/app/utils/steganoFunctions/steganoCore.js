@@ -3,7 +3,7 @@ const PixelSelector = require('./pixelSelector');
 const EncryptionService = require('../../Services/encryptionService');
 const ImageProcessor = require('./imageProcessor');
 
-class SteganographyCore {
+class SteganoCore {
   static async embed(imageBuffer, message, password, busyAreas = []) {
     const { canvas, ctx } = await ImageProcessor.loadImageToCanvas(imageBuffer);
     const imageData = ImageProcessor.getImageData(ctx, canvas.width, canvas.height);
@@ -59,4 +59,4 @@ class SteganographyCore {
   }
 }
 
-module.exports = SteganographyCore;
+module.exports = SteganoCore;
