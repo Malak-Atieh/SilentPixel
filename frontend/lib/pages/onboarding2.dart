@@ -12,7 +12,7 @@ class OnboardingScreenSecond extends StatelessWidget {
           // Background image
           Positioned.fill(
             child: Image.asset(
-              'assets/images/picture4.png', 
+              'assets/images/onboarding2.png',
               fit: BoxFit.cover,
             ),
           ),
