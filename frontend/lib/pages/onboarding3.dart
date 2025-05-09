@@ -85,29 +85,29 @@ class OnboardingScreenThird extends StatelessWidget {
                       children: [
                         Container(
                           height: 8,
+                          width: 8,
+                          margin: const EdgeInsets.symmetric(horizontal: 4),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: Colors.white30,
+                          ),
+                        ),
+                        Container(
+                          height: 8,
+                          width: 8,
+                          margin: const EdgeInsets.symmetric(horizontal: 4),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.white30,
+                          ),
+                        ),
+                        Container(
+                          height: 8,
                           width: 18,
                           margin: const EdgeInsets.symmetric(horizontal: 4),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
                             color: Colors.white60,
-                          ),
-                        ),
-                        Container(
-                          height: 8,
-                          width: 8,
-                          margin: const EdgeInsets.symmetric(horizontal: 4),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.white30,
-                          ),
-                        ),
-                        Container(
-                          height: 8,
-                          width: 8,
-                          margin: const EdgeInsets.symmetric(horizontal: 4),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.white30,
                           ),
                         ),
                       ],
