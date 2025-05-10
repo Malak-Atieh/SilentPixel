@@ -138,7 +138,7 @@ class Login extends StatelessWidget {
                   ElevatedButton(
                     onPressed: () {},
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
+                      backgroundColor: Color(0xFF0CCE6B),
                       minimumSize: const Size(double.infinity, 50),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     ),
@@ -208,7 +208,7 @@ class Login extends StatelessWidget {
                         child: const Text(
                           "Sign Up", 
                           style: TextStyle(
-                            color: Colors.green
+                            color: Color(0xFF0CCE6B)
                           )
                         ),
                       ),
