@@ -18,7 +18,10 @@ class Home extends StatelessWidget {
                 color: Colors.white
             )
         ),
-
+        leading: IconButton(
+          icon: const Icon(Icons.menu, color: Colors.white),
+          onPressed: () {},
+        ),
       ),
 
     );
