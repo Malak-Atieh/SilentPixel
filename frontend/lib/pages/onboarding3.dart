@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/pages/login.dart';
+import 'package:frontend/pages/signUp.dart';
 
 class OnboardingScreenThird extends StatelessWidget {
   const OnboardingScreenThird({super.key});
@@ -72,13 +72,21 @@ class OnboardingScreenThird extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      'Skip',
-                      style: TextStyle(
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => SignUp()),
+                        );
+                      },
+                      child: const Text(
+                        'Skip',
+                        style: TextStyle(
                           fontFamily: 'Inter',
                           fontWeight: FontWeight.w500,
                           fontSize: 16,
                           color: Colors.white
+                        ),
                       ),
                     ),
                     Row(
@@ -116,7 +124,7 @@ class OnboardingScreenThird extends StatelessWidget {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => Login()),
+                          MaterialPageRoute(builder: (context) => SignUp()),
                         );
                       },
                       child: Container(
