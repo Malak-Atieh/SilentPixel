@@ -165,7 +165,11 @@ class Login extends StatelessWidget {
                           )
                         ),
                       ),
-                      Expanded(child: Divider(color: Color(0xFFF4F4F4))),
+                      Expanded(
+                        child: Divider(
+                          color: Color(0xFFF4F4F4)
+                        )
+                      ),
                     ],
                   ),
 
