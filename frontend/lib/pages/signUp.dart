@@ -134,7 +134,7 @@ class SignUp extends StatelessWidget {
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                         ),
                         child: const Text(
-                          'Login', 
+                          'SignUp',
                           style: TextStyle(
                             fontFamily: 'Orbitron',
                             color: Color(0xFFF4F4F4),
@@ -157,7 +157,7 @@ class SignUp extends StatelessWidget {
                           Padding(
                             padding: EdgeInsets.symmetric(horizontal: 10),
                             child: Text(
-                                "Or login with",
+                                "Or Sign Up with",
                                 style: TextStyle(
                                     color: Color(0xFFF4F4F4)
                                 )
