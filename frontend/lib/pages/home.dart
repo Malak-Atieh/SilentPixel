@@ -9,8 +9,16 @@ class Home extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: const Color(0xFF09192C),
         elevation: 0,
-        title: const Text("Silent Pixel", style: TextStyle(color: Colors.white)),
-        
+        title: const Text(
+            "Silent Pixel",
+            style: TextStyle(
+                fontFamily: 'Orbitron',
+                fontWeight: FontWeight.w400,
+                fontSize: 16,
+                color: Colors.white
+            )
+        ),
+
       ),
 
     );
