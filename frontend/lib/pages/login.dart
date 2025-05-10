@@ -58,7 +58,7 @@ class Login extends StatelessWidget {
                     style: const TextStyle(
                       fontFamily: 'Inter',
                       fontWeight: FontWeight.w400,
-                      color: Color(0xFFF4F4F4),
+                      color: Color(0xFFB4B4B4),
                     ),
                     decoration: InputDecoration(
                       hintText: 'JohnDoe@example.com',
@@ -70,7 +70,7 @@ class Login extends StatelessWidget {
                         color: Color(0xFFB4B4B4)
                         ),
                       filled: true,
-                      fillColor: Colors.white24,
+                      fillColor: Color(0xFFF4F4F4),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
@@ -85,7 +85,7 @@ class Login extends StatelessWidget {
                     style: const TextStyle(
                       fontFamily: 'Inter',
                       fontWeight: FontWeight.w400,
-                      color: Color(0xFFF4F4F4),
+                      color:  Color(0xFFB4B4B4),
                     ),
                     decoration: InputDecoration(
                       hintText: 'enter 8 digit password',
@@ -97,7 +97,7 @@ class Login extends StatelessWidget {
                         color: Color(0xFFB4B4B4)
                         ),
                       filled: true,
-                      fillColor: Colors.white24,
+                      fillColor: Color(0xFFF4F4F4),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
