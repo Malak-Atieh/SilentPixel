@@ -30,7 +30,13 @@ class SignUp extends StatelessWidget {
                 ),
               ),
             ),
+            SafeArea(
+                child: Padding(
+                  // Login form
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
 
+                ),
+            ),
 
 
           ],
