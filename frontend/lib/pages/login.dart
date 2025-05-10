@@ -229,7 +229,7 @@ class Login extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Color(0xFF09192C),
+        color: Color(0xFF23488A),
         shape: BoxShape.circle,
       ),
       child: FaIcon(
