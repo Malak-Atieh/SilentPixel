@@ -16,7 +16,20 @@ class SignUp extends StatelessWidget {
                 fit: BoxFit.cover,
               ),
             ),
-
+            Positioned.fill(
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Color(0xFF09192C).withAlpha((0.6 * 255).toInt()),
+                      Color(0xFF09192C).withAlpha((0.9 * 255).toInt())
+                    ],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
+                ),
+              ),
+            ),
 
 
 
