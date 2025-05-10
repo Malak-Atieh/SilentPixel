@@ -114,7 +114,11 @@ class Login extends StatelessWidget {
                       Row(
                         children: [
                           Switch(value: false, onChanged: (_) {}),
-                          const Text('Remember me', style: TextStyle(color: Color(0xFFF4F4F4))),
+                          const Text('Remember me', style: 
+                            TextStyle(
+                              color: Color(0xFFF4F4F4)
+                            )
+                          ),
                         ],
                       ),
                       TextButton(
