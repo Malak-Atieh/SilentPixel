@@ -10,6 +10,16 @@ class SignUp extends StatelessWidget {
       extendBodyBehindAppBar: true,
       body: Stack(
           children: [
+            Positioned.fill(
+              child: Image.asset(
+                'assets/images/bg.png',
+                fit: BoxFit.cover,
+              ),
+            ),
+
+
+
+
           ],
       ),
     );
