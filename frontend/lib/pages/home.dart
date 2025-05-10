@@ -36,7 +36,7 @@ class Home extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 24),
         child: Column(
             children: [
-            const SizedBox(height: 70),
+            const SizedBox(height: 80),
             Center(
               child: Image.asset(
                 'assets/images/whitelogo.png',
@@ -44,6 +44,16 @@ class Home extends StatelessWidget {
                 height: 200,
                 fit: BoxFit.fill,
               ),
+            ),
+            const SizedBox(height: 20),
+            const Text(
+                'Silent Pixel',
+                style: TextStyle(
+                  fontFamily: 'Orbitron',
+                  fontWeight: FontWeight.w400,
+                  fontSize: 46,
+                  color: Colors.white,
+                ),
             ),
           ],
         ),
