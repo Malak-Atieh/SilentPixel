@@ -90,7 +90,9 @@ class Login extends StatelessWidget {
                     ),
                     decoration: InputDecoration(
                       hintText: 'enter 8 digit password',
-                      hintStyle: const TextStyle(color: Color(0xFFF4F4F4)),
+                      hintStyle: const TextStyle(
+                        color: Color(0xFFF4F4F4)
+                        ),
                       labelText: 'Password',
                       labelStyle: const TextStyle(color: Color(0xFFF4F4F4)),
                       filled: true,
