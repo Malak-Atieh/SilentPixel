@@ -76,7 +76,6 @@ class SignUp extends StatelessWidget {
 
                       const SizedBox(height: 20),
 
-
                       TextField(
                         style: const TextStyle(
                           fontFamily: 'Inter',
@@ -102,6 +101,31 @@ class SignUp extends StatelessWidget {
 
                       const SizedBox(height: 20),
 
+                      TextField(
+                        obscureText: true,
+                        style: const TextStyle(
+                          fontFamily: 'Inter',
+                          fontWeight: FontWeight.w400,
+                          color:  Color(0xFFB4B4B4),
+                        ),
+                        decoration: InputDecoration(
+                          hintText: 'enter 8 digit password',
+                          hintStyle: const TextStyle(
+                            color: Color(0xFFB4B4B4)
+                            ),
+                          labelText: 'Password',
+                          labelStyle: const TextStyle(
+                            color: Color(0xFFB4B4B4)
+                            ),
+                          filled: true,
+                          fillColor: Color(0xFFF4F4F4),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 10),
                     ],
                   ),
                 ),
