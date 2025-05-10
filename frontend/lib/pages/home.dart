@@ -19,7 +19,7 @@ class Home extends StatelessWidget {
             )
         ),
         leading: IconButton(
-          icon: const Icon(Icons.menu, color: Colors.white),
+          icon: const Icon(Icons.menu, color:Color(0xFFF4F4F4)),
           onPressed: () {},
         ),
         actions: [
@@ -27,7 +27,7 @@ class Home extends StatelessWidget {
             padding: const EdgeInsets.only(right: 12.0),
             child: CircleAvatar(
               backgroundColor: Colors.white24,
-              child: Icon(Icons.person, color: Colors.white), //later: radius: 20,backgroundImage: NetworkImage(user.profileImageUrl),
+              child: Icon(Icons.person, color:Color(0xFFF4F4F4)), //later: radius: 20,backgroundImage: NetworkImage(user.profileImageUrl),
             ),
           )
         ],
@@ -52,7 +52,7 @@ class Home extends StatelessWidget {
                   fontFamily: 'Orbitron',
                   fontWeight: FontWeight.w400,
                   fontSize: 46,
-                  color: Colors.white,
+                  color:Color(0xFFF4F4F4),
                 ),
             ),
           ],
