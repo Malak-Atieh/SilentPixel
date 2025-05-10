@@ -33,10 +33,27 @@ class SignUp extends StatelessWidget {
             ),
             SafeArea(
                 child: Padding(
-                  // Login form
                   padding: const EdgeInsets.symmetric(horizontal: 24),
-
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const Spacer(),
+                      
+                      const SizedBox(height: 40),
+                      const Text(
+                        'Sign Up',
+                        style: TextStyle(
+                          fontSize: 36,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFFF4F4F4),
+                          fontFamily: 'Orbitron',
+                        ),
+                      ),
+                      const SizedBox(height: 40),
+                    ],
+                  ),
                 ),
+
             ),
 
 
