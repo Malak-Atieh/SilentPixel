@@ -136,7 +136,7 @@ class SignUp extends StatelessWidget {
                           ),
                         ),
                         child: const Text(
-                          'SignUp',
+                          'Sign Up',
                           style: TextStyle(
                             fontFamily: 'Orbitron',
                             color: Color(0xFFF4F4F4),
@@ -206,7 +206,7 @@ class SignUp extends StatelessWidget {
                               );
                             },
                             child: const Text(
-                                "Sign Up",
+                                "Login",
                                 style: TextStyle(
                                     color: Color(0xFF0CCE6B)
                                 )
