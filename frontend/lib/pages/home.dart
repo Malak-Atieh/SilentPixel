@@ -27,12 +27,26 @@ class Home extends StatelessWidget {
             padding: const EdgeInsets.only(right: 12.0),
             child: CircleAvatar(
               backgroundColor: Colors.white24,
-              child: Icon(Icons.person, color: Colors.white),
+              child: Icon(Icons.person, color: Colors.white), //later: radius: 20,backgroundImage: NetworkImage(user.profileImageUrl),
             ),
           )
         ],
       ),
-
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: Column(
+            children: [
+            const SizedBox(height: 40),
+            Center(
+              child: Image.asset(
+                'assets/images/whitelogo.png',
+                width: 120, // adjust as needed
+                height: 150,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
