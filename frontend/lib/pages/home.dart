@@ -22,6 +22,15 @@ class Home extends StatelessWidget {
           icon: const Icon(Icons.menu, color: Colors.white),
           onPressed: () {},
         ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 12.0),
+            child: CircleAvatar(
+              backgroundColor: Colors.white24,
+              child: Icon(Icons.person, color: Colors.white),
+            ),
+          )
+        ],
       ),
 
     );
