@@ -36,12 +36,13 @@ class Home extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 24),
         child: Column(
             children: [
-            const SizedBox(height: 40),
+            const SizedBox(height: 70),
             Center(
               child: Image.asset(
                 'assets/images/whitelogo.png',
-                width: 120, // adjust as needed
-                height: 150,
+                width: 250,
+                height: 200,
+                fit: BoxFit.fill,
               ),
             ),
           ],
