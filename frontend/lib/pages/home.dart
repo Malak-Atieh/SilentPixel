@@ -81,7 +81,24 @@ class Home extends StatelessWidget {
                     )
                 ),
               ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 25),
+            ElevatedButton(
+              onPressed: () {},
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFF0CCE6B),
+                minimumSize: const Size(double.infinity, 50),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              ),
+              child: const Text(
+                'Reveal a message',
+                style: TextStyle(
+                  fontFamily: 'Orbitron',
+                  color: Color(0xFFF4F4F4),
+                  fontSize: 18
+                )
+              ),
+            ),
+
           ],
         ),
       ),
