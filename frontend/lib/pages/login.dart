@@ -146,7 +146,7 @@ class Login extends StatelessWidget {
                     child: const Text(
                       'Login', 
                       style: TextStyle(
-                        color: Color(0xFF09192C),
+                        color: Color(0xFFF4F4F4),
                         fontSize: 18
                       ),
                       
