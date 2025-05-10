@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class Login extends StatelessWidget {
   const Login({super.key});
@@ -130,5 +131,14 @@ class Login extends StatelessWidget {
     );
   }
 
-  
+    Widget _buildSocialIcon(IconData icon) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.blueGrey[800],
+        shape: BoxShape.circle,
+      ),
+      child: FaIcon(icon, color: Colors.white, size: 20),
+    );
+  }
 }
