@@ -227,7 +227,8 @@ class Login extends StatelessWidget {
         shape: BoxShape.circle,
       ),
       child: FaIcon(
-        icon, color: Color(0xFFF4F4F4), size: 20),
+        icon, 
+        color: Color(0xFFF4F4F4), size: 20),
     );
   }
 }
