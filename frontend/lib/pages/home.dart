@@ -64,6 +64,24 @@ class Home extends StatelessWidget {
                 color:Color(0xFFF4F4F4),
               ),
             ),
+            const SizedBox(height: 40),
+            ElevatedButton(
+              onPressed: () {},
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFF0CCE6B),
+                  minimumSize: const Size(double.infinity, 50),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                ),
+                child: const Text(
+                    'Hide a message',
+                    style: TextStyle(
+                        fontFamily: 'Orbitron',
+                        color: Color(0xFFF4F4F4),
+                        fontSize: 18
+                    )
+                ),
+              ),
+            const SizedBox(height: 16),
           ],
         ),
       ),
