@@ -98,6 +98,20 @@ class Home extends StatelessWidget {
                 )
               ),
             ),
+            const Spacer(),
+            TextButton(
+              onPressed: () {},
+              child: const Text(
+                'Link to Demo video or Github documentation for reference',
+                 style: TextStyle(
+                     fontFamily: 'Orbitron',
+                     color: Color(0xFFF4F4F4),
+                     fontSize: 18
+                 ),
+                 textAlign: TextAlign.center,
+              ),
+            ),
+            const SizedBox(height: 40),
 
           ],
         ),
