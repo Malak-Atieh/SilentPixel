@@ -7,7 +7,10 @@ class Home extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFF09192C),
       appBar: AppBar(
-      backgroundColor: const Color(0xFF09192C),
+        backgroundColor: const Color(0xFF09192C),
+        elevation: 0,
+        title: const Text("Silent Pixel", style: TextStyle(color: Colors.white)),
+        
       ),
 
     );
