@@ -25,11 +25,35 @@ class Login extends StatelessWidget {
               ),
               const SizedBox(height: 40),
               TextField(
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontWeight: FontWeight.w400,
+                  color: Colors.white
+                  ),
                 decoration: InputDecoration(
                   hintText: 'JohnDoe@example.com',
                   hintStyle: TextStyle(color: Colors.white54),
                   labelText: 'Email',
+                  labelStyle: TextStyle(color: Colors.white),
+                  filled: true,
+                  fillColor: Colors.white10,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
+                            const SizedBox(height: 20),
+              TextField(
+                obscureText: true,
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontWeight: FontWeight.w400,
+                  color: Colors.white
+                  ),
+                decoration: InputDecoration(
+                  hintText: 'enter 8 digit password',
+                  hintStyle: TextStyle(color: Colors.white54),
+                  labelText: 'Password',
                   labelStyle: TextStyle(color: Colors.white),
                   filled: true,
                   fillColor: Colors.white10,
