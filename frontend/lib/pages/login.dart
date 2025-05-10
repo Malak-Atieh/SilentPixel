@@ -20,7 +20,7 @@ class Login extends StatelessWidget {
                 style: TextStyle(
                 fontSize: 36,
                 fontWeight: FontWeight.w600,
-                color: Colors.white,
+                color: Color(0xFFF4F4F4),
                 fontFamily: 'Orbitron',
                 ),
               ),
@@ -29,15 +29,15 @@ class Login extends StatelessWidget {
                 style: TextStyle(
                   fontFamily: 'Inter',
                   fontWeight: FontWeight.w400,
-                  color: Colors.white
+                  color: Color(0xFFF4F4F4)
                   ),
                 decoration: InputDecoration(
                   hintText: 'JohnDoe@example.com',
-                  hintStyle: TextStyle(color: Colors.white54),
+                  hintStyle: TextStyle(color: Color(0xFFF4F4F4)),
                   labelText: 'Email',
-                  labelStyle: TextStyle(color: Colors.white),
+                  labelStyle: TextStyle(color: Color(0xFFF4F4F4)),
                   filled: true,
-                  fillColor: Colors.white10,
+                  fillColor: Color(0xFFF4F4F4),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -49,15 +49,15 @@ class Login extends StatelessWidget {
                 style: TextStyle(
                   fontFamily: 'Inter',
                   fontWeight: FontWeight.w400,
-                  color: Colors.white
+                  color: Color(0xFFF4F4F4)
                   ),
                 decoration: InputDecoration(
                   hintText: 'enter 8 digit password',
-                  hintStyle: TextStyle(color: Colors.white54),
+                  hintStyle: TextStyle(color: Color(0xFFF4F4F4)),
                   labelText: 'Password',
-                  labelStyle: TextStyle(color: Colors.white),
+                  labelStyle: TextStyle(color: Color(0xFFF4F4F4)),
                   filled: true,
-                  fillColor: Colors.white10,
+                  fillColor: Color(0xFFF4F4F4),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -70,14 +70,14 @@ class Login extends StatelessWidget {
                   Row(
                     children: [
                       Switch(value: false, onChanged: (_) {}),
-                      const Text('Remember me', style: TextStyle(color: Colors.white)),
+                      const Text('Remember me', style: TextStyle(color: Color(0xFFF4F4F4))),
                     ],
                   ),
                   TextButton(
                     onPressed: () {},
                     child: const Text(
                       'Forget password?',
-                      style: TextStyle(color: Colors.white70),
+                      style: TextStyle(color: Color(0xFFF4F4F4)),
                     ),
                   ),
                 ],
@@ -95,12 +95,12 @@ class Login extends StatelessWidget {
               const SizedBox(height: 20),
               Row(
                 children: const [
-                  Expanded(child: Divider(color: Colors.white30)),
+                  Expanded(child: Divider(color: Color(0xFFF4F4F4))),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 10),
-                    child: Text("Or login with", style: TextStyle(color: Colors.white)),
+                    child: Text("Or login with", style: TextStyle(color: Color(0xFFF4F4F4))),
                   ),
-                  Expanded(child: Divider(color: Colors.white30)),
+                  Expanded(child: Divider(color: Color(0xFFF4F4F4))),
                 ],
               ),
               const SizedBox(height: 20),
@@ -116,7 +116,7 @@ class Login extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text("Don't have an account? ", style: TextStyle(color: Colors.white)),
+                  const Text("Don't have an account? ", style: TextStyle(color: Color(0xFFF4F4F4))),
                   GestureDetector(
                     onTap: () {},
                     child: const Text("Sign Up", style: TextStyle(color: Colors.green)),
@@ -138,7 +138,7 @@ class Login extends StatelessWidget {
         color: Colors.blueGrey[800],
         shape: BoxShape.circle,
       ),
-      child: FaIcon(icon, color: Colors.white, size: 20),
+      child: FaIcon(icon, color: Color(0xFFF4F4F4), size: 20),
     );
   }
 }
