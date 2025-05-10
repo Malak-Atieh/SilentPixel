@@ -63,7 +63,9 @@ class Login extends StatelessWidget {
                     ),
                     decoration: InputDecoration(
                       hintText: 'JohnDoe@example.com',
-                      hintStyle: const TextStyle(color: Color(0xFFF4F4F4)),
+                      hintStyle: const TextStyle(
+                        color: Color(0xFFF4F4F4)
+                        ),
                       labelText: 'Email',
                       labelStyle: const TextStyle(color: Color(0xFFF4F4F4)),
                       filled: true,
