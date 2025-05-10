@@ -235,7 +235,15 @@ class SignUp extends StatelessWidget {
           top:14,
           bottom: 14
       ),
-
+      decoration: BoxDecoration(
+        color: Color(0xFF23488A),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: FaIcon(
+          icon,
+          color: Color(0xFFF4F4F4),
+          size: 20
+      ),
     );
   }
 }
