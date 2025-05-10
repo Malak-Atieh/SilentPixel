@@ -227,7 +227,12 @@ class Login extends StatelessWidget {
 
     Widget _buildSocialIcon(IconData icon) {
     return Container(
-      padding: const EdgeInsets.all(50),
+      padding: const EdgeInsets.only(
+        left: 45,
+        right: 45,
+        top:14,
+        bottom: 14
+      ),
       decoration: BoxDecoration(
         color: Color(0xFF23488A),
         borderRadius: BorderRadius.circular(10),
