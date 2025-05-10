@@ -23,6 +23,21 @@ class Login extends StatelessWidget {
                 fontFamily: 'Orbitron',
                 ),
               ),
+              const SizedBox(height: 40),
+              TextField(
+                style: TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  hintText: 'JohnDoe@example.com',
+                  hintStyle: TextStyle(color: Colors.white54),
+                  labelText: 'Email',
+                  labelStyle: TextStyle(color: Colors.white),
+                  filled: true,
+                  fillColor: Colors.white10,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
             ]
           ),    
         ),     
