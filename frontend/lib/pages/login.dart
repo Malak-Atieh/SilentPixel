@@ -8,8 +8,10 @@ class Login extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      body: Stack(
-        
+      body: SafeArea(
+         child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+         ),
       )
     );
   }
