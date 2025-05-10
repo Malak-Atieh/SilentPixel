@@ -174,7 +174,7 @@ class SignUp extends StatelessWidget {
                       ),
 
                       const SizedBox(height: 20),
-                      
+
                       // Social icons
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -188,6 +188,34 @@ class SignUp extends StatelessWidget {
                       const Spacer(),
 
 
+                      // Sign up prompt
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                              "Don't have an account? ",
+                              style: TextStyle(
+                                  color: Color(0xFFF4F4F4)
+                              )
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => SignUp()),
+                              );
+                            },
+                            child: const Text(
+                                "Sign Up",
+                                style: TextStyle(
+                                    color: Color(0xFF0CCE6B)
+                                )
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      
                     ],
                   ),
                 ),
