@@ -197,7 +197,10 @@ class Login extends StatelessWidget {
                       ),
                       GestureDetector(
                         onTap: () {},
-                        child: const Text("Sign Up", style: TextStyle(color: Colors.green)),
+                        child: const Text(
+                          "Sign Up", 
+                          style: TextStyle(color: Colors.green)
+                        ),
                       ),
                     ],
                   ),
