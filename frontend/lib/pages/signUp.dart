@@ -222,10 +222,13 @@ class SignUp extends StatelessWidget {
 
             ),
 
-
-
           ],
       ),
     );
+  }
+
+  Widget _buildSocialIcon(IconData icon) {
+    return Container(
+
   }
 }
