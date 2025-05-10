@@ -131,7 +131,9 @@ class SignUp extends StatelessWidget {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Color(0xFF0CCE6B),
                           minimumSize: const Size(double.infinity, 50),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)
+                          ),
                         ),
                         child: const Text(
                           'SignUp',
