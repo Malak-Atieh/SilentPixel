@@ -6,6 +6,10 @@ class Home extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF09192C),
+      appBar: AppBar(
+      backgroundColor: const Color(0xFF09192C),
+      ),
+
     );
   }
 }
