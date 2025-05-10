@@ -193,7 +193,7 @@ class SignUp extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           const Text(
-                              "Don't have an account? ",
+                              "Already have an account? ",
                               style: TextStyle(
                                   color: Color(0xFFF4F4F4)
                               )
@@ -202,7 +202,7 @@ class SignUp extends StatelessWidget {
                             onTap: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => SignUp()),
+                                MaterialPageRoute(builder: (context) => Login()),
                               );
                             },
                             child: const Text(
