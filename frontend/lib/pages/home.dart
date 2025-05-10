@@ -47,13 +47,22 @@ class Home extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             const Text(
-                'Silent Pixel',
-                style: TextStyle(
-                  fontFamily: 'Orbitron',
-                  fontWeight: FontWeight.w400,
-                  fontSize: 46,
-                  color:Color(0xFFF4F4F4),
-                ),
+              'Silent Pixel',
+              style: TextStyle(
+                fontFamily: 'Orbitron',
+                fontWeight: FontWeight.w500,
+                fontSize: 46,
+                color:Color(0xFFF4F4F4),
+              ),
+            ),
+            const Text(
+              'Every pixel tells your story... Silently',
+              style: TextStyle(
+                fontFamily: 'Orbitron',
+                fontWeight: FontWeight.w400,
+                fontSize: 18,
+                color:Color(0xFFF4F4F4),
+              ),
             ),
           ],
         ),
