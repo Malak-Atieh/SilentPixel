@@ -67,7 +67,9 @@ class Login extends StatelessWidget {
                         color: Color(0xFFF4F4F4)
                         ),
                       labelText: 'Email',
-                      labelStyle: const TextStyle(color: Color(0xFFF4F4F4)),
+                      labelStyle: const TextStyle(
+                        color: Color(0xFFF4F4F4)
+                        ),
                       filled: true,
                       fillColor: Colors.white24,
                       border: OutlineInputBorder(
