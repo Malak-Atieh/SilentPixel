@@ -77,7 +77,7 @@ class OnboardingScreen extends StatelessWidget {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => Login()),
+                          MaterialPageRoute(builder: (context) => SignUp()),
                         );
                       },
                       child: const Text(
