@@ -174,6 +174,18 @@ class SignUp extends StatelessWidget {
                       ),
 
                       const SizedBox(height: 20),
+                      
+                      // Social icons
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          _buildSocialIcon(FontAwesomeIcons.google),
+                          _buildSocialIcon(FontAwesomeIcons.instagram),
+                          _buildSocialIcon(FontAwesomeIcons.facebookF),
+                        ],
+                      ),
+
+                      const Spacer(),
 
 
                     ],
