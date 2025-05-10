@@ -229,6 +229,13 @@ class SignUp extends StatelessWidget {
 
   Widget _buildSocialIcon(IconData icon) {
     return Container(
+      padding: const EdgeInsets.only(
+          left: 45,
+          right: 45,
+          top:14,
+          bottom: 14
+      ),
 
+    );
   }
 }
