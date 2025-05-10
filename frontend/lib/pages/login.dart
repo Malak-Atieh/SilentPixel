@@ -228,7 +228,9 @@ class Login extends StatelessWidget {
       ),
       child: FaIcon(
         icon, 
-        color: Color(0xFFF4F4F4), size: 20),
+        color: Color(0xFFF4F4F4), 
+        size: 20
+      ),
     );
   }
 }
