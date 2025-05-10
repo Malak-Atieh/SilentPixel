@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/pages/signUp.dart';
+import 'package:frontend/pages/signup.dart';
 
 class OnboardingScreenThird extends StatelessWidget {
   const OnboardingScreenThird({super.key});
@@ -48,7 +48,7 @@ class OnboardingScreenThird extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 36,
                     fontWeight: FontWeight.w600,
-                    color: Colors.white,
+                    color: Color(0xFFF4F4F4),
                     fontFamily: 'Orbitron',
 
                   ),
@@ -62,7 +62,7 @@ class OnboardingScreenThird extends StatelessWidget {
                     fontFamily: 'Inter',
                     fontWeight: FontWeight.w500,
                     fontSize: 16,
-                    color: Colors.white70,
+                    color: Color(0xFFF4F4F4),
                   ),
                 ),
 
@@ -85,7 +85,7 @@ class OnboardingScreenThird extends StatelessWidget {
                           fontFamily: 'Inter',
                           fontWeight: FontWeight.w500,
                           fontSize: 16,
-                          color: Colors.white
+                          color: Color(0xFFF4F4F4)
                         ),
                       ),
                     ),
@@ -97,7 +97,7 @@ class OnboardingScreenThird extends StatelessWidget {
                           margin: const EdgeInsets.symmetric(horizontal: 4),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
-                            color: Colors.white30,
+                            color: Color(0xFFF4F4F4),
                           ),
                         ),
                         Container(
@@ -106,7 +106,7 @@ class OnboardingScreenThird extends StatelessWidget {
                           margin: const EdgeInsets.symmetric(horizontal: 4),
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: Colors.white30,
+                            color: Color(0xFFF4F4F4),
                           ),
                         ),
                         Container(
@@ -115,7 +115,7 @@ class OnboardingScreenThird extends StatelessWidget {
                           margin: const EdgeInsets.symmetric(horizontal: 4),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
-                            color: Colors.white60,
+                            color: Color(0xFFF4F4F4),
                           ),
                         ),
                       ],
@@ -130,7 +130,7 @@ class OnboardingScreenThird extends StatelessWidget {
                       child: Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: Color(0xFFF4F4F4),
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(Icons.arrow_forward_ios_rounded, size: 16),
