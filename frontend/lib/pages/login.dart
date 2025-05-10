@@ -151,10 +151,18 @@ class Login extends StatelessWidget {
                   // Or login with divider
                   Row(
                     children: const [
-                      Expanded(child: Divider(color: Color(0xFFF4F4F4))),
+                      Expanded(
+                        child: Divider(
+                          color: Color(0xFFF4F4F4)
+                        )
+                      ),
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: 10),
-                        child: Text("Or login with", style: TextStyle(color: Color(0xFFF4F4F4))),
+                        child: Text(
+                          "Or login with", 
+                          style: TextStyle(
+                            color: Color(0xFFF4F4F4)
+                            )),
                       ),
                       Expanded(child: Divider(color: Color(0xFFF4F4F4))),
                     ],
