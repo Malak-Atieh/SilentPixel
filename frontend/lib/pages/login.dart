@@ -143,7 +143,10 @@ class Login extends StatelessWidget {
                       minimumSize: const Size(double.infinity, 50),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     ),
-                    child: const Text('Login', style: TextStyle(fontSize: 18)),
+                    child: const Text(
+                      'Login', 
+                      style: TextStyle(fontSize: 18)
+                    ),
                   ),
 
                   const SizedBox(height: 20),
