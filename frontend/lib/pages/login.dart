@@ -42,7 +42,7 @@ class Login extends StatelessWidget {
                   ),
                 ),
               ),
-                            const SizedBox(height: 20),
+              const SizedBox(height: 20),
               TextField(
                 obscureText: true,
                 style: TextStyle(
@@ -62,10 +62,73 @@ class Login extends StatelessWidget {
                   ),
                 ),
               ),
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Switch(value: false, onChanged: (_) {}),
+                      const Text('Remember me', style: TextStyle(color: Colors.white)),
+                    ],
+                  ),
+                  TextButton(
+                    onPressed: () {},
+                    child: const Text(
+                      'Forget password?',
+                      style: TextStyle(color: Colors.white70),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: () {},
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  minimumSize: const Size(double.infinity, 50),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                ),
+                child: const Text('Login', style: TextStyle(fontSize: 18)),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                children: const [
+                  Expanded(child: Divider(color: Colors.white30)),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 10),
+                    child: Text("Or login with", style: TextStyle(color: Colors.white)),
+                  ),
+                  Expanded(child: Divider(color: Colors.white30)),
+                ],
+              ),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  _buildSocialIcon(FontAwesomeIcons.google),
+                  _buildSocialIcon(FontAwesomeIcons.instagram),
+                  _buildSocialIcon(FontAwesomeIcons.facebookF),
+                ],
+              ),
+              const Spacer(),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text("Don't have an account? ", style: TextStyle(color: Colors.white)),
+                  GestureDetector(
+                    onTap: () {},
+                    child: const Text("Sign Up", style: TextStyle(color: Colors.green)),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
             ]
           ),    
         ),     
       )
     );
   }
+
+  
 }
