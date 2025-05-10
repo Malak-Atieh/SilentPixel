@@ -8,8 +8,7 @@ class Login extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      body: SafeArea(
-        child: Stack(
+      body: Stack(
           children: [
             // Background image
             Positioned.fill(
@@ -33,9 +32,9 @@ class Login extends StatelessWidget {
                 ),
               ),
             ),
-
+            SafeArea(
+            child: Padding(
             // Login form
-            Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -220,8 +219,8 @@ class Login extends StatelessWidget {
                 ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
