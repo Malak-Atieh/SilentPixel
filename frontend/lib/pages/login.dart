@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:frontend/pages/signUp.dart';
 
 class Login extends StatelessWidget {
   const Login({super.key});
@@ -205,7 +206,12 @@ class Login extends StatelessWidget {
                         )
                       ),
                       GestureDetector(
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => SignUp()),
+                        );
+                        },
                         child: const Text(
                           "Sign Up", 
                           style: TextStyle(
