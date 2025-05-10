@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/pages/onboarding3.dart';
-import 'package:frontend/pages/login.dart';
+import 'package:frontend/pages/signUp.dart';
 
 class OnboardingScreenSecond extends StatelessWidget {
   const OnboardingScreenSecond({super.key});
@@ -77,7 +77,7 @@ class OnboardingScreenSecond extends StatelessWidget {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => Login()),
+                          MaterialPageRoute(builder: (context) => SignUp()),
                         );
                       },
                       child: const Text(
