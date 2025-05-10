@@ -38,7 +38,6 @@ class SignUp extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       const Spacer(),
-                      
                       const SizedBox(height: 40),
                       const Text(
                         'Sign Up',
@@ -143,6 +142,33 @@ class SignUp extends StatelessWidget {
                           ),
                           
                         ),
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      // Or login with divider
+                      Row(
+                        children: const [
+                          Expanded(
+                              child: Divider(
+                                  color: Color(0xFFF4F4F4)
+                              )
+                          ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 10),
+                            child: Text(
+                                "Or login with",
+                                style: TextStyle(
+                                    color: Color(0xFFF4F4F4)
+                                )
+                            ),
+                          ),
+                          Expanded(
+                              child: Divider(
+                                  color: Color(0xFFF4F4F4)
+                              )
+                          ),
+                        ],
                       ),
 
                       const SizedBox(height: 20),
