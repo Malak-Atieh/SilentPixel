@@ -191,7 +191,10 @@ class Login extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text("Don't have an account? ", style: TextStyle(color: Color(0xFFF4F4F4))),
+                      const Text(
+                        "Don't have an account? ", 
+                        style: TextStyle(color: Color(0xFFF4F4F4))
+                      ),
                       GestureDetector(
                         onTap: () {},
                         child: const Text("Sign Up", style: TextStyle(color: Colors.green)),
