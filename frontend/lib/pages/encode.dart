@@ -126,6 +126,13 @@ class _HideMessageScreenState extends State<HideMessageScreen> {
             TextButton(
             onPressed: _pickImage, child: Text("Re-upload image")),
             ],
+            SizedBox(height: 16),
+            CheckboxListTile(
+              value: _generateQR,
+              onChanged: (val) => setState(() => _generateQR = val ?? false),
+              title: Text('Generate Qrcode',
+                  style: TextStyle(color: Colors.white)),
+            ),
           ]
         )
       )
