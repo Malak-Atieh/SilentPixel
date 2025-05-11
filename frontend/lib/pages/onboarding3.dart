@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/pages/signup.dart';
+import 'package:frontend/pages/sign_up.dart';
 
 class OnboardingScreenThird extends StatelessWidget {
   const OnboardingScreenThird({super.key});
