@@ -133,6 +133,12 @@ class _HideMessageScreenState extends State<HideMessageScreen> {
               title: Text('Generate Qrcode',
                   style: TextStyle(color: Colors.white)),
             ),
+            CheckboxListTile(
+              value: _addWatermarks,
+              onChanged: (val) => setState(() => _addWatermarks = val ?? false),
+              title: Text('Add watermarks',
+                  style: TextStyle(color: Colors.white)),
+            ),
           ]
         )
       )
