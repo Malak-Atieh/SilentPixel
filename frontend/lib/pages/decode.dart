@@ -49,6 +49,7 @@ class _RevealMessageScreenState extends State<RevealMessageScreen> {
       appBar: AppBar(
         backgroundColor: const Color(0xFF09192C),
         elevation: 0,
+        title: const Text(),
 
       ),
     );
