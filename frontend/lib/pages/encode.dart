@@ -108,7 +108,11 @@ class _HideMessageScreenState extends State<HideMessageScreen> {
             SizedBox(height: 16),
             ElevatedButton.icon(
               onPressed: _pickImage,
-              icon: Icon(Icons.upload),
+              icon: Icon(
+                  Icons.upload,
+                  color: Color(0xFFF4F4F4),
+                  size: 24,
+              ),
               label: Text(
                 'Upload image',
                 style: TextStyle(
