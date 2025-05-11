@@ -9,3 +9,16 @@ class HideMessageScreen extends StatefulWidget {
   _HideMessageScreenState createState() => _HideMessageScreenState();
 }
 
+
+class _HideMessageScreenState extends State<HideMessageScreen> {
+  final TextEditingController _messageController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  File? _selectedImage;
+  Map<String, dynamic>? _imageAnalysisResult;
+  bool _generateQR = false;
+  bool _addWatermarks = false;
+  bool _isAnalyzing = false;
+
+  
+}
