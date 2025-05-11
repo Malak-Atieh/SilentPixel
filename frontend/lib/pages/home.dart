@@ -71,7 +71,7 @@ class Home extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const Encode()),
+                  MaterialPageRoute(builder: (context) => HideMessageScreen()),
                 );
               },
               style: ElevatedButton.styleFrom(
