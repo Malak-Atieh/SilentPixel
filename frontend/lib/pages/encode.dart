@@ -141,31 +141,49 @@ class _HideMessageScreenState extends State<HideMessageScreen> {
             SizedBox(height: 8),
             if (_imageAnalysisResult != null)
             _buildAnalysisDetails(_imageAnalysisResult!),
-            TextButton(
-            onPressed: _pickImage, child: Text("Re-upload image")),
+
             ],
-            SizedBox(height: 16),
+            SizedBox(height: 10),
             CheckboxListTile(
               value: _generateQR,
               onChanged: (val) => setState(() => _generateQR = val ?? false),
-              title: Text('Generate Qrcode',
-                  style: TextStyle(color: Colors.white)),
+              title: Text(
+                  'Generate Qrcode',
+                  style: TextStyle(
+                      color: Color(0xFFF4F4F4),
+                  )
+              ),
             ),
             CheckboxListTile(
               value: _addWatermarks,
               onChanged: (val) => setState(() => _addWatermarks = val ?? false),
               title: Text('Add watermarks',
-                  style: TextStyle(color: Colors.white)),
+                  style: TextStyle(
+                      color: Color(0xFFF4F4F4),
+                  )
+              ),
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 10),
             ElevatedButton(
               onPressed: _canEncode ? () {} : null,
               style: ElevatedButton.styleFrom(
                 backgroundColor:
-                _canEncode ? Color(0xFF00D084) : Colors.grey.shade700,
+                _canEncode ? Color(0xFF0CCE6B) : Color(0xFFB4B4B4),
                 minimumSize: Size(double.infinity, 50),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                splashFactory: _canEncode ? InkRipple.splashFactory : NoSplash.splashFactory,
               ),
-              child: Text('Hide the message'),
+              child: Text(
+                  'Hide message',
+                  style: TextStyle(
+                    fontFamily: 'Orbitron',
+                    fontWeight: FontWeight.w500,
+                    fontSize: 18,
+                    color: Color(0xFFF4F4F4),
+                  ),
+              ),
             )
           ]
         )
@@ -177,13 +195,17 @@ class _HideMessageScreenState extends State<HideMessageScreen> {
     return TextField(
       controller: controller,
       obscureText: obscure,
-      style: TextStyle(color: Colors.white),
+      style: TextStyle(
+          color: Color(0xFF09192C),
+      ),
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: TextStyle(color: Colors.white54),
+        hintStyle: TextStyle(
+          color: Color(0xFFB4B4B4),
+        ),
         filled: true,
-        fillColor: Colors.white10,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+        fillColor: Color(0xFFF4F4F4),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(4)),
       ),
     );
   }
