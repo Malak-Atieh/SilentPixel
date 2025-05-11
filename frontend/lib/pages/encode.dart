@@ -34,5 +34,17 @@ class _HideMessageScreenState extends State<HideMessageScreen> {
     }
   }
 
-  
+  Future<void> _analyzeImage(File image) async {
+    // TODO when backend finish: Call backend API
+    await Future.delayed(Duration(seconds: 2)); // mock delay
+    setState(() {
+      _imageAnalysisResult = {
+        'capacity': '1024 bits',
+        'resolution': '1080x720',
+        'format': 'PNG',
+      };
+      _isAnalyzing = false;
+    });
+  }
+
 }
