@@ -154,4 +154,20 @@ class _HideMessageScreenState extends State<HideMessageScreen> {
       )
     );
   }
+  Widget _buildTextField(TextEditingController controller, String hint,
+      {bool obscure = false}) {
+    return TextField(
+      controller: controller,
+      obscureText: obscure,
+      style: TextStyle(color: Colors.white),
+      decoration: InputDecoration(
+        hintText: hint,
+        hintStyle: TextStyle(color: Colors.white54),
+        filled: true,
+        fillColor: Colors.white10,
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+      ),
+    );
+  }
+
 }
