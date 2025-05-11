@@ -125,6 +125,9 @@ class _HideMessageScreenState extends State<HideMessageScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Color(0xFF23488A),
                 minimumSize: Size(double.infinity, 50),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(4), // 4px radius
+                ),
               ),
             ),
             if (_isAnalyzing)
