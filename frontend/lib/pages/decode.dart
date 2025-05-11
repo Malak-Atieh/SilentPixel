@@ -102,6 +102,46 @@ class _RevealMessageScreenState extends State<RevealMessageScreen> {
             SizedBox(height: 10),
             _buildTextField(_passwordController, 'Enter your password',
                 obscure: true),
+            SizedBox(height: 25),
+            ElevatedButton.icon(
+              onPressed: _pickImage,
+              icon: Icon(
+                Icons.upload,
+                color: Color(0xFFF4F4F4),
+                size: 24,
+              ),
+              label: Text(
+                'Upload image',
+                style: TextStyle(
+                  fontFamily: 'Orbitron',
+                  fontWeight: FontWeight.w600,
+                  fontSize: 18,
+                  color: Color(0xFFF4F4F4),
+                ),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFF23488A),
+                minimumSize: Size(double.infinity, 50),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(4), // 4px radius
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            if (_selectedImage != null)
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Image.file(_selectedImage!, height: 180),
+                  const SizedBox(height: 10),
+                  if (_isAnalyzing)
+                    const Center(child: CircularProgressIndicator())
+                  else if (_hasResult && _extractedMessage != null)
+                    Text('Extracted Message: $_extractedMessage', style: const TextStyle(color: Colors.white))
+                  else if (_errorMessage != null)
+                      Text(_errorMessage!, style: const TextStyle(color: Colors.red)),
+                ],
+              ),
           ],
         )
       ),
