@@ -58,6 +58,10 @@ class _RevealMessageScreenState extends State<RevealMessageScreen> {
                 color: Color(0xFFF4F4F4)
             )
         ),
+        leading: IconButton(
+          icon: const Icon(Icons.menu, color:Color(0xFFF4F4F4)),
+          onPressed: () {},
+        ),
 
 
       ),
