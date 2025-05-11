@@ -99,8 +99,28 @@ class _HideMessageScreenState extends State<HideMessageScreen> {
               )
             ),
             SizedBox(height: 30),
+            Text(
+                'Secret Message',
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontWeight: FontWeight.w400,
+                  color: Color(0xFFF4F4F4),
+                  fontSize: 18,
+                )
+            ),
+            SizedBox(height: 10),
             _buildTextField(_messageController, 'Secret message'),
             SizedBox(height: 12),
+            Text(
+                'Password',
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontWeight: FontWeight.w400,
+                  color: Color(0xFFF4F4F4),
+                  fontSize: 18,
+                )
+            ),
+            SizedBox(height: 10),
             _buildTextField(_passwordController, 'Enter your password',
             obscure: true),
             SizedBox(height: 16),
