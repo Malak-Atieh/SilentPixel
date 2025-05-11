@@ -58,7 +58,9 @@ class _HideMessageScreenState extends State<HideMessageScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: const Color(0xFF09192C),
+      appBar: AppBar(
 
+      ),
     );
   }
 }
