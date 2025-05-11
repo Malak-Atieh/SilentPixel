@@ -7,7 +7,6 @@ class HideMessageScreen extends StatefulWidget {
   _HideMessageScreenState createState() => _HideMessageScreenState();
 }
 
-
 class _HideMessageScreenState extends State<HideMessageScreen> {
   final TextEditingController _messageController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -55,7 +54,7 @@ class _HideMessageScreenState extends State<HideMessageScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: const Color(0xFF09192C),
+      backgroundColor: const Color(0xFF09192C),
       appBar: AppBar(
         backgroundColor: const Color(0xFF09192C),
         elevation: 0,
@@ -88,7 +87,7 @@ class _HideMessageScreenState extends State<HideMessageScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 35),
+            SizedBox(height: 20),
             Text(
               'Hide Your Message',
               style: TextStyle(
@@ -98,12 +97,32 @@ class _HideMessageScreenState extends State<HideMessageScreen> {
                   fontSize: 34,
               )
             ),
-            SizedBox(height: 30),
+            SizedBox(height: 25),
+            Text(
+                'Secret Message',
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontWeight: FontWeight.w400,
+                  color: Color(0xFFF4F4F4),
+                  fontSize: 18,
+                )
+            ),
+            SizedBox(height: 10),
             _buildTextField(_messageController, 'Secret message'),
             SizedBox(height: 12),
+            Text(
+                'Password',
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontWeight: FontWeight.w400,
+                  color: Color(0xFFF4F4F4),
+                  fontSize: 18,
+                )
+            ),
+            SizedBox(height: 10),
             _buildTextField(_passwordController, 'Enter your password',
             obscure: true),
-            SizedBox(height: 16),
+            SizedBox(height: 25),
             ElevatedButton.icon(
               onPressed: _pickImage,
               icon: Icon(
@@ -167,6 +186,7 @@ class _HideMessageScreenState extends State<HideMessageScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor:
                 _canEncode ? Color(0xFF0CCE6B) : Color(0xFFB4B4B4),
+                foregroundColor: _canEncode ? Color(0xFFF4F4F4) : Colors.grey[800],
                 minimumSize: Size(double.infinity, 50),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(4),
@@ -179,7 +199,6 @@ class _HideMessageScreenState extends State<HideMessageScreen> {
                     fontFamily: 'Orbitron',
                     fontWeight: FontWeight.w500,
                     fontSize: 18,
-                    color: Color(0xFFF4F4F4),
                   ),
               ),
             )
