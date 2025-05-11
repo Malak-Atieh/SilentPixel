@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/pages/encode.dart';
+import 'package:frontend/pages/decode.dart';
 
 class Home extends StatelessWidget {
   const Home({super.key});
@@ -15,7 +17,7 @@ class Home extends StatelessWidget {
                 fontFamily: 'Orbitron',
                 fontWeight: FontWeight.w400,
                 fontSize: 16,
-                color: Colors.white
+                color: Color(0xFFF4F4F4)
             )
         ),
         leading: IconButton(
@@ -66,24 +68,34 @@ class Home extends StatelessWidget {
             ),
             const SizedBox(height: 40),
             ElevatedButton(
-              onPressed: () {},
-                style: ElevatedButton.styleFrom(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => HideMessageScreen()),
+                );
+              },
+              style: ElevatedButton.styleFrom(
                   backgroundColor: Color(0xFF0CCE6B),
                   minimumSize: const Size(double.infinity, 50),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                ),
-                child: const Text(
-                    'Hide a message',
-                    style: TextStyle(
-                        fontFamily: 'Orbitron',
-                        color: Color(0xFFF4F4F4),
-                        fontSize: 18
-                    )
-                ),
               ),
+              child: const Text(
+                 'Hide a message',
+                 style: TextStyle(
+                   fontFamily: 'Orbitron',
+                   color: Color(0xFFF4F4F4),
+                   fontSize: 18
+                 )
+              ),
+            ),
             const SizedBox(height: 25),
             ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Decode()),
+                );
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Color(0xFF0CCE6B),
                 minimumSize: const Size(double.infinity, 50),
