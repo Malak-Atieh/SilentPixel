@@ -71,7 +71,11 @@ class _RevealMessageScreenState extends State<RevealMessageScreen> {
             ),
           )
         ],
+      ),
 
+
+      body: SingleChildScrollView(
+        padding: EdgeInsets.all(16),
       ),
     );
   }
