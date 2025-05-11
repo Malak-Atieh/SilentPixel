@@ -76,6 +76,21 @@ class _RevealMessageScreenState extends State<RevealMessageScreen> {
 
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: 35),
+            Text(
+              'Reveal Message',
+              style: TextStyle(
+                fontFamily: 'Orbitron',
+                fontWeight: FontWeight.w600,
+                color: Color(0xFFF4F4F4),
+                fontSize: 34,
+              )
+            ),
+          ],
+        )
       ),
     );
   }
