@@ -90,14 +90,17 @@ class _HideMessageScreenState extends State<HideMessageScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            SizedBox(height: 35),
             Text(
               'Hide Your Message',
               style: TextStyle(
-                  fontSize: 24,
-                  color: Colors.white
+                  fontFamily: 'Orbitron',
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFFF4F4F4),
+                  fontSize: 34,
               )
             ),
-            SizedBox(height: 16),
+            SizedBox(height: 30),
             _buildTextField(_messageController, 'Secret message'),
             SizedBox(height: 12),
             _buildTextField(_passwordController, 'Enter your password',
@@ -105,10 +108,18 @@ class _HideMessageScreenState extends State<HideMessageScreen> {
             SizedBox(height: 16),
             ElevatedButton.icon(
               onPressed: _pickImage,
-              icon: Icon(Icons.upload_file),
-              label: Text('Upload image'),
+              icon: Icon(Icons.upload),
+              label: Text(
+                'Upload image',
+                style: TextStyle(
+                  fontFamily: 'Orbitron',
+                  fontWeight: FontWeight.w600,
+                  fontSize: 18,
+                  color: Color(0xFFF4F4F4),
+                ),
+              ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFF1B3C88),
+                backgroundColor: Color(0xFF23488A),
                 minimumSize: Size(double.infinity, 50),
               ),
             ),
