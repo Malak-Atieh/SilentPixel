@@ -20,5 +20,19 @@ class _HideMessageScreenState extends State<HideMessageScreen> {
   bool _addWatermarks = false;
   bool _isAnalyzing = false;
 
+
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final picked = await picker.pickImage(source: ImageSource.gallery);
+    if (picked != null) {
+      setState(() {
+        _selectedImage = File(picked.path);
+        _isAnalyzing = true;
+        _imageAnalysisResult = null;
+      });
+      await _analyzeImage(File(picked.path));
+    }
+  }
+
   
 }
