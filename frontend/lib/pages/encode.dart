@@ -61,6 +61,15 @@ class _HideMessageScreenState extends State<HideMessageScreen> {
       appBar: AppBar(
         backgroundColor: const Color(0xFF09192C),
         elevation: 0,
+        title: const Text(
+            "Silent Pixel",
+            style: TextStyle(
+                fontFamily: 'Orbitron',
+                fontWeight: FontWeight.w400,
+                fontSize: 16,
+                color: Color(0xFFF4F4F4)
+            )
+        ),
 
       ),
     );
