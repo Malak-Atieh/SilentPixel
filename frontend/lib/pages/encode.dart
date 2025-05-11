@@ -46,5 +46,12 @@ class _HideMessageScreenState extends State<HideMessageScreen> {
       _isAnalyzing = false;
     });
   }
+  
+  bool get _canEncode =>
+      _selectedImage != null &&
+          _imageAnalysisResult != null &&
+          _messageController.text.isNotEmpty &&
+          _passwordController.text.length >= 8;
+
 
 }
