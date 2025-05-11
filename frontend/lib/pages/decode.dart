@@ -46,7 +46,9 @@ class _RevealMessageScreenState extends State<RevealMessageScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF09192C),
-      
+      appBar: AppBar(
+
+      ),
     );
   }
 }
