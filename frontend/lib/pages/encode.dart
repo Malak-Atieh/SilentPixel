@@ -84,6 +84,38 @@ class _HideMessageScreenState extends State<HideMessageScreen> {
           )
         ],
       ),
+
+      body: SingleChildScrollView(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Hide Your Message',
+              style: TextStyle(
+                  fontSize: 24,
+                  color: Colors.white
+              )
+            ),
+            SizedBox(height: 16),
+            _buildTextField(_messageController, 'Secret message'),
+            SizedBox(height: 12),
+            _buildTextField(_passwordController, 'Enter your password',
+            obscure: true),
+            SizedBox(height: 16),
+            ElevatedButton.icon(
+              onPressed: _pickImage,
+              icon: Icon(Icons.upload_file),
+              label: Text('Upload image'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFF1B3C88),
+                minimumSize: Size(double.infinity, 50),
+              ),
+            ),
+            
+          ]
+        )
+      )
     );
   }
 }
