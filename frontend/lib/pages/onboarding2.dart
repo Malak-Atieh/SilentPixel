@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/pages/onboarding3.dart';
-import 'package:frontend/pages/signup.dart';
+import 'package:frontend/pages/sign_up.dart';
 
 class OnboardingScreenSecond extends StatelessWidget {
   const OnboardingScreenSecond({super.key});
