@@ -46,7 +46,7 @@ class _HideMessageScreenState extends State<HideMessageScreen> {
       _isAnalyzing = false;
     });
   }
-  
+
   bool get _canEncode =>
       _selectedImage != null &&
           _imageAnalysisResult != null &&
@@ -54,4 +54,11 @@ class _HideMessageScreenState extends State<HideMessageScreen> {
           _passwordController.text.length >= 8;
 
 
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        backgroundColor: const Color(0xFF09192C),
+
+    );
+  }
 }
