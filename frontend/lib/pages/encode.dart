@@ -112,7 +112,20 @@ class _HideMessageScreenState extends State<HideMessageScreen> {
                 minimumSize: Size(double.infinity, 50),
               ),
             ),
-            
+            if (_isAnalyzing)
+              Padding(
+                padding: EdgeInsets.all(12),
+                child: Center(child: CircularProgressIndicator()),
+              ),
+            if (_selectedImage != null && !_isAnalyzing) ...[
+            SizedBox(height: 12),
+            Image.file(_selectedImage!, height: 150),
+            SizedBox(height: 8),
+            if (_imageAnalysisResult != null)
+            _buildAnalysisDetails(_imageAnalysisResult!),
+            TextButton(
+            onPressed: _pickImage, child: Text("Re-upload image")),
+            ],
           ]
         )
       )
