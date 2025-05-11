@@ -167,6 +167,7 @@ class _HideMessageScreenState extends State<HideMessageScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor:
                 _canEncode ? Color(0xFF0CCE6B) : Color(0xFFB4B4B4),
+                foregroundColor: _canEncode ? Color(0xFFF4F4F4) : Colors.grey[800],
                 minimumSize: Size(double.infinity, 50),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(4),
@@ -179,7 +180,6 @@ class _HideMessageScreenState extends State<HideMessageScreen> {
                     fontFamily: 'Orbitron',
                     fontWeight: FontWeight.w500,
                     fontSize: 18,
-                    color: Color(0xFFF4F4F4),
                   ),
               ),
             )
