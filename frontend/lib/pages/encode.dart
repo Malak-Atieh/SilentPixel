@@ -7,7 +7,6 @@ class HideMessageScreen extends StatefulWidget {
   _HideMessageScreenState createState() => _HideMessageScreenState();
 }
 
-
 class _HideMessageScreenState extends State<HideMessageScreen> {
   final TextEditingController _messageController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -88,7 +87,7 @@ class _HideMessageScreenState extends State<HideMessageScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 35),
+            SizedBox(height: 20),
             Text(
               'Hide Your Message',
               style: TextStyle(
@@ -98,7 +97,7 @@ class _HideMessageScreenState extends State<HideMessageScreen> {
                   fontSize: 34,
               )
             ),
-            SizedBox(height: 30),
+            SizedBox(height: 25),
             Text(
                 'Secret Message',
                 style: TextStyle(
@@ -123,7 +122,7 @@ class _HideMessageScreenState extends State<HideMessageScreen> {
             SizedBox(height: 10),
             _buildTextField(_passwordController, 'Enter your password',
             obscure: true),
-            SizedBox(height: 16),
+            SizedBox(height: 25),
             ElevatedButton.icon(
               onPressed: _pickImage,
               icon: Icon(
