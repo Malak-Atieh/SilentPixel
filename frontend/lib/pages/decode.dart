@@ -21,8 +21,20 @@ class _RevealMessageScreenState extends State<RevealMessageScreen> {
   Future<void> _pickImage() async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        _selectedImage = File(pickedFile.path);
+        _isAnalyzing = true;
+        _hasResult = false;
+        _extractedMessage = null;
+        _errorMessage = null;
+      });
+
+      
+    }
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
