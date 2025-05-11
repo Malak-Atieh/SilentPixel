@@ -139,6 +139,16 @@ class _HideMessageScreenState extends State<HideMessageScreen> {
               title: Text('Add watermarks',
                   style: TextStyle(color: Colors.white)),
             ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _canEncode ? () {} : null,
+              style: ElevatedButton.styleFrom(
+                backgroundColor:
+                _canEncode ? Color(0xFF00D084) : Colors.grey.shade700,
+                minimumSize: Size(double.infinity, 50),
+              ),
+              child: Text('Hide the message'),
+            )
           ]
         )
       )
