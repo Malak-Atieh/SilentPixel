@@ -31,7 +31,14 @@ class _RevealMessageScreenState extends State<RevealMessageScreen> {
         _errorMessage = null;
       });
 
-      
+
+      await Future.delayed(const Duration(seconds: 2)); // mock api call
+
+      setState(() {
+        _isAnalyzing = false;
+        _hasResult = true;
+        _extractedMessage = 'Hello, this is your hidden message!'; // mock response
+      });
     }
   }
 
