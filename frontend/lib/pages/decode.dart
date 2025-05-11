@@ -89,9 +89,13 @@ class _RevealMessageScreenState extends State<RevealMessageScreen> {
                 fontSize: 34,
               )
             ),
+            _buildTextField(_passwordController, 'Enter your password',
+                obscure: true),
           ],
         )
       ),
     );
   }
+
+  
 }
