@@ -97,5 +97,24 @@ class _RevealMessageScreenState extends State<RevealMessageScreen> {
     );
   }
 
-  
+  Widget _buildTextField(TextEditingController controller, String hint,
+      {bool obscure = false}) {
+    return TextField(
+      controller: controller,
+      obscureText: obscure,
+      style: TextStyle(
+        color: Color(0xFF09192C),
+      ),
+      decoration: InputDecoration(
+        hintText: hint,
+        hintStyle: TextStyle(
+          color: Color(0xFFB4B4B4),
+        ),
+        filled: true,
+        fillColor: Color(0xFFF4F4F4),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(4)),
+      ),
+    );
+  }
+
 }
