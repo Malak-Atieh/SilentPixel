@@ -59,6 +59,8 @@ class _HideMessageScreenState extends State<HideMessageScreen> {
     return Scaffold(
         backgroundColor: const Color(0xFF09192C),
       appBar: AppBar(
+        backgroundColor: const Color(0xFF09192C),
+        elevation: 0,
 
       ),
     );
