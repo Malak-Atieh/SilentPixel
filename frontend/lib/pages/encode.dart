@@ -170,4 +170,16 @@ class _HideMessageScreenState extends State<HideMessageScreen> {
     );
   }
 
+  Widget _buildAnalysisDetails(Map<String, dynamic> data) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: data.entries.map((entry) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 2.0),
+          child: Text("${entry.key}: ${entry.value}",
+              style: TextStyle(color: Colors.white70)),
+        );
+      }).toList(),
+    );
+  }
 }
