@@ -7,16 +7,8 @@ class QRService {
     static async addQRCode(imageBuffer, data) {
 
         try {
-            //load the image
-            const image =loadImage(imageBuffer);
-
-            //create a canvas
-            const canvas = createCanvas(image.width, image.height);
-            const ctx = canvas.getContext('2d');
-
-            //draw the image on the canvas
-            ctx.drawImage(image, 0, 0);
-
+            const { canvas, ctx } = await ImageProcessor.loadImageToCanvas(imageBuffer);
+    
             //generate the QR code
             const qrSize = Math.min(image.width, image.height) *0.15; //15% of img lenght
             const qrCanvas = createCanvas(qrSize, qrSize);
@@ -52,19 +44,9 @@ class QRService {
 
     static async extractQRCode(imageBuffer) {
         try {
-            //load the image
-            const image =loadImage(imageBuffer);
-
-            //create a canvas
-            const canvas = createCanvas(image.width, image.height);
-            const ctx = canvas.getContext('2d');
-
-            //draw the image on the canvas
-            ctx.drawImage(image, 0, 0);
-
-            //get the image data
-            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-
+            const { canvas, ctx } = await ImageProcessor.loadImageToCanvas(imageBuffer);
+            const imageData = ImageProcessor.getImageData(ctx, canvas.width, canvas.height);
+    
             //scan the image for QR code
             const code = jsQR(imageData.data, canvas.width, canvas.height);
             let qrData = null;
