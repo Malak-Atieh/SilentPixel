@@ -60,4 +60,4 @@ class MLService {
   }
 
 }
-module.exports = {  };
+module.exports = new MLService();
