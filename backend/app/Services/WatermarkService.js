@@ -1,23 +1,15 @@
 const {createCanvas, loadImage} = require ('canvas');
 const {createResponse} = require('../Traits/response');
 const crypto = require('crypto');
+const ImageProcessor = require('../utils/steganoFunctions/imageProcessor');
 const BinaryConverter = require('../utils/steganoFunctions/binaryConverter');
 class WatermarkService {
     static async addWatermark(imageBuffer, watermarkData) {
         try {
 
-            //load the image
-            const image = await loadImage(imageBuffer);
-
-            //create a canvas
-            const canvas = createCanvas(image.width, image.height);
-            const ctx = canvas.getContext('2d');
-
-            //draw the image on the canvas
-            ctx.drawImage(image, 0, 0);
-
-            //get image data 
-            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const { canvas, ctx } = await ImageProcessor.loadImageToCanvas(imageBuffer);
+            const imageData = ImageProcessor.getImageData(ctx, canvas.width, canvas.height);
+            
             const pixels = imageData.data;
 
             //create a digest of the image data
@@ -65,18 +57,9 @@ class WatermarkService {
 
     static async extractWatermark(imageBuffer) {
         try {
-            //load image
-            const image = await loadImage(imageBuffer);
-
-            //create a canvas
-            const canvas = createCanvas(image.width, image.height);
-            const ctx = canvas.getContext('2d');
-
-            //draw the image on the canvas
-            ctx.drawImage(image, 0, 0);
-
-            //get image data    
-            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const { canvas, ctx } = await ImageProcessor.loadImageToCanvas(imageBuffer);
+            const imageData = ImageProcessor.getImageData(ctx, canvas.width, canvas.height);
+            
             const pixels = imageData.data;
 
             //retrieve watermark hash from alpha channel corners
