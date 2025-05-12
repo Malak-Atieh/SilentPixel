@@ -103,8 +103,12 @@ class WatermarkService {
                 const green= pixels[pixelIndex + 1];
 
                 binaryWatermark += (red > green) ? '1' : '0';
-                
             }
+
+            //convert binary to string
+            const watermarkString = this._binaryToString(binaryWatermark);
+
+            
         } catch (error) {
             return createResponse(500, 'Error extracting watermark', error);
         }
