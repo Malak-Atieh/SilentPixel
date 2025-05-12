@@ -83,6 +83,16 @@ class WatermarkService {
             //retrieve watermark hash from alpha channel corners
             const storedHash = this._retrieveWatermarkHash(ctx, canvas.width, canvas.height);   
 
+            if(!storedHash) {
+                return createResponse(400, 'No watermark found',null);
+            }
+
+            //max length of watermark data
+            const maxLength = 128 * 8 ; 
+
+            //get watermark position
+            const position = this._getWatermarkPosition(canvas.width, canvas.height, maxLength);
+
             
         } catch (error) {
             return createResponse(500, 'Error extracting watermark', error);
