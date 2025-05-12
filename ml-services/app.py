@@ -74,4 +74,9 @@ class SteganographyCNN(nn.Module):
             nn.ReLU(inplace=True),
             nn.Linear(128, 3)  # Three classes: no steganography, LSB steganography, DCT steganography
         )
+        def forward(self, x):
+            x = self.features(x)
+            x = self.classifier(x)
+            return x
+    
         
