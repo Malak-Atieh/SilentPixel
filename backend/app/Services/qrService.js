@@ -1,6 +1,7 @@
 const QECode= require('qrcode');
 const {createCanvas, loadImage} = require('canvas');
 const jsQR= require('jsqr');
+const ImageProcessor = require('../utils/steganoFunctions/imageProcessor');
 const {createResponse} = require('../Traits/response');
 class QRService {
 
