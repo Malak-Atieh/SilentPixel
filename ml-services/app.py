@@ -380,3 +380,55 @@ def analyze_image():
         logger.error("Error analyzing image: %s", str(e), exc_info=True)
         return jsonify({"error": "Failed to analyze image", "message": str(e)}), 500
 
+
+@app.route('/api/detect-busy-areas', methods=['POST'])
+def detect_busy_areas():
+    """
+    Endpoint to detect visually busy or complex areas in an image.
+    
+    Expects a form with:
+    - 'image' field containing the image file
+    - Optional 'sensitivity' field with value 'low', 'medium', or 'high'
+    """
+    try:
+        # Check if image is in the request
+        if 'image' not in request.files:
+            return jsonify({"error": "No image provided"}), 400
+            
+        file = request.files['image']
+        
+        # Check if the file is valid
+        if file.filename == '':
+            return jsonify({"error": "Empty file provided"}), 400
+            
+        if not allowed_file(file.filename):
+            return jsonify({"error": f"Invalid file type. Allowed types: {', '.join(ALLOWED_EXTENSIONS)}"}), 400
+        
+        # Get sensitivity parameter
+        sensitivity = request.form.get('sensitivity', 'medium').lower()
+        if sensitivity not in ['low', 'medium', 'high']:
+            sensitivity = 'medium'
+        
+        # Read and preprocess the image
+        image_bytes = file.read()
+        _, img_np = preprocess_image(image_bytes)
+        
+        # Load the detector
+        detector = load_busy_area_detector()
+        
+        # Perform detection
+        busy_areas = detector.detect(img_np, sensitivity)
+        
+        # Return results
+        return jsonify({
+            "busyAreas": busy_areas,
+            "imageSize": {
+                "width": img_np.shape[1],
+                "height": img_np.shape[0]
+            },
+            "sensitivity": sensitivity
+        })
+        
+    except Exception as e:
+        logger.error("Error detecting busy areas: %s", str(e), exc_info=True)
+        return jsonify({"error": "Failed to detect busy areas", "message": str(e)}), 500
