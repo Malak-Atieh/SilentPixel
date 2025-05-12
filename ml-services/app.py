@@ -21,3 +21,9 @@ logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 CORS(app)
+
+# Configuration
+MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16MB max image size
+app.config['MAX_CONTENT_LENGTH'] = MAX_CONTENT_LENGTH
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp'}
+
