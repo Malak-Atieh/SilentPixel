@@ -115,4 +115,75 @@ class BusyAreaDetector:
             'low': {'edge_threshold': 120, 'density_threshold': 0.3, 'sigma': 2.0},
             'medium': {'edge_threshold': 100, 'density_threshold': 0.2, 'sigma': 1.5},
             'high': {'edge_threshold': 80, 'density_threshold': 0.1, 'sigma': 1.0}
-        }           
+        }
+        def detect(self, image_np, sensitivity='medium'):
+            """
+            Detects busy areas in the image using edge detection and gradient analysis.
+            
+            Args:
+                image_np: numpy array of image
+                sensitivity: 'low', 'medium', or 'high'
+                
+            Returns:
+                List of dictionaries with busy area coordinates
+            """
+            # Get parameters based on sensitivity
+            params = self.sensitivity_presets.get(sensitivity, self.sensitivity_presets['medium'])
+            
+            # Convert to grayscale if it's not already
+            if len(image_np.shape) == 3 and image_np.shape[2] == 3:
+                gray = cv2.cvtColor(image_np, cv2.COLOR_RGB2GRAY)
+            else:
+                gray = image_np
+                
+            # 1. Edge detection
+            edges = cv2.Canny(gray, params['edge_threshold'], params['edge_threshold'] * 2)
+            
+            # 2. Texture complexity analysis (using gradients)
+            sobelx = cv2.Sobel(gray, cv2.CV_64F, 1, 0, ksize=3)
+            sobely = cv2.Sobel(gray, cv2.CV_64F, 0, 1, ksize=3)
+            gradient_magnitude = np.sqrt(sobelx**2 + sobely**2)
+            
+            # Normalize gradient magnitude
+            if gradient_magnitude.max() > 0:
+                gradient_magnitude = gradient_magnitude / gradient_magnitude.max()
+            
+            # 3. Combine edge and gradient information
+            complexity_map = edges.astype(float) / 255 + gradient_magnitude
+            complexity_map = np.clip(complexity_map, 0, 1)
+            
+            # 4. Apply Gaussian smoothing to the map
+            complexity_map = gaussian_filter(complexity_map, sigma=params['sigma'])
+            
+            # 5. Segment the image into grid cells and analyze each cell
+            h, w = complexity_map.shape
+            cell_size = min(h, w) // 10  # Divide image into approximately 10x10 grid
+            cell_size = max(cell_size, 20)  # Minimum cell size of 20px
+            
+            busy_areas = []
+            
+            # Iterate through grid cells
+            for y in range(0, h - cell_size + 1, cell_size):
+                for x in range(0, w - cell_size + 1, cell_size):
+                    cell = complexity_map[y:y+cell_size, x:x+cell_size]
+                    
+                    # Calculate average complexity in this cell
+                    avg_complexity = np.mean(cell)
+                    
+                    # If complexity is above threshold, mark as busy area
+                    if avg_complexity > params['density_threshold']:
+                        busy_areas.append({
+                            'x': int(x),
+                            'y': int(y),
+                            'width': int(cell_size),
+                            'height': int(cell_size),
+                            'complexity': float(avg_complexity)
+                        })
+            
+            # 6. Merge adjacent busy areas
+            merged_areas = self._merge_adjacent_areas(busy_areas, cell_size)
+            
+            # Sort by complexity (highest first)
+            merged_areas.sort(key=lambda area: area['complexity'], reverse=True)
+            
+            return merged_areas               
