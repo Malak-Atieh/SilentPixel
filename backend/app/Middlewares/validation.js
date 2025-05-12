@@ -18,6 +18,13 @@ const validateImageUpload = (req, res, next) => {
   if (!allowedMimeTypes.includes(req.file.mimetype)) {
     throw new ValidationError('File must be a valid image (JPEG, PNG, or GIF)');
   }
+
+  const maxSize = 10 * 1024 * 1024; 
+  if (req.file.size > maxSize) {
+    throw new ValidationError('File size must be less than 10MB');
+  }
+  
+  next();
 }
   module.exports = { validate };
   
