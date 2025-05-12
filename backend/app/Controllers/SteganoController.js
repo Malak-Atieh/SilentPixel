@@ -8,6 +8,20 @@ const { createResponse } = require('../Traits/response');
 class SteganoController {
 
   static async encode(req, res) {
+    try {
+      const processedImage = await SteganographyService.handleEncoding(req);
+      
+      // Return the processed image
+      res.set('Content-Type', req.file.mimetype);
+      return createResponse(res, 200, 'Image encoded successfully', processedImage);
+    } catch (err) {
+      return createResponse(res, err.status || 500, err.message);
+    }
+  }
+
+  
+/*
+  static async encode(req, res) {
     
     try {
       const { message, password, addWatermark, addQRCode, busyAreas} = req.body;
@@ -133,7 +147,7 @@ class SteganoController {
     } catch (error) {
       return errorHandler(error, res);
     }
-  }
+  }*/
 }
 
 module.exports = SteganoController;
