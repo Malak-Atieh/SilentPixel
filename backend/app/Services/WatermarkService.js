@@ -73,6 +73,16 @@ class WatermarkService {
             const canvas = createCanvas(image.width, image.height);
             const ctx = canvas.getContext('2d');
 
+            //draw the image on the canvas
+            ctx.drawImage(image, 0, 0);
+
+            //get image data    
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const pixels = imageData.data;
+
+            //retrieve watermark hash from alpha channel corners
+            const storedHash = this._retrieveWatermarkHash(ctx, canvas.width, canvas.height);   
+
             
         } catch (error) {
             return createResponse(500, 'Error extracting watermark', error);
