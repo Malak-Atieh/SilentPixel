@@ -1,8 +1,7 @@
 const {createCanvas, loadImage} = require ('canvas');
 const {createResponse} = require('../Traits/response');
 const crypto = require('crypto');
-const { parse } = require('path');
-
+const BinaryConverter = require('../utils/steganoFunctions/binaryConverter');
 class WatermarkService {
     static async addWatermark(imageBuffer, watermarkData) {
         try {
@@ -26,7 +25,7 @@ class WatermarkService {
             const watermarkHash = crypto.createHash('sha256').update(watermarkString).digest('hex'); 
             
             //convert watermark data to binary(using 128 of hash)
-            const binaryWatermark = this._stringToBinary(watermarkString.substring(0, 128));
+            const binaryWatermark = BinaryConverter.textToBinary(watermarkString.substring(0, 128));
 
             //determine watermark position
             const position = this._getWatermarkPosition(canvas.width, canvas.height, binaryWatermark.length);
@@ -106,7 +105,7 @@ class WatermarkService {
             }
 
             //convert binary to string
-            const watermarkString = this._binaryToString(binaryWatermark);
+            const watermarkString = BinaryConverter.binaryToText(binaryWatermark);
 
             //validate watermark hash
             const extractedHash = crypto.createHash('sha256').update(watermarkString).digest('hex');
