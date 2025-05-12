@@ -282,3 +282,13 @@ def load_steganography_model():
         steg_model = model
     
     return steg_model
+def load_busy_area_detector():
+    """Load the busy area detector."""
+    global busy_area_detector
+    
+    if busy_area_detector is None:
+        logger.info("Initializing busy area detector...")
+        busy_area_detector = BusyAreaDetector()
+    
+    return busy_area_detector
+
