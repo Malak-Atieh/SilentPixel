@@ -60,7 +60,7 @@ class WatermarkService {
 
             return createResponse(200, 'Watermark added successfully', modifiedBuffer);
         } catch (error) {
-        
+            createResponse(500, 'Error adding watermark', error);
         }
     }
 }
