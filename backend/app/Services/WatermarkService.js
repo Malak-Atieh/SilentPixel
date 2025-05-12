@@ -55,5 +55,7 @@ class WatermarkService {
 
         //convert the canvas to a buffer
         const modifiedBuffer = canvas.toBuffer('image/png');
+
+        return createResponse(200, 'Watermark added successfully', modifiedBuffer);
     }
 }
