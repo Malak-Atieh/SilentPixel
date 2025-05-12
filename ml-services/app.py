@@ -338,3 +338,45 @@ def health_check():
     """Health check endpoint."""
     return jsonify({"status": "ok", "message": "Service is running"})
 
+
+@app.route('/api/analyze', methods=['POST'])
+def analyze_image():
+    """
+    Endpoint to analyze images for hidden steganographic content.
+    
+    Expects a form with an 'image' field containing the image file.
+    """
+    try:
+        # Check if image is in the request
+        if 'image' not in request.files:
+            return jsonify({"error": "No image provided"}), 400
+            
+        file = request.files['image']
+        
+        # Check if the file is valid
+        if file.filename == '':
+            return jsonify({"error": "Empty file provided"}), 400
+            
+        if not allowed_file(file.filename):
+            return jsonify({"error": f"Invalid file type. Allowed types: {', '.join(ALLOWED_EXTENSIONS)}"}), 400
+        
+        # Read and preprocess the image
+        image_bytes = file.read()
+        img_tensor, _ = preprocess_image(image_bytes)
+        
+        # Load the model if not already loaded
+        model = load_steganography_model()
+        
+        # Perform detection
+        results = model.detect(img_tensor)
+        
+        # Add metadata
+        results["imageSize"] = len(image_bytes)
+        results["fileName"] = file.filename
+        
+        return jsonify(results)
+        
+    except Exception as e:
+        logger.error("Error analyzing image: %s", str(e), exc_info=True)
+        return jsonify({"error": "Failed to analyze image", "message": str(e)}), 500
+
