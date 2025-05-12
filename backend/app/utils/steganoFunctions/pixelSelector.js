@@ -50,6 +50,30 @@ class PixelSelector {
     return this._shuffleArray(allIndices).slice(0, dataLength);
   }
   
+    static _fillRemainingIndices(selectedIndices, width, height, busyAreas, dataLength) {
+    // Create set of already selected indices for quick lookup
+    const selectedSet = new Set(selectedIndices);
+    
+    // Generate array of remaining indices not in busy areas
+    const remainingIndices = [];
+    for (let i = 0; i < width * height; i++) {
+      if (!selectedSet.has(i) && !this._isInBusyAreas(i, width, busyAreas)) {
+        remainingIndices.push(i);
+      }
+    }
+    
+    // Shuffle remaining indices for randomness
+    const shuffled = this._shuffleArray(remainingIndices);
+    
+    // Add remaining indices until we reach required data length
+    for (let i = 0; i < shuffled.length && selectedIndices.length < dataLength; i++) {
+      selectedIndices.push(shuffled[i]);
+    }
+    
+    if (selectedIndices.length < dataLength) {
+      throw new Error('Not enough pixels to embed the full message');
+    }
+  }
   
   /*
     static getIndices(width, height, busyAreas = [], dataLength) {
