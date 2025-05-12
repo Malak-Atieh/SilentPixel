@@ -63,4 +63,12 @@ class WatermarkService {
             createResponse(500, 'Error adding watermark', error);
         }
     }
+
+    static async extractWatermark(imageBuffer) {
+        try {
+
+        } catch (error) {
+            return createResponse(500, 'Error extracting watermark', error);
+        }
+    }
 }
