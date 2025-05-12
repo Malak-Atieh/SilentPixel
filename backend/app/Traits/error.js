@@ -18,3 +18,8 @@ class AuthenticationError extends AppError {
   }
 }
 
+class ResourceNotFoundError extends AppError {
+  constructor(message) {
+    super(message, 404);
+  }
+}
