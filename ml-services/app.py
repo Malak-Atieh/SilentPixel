@@ -208,6 +208,7 @@ class BusyAreaDetector:
                         a2['x'] + a2['width'] < expanded_a1['x'] or
                         expanded_a1['y'] + expanded_a1['height'] < a2['y'] or
                         a2['y'] + a2['height'] < expanded_a1['y'])
+            
             # Function to merge two areas
             def merge(a1, a2):
                 x1 = min(a1['x'], a2['x'])
@@ -252,6 +253,7 @@ class BusyAreaDetector:
                     break
             
             return merged    
+        
 # -------------- Model Loading --------------
 
 # Singleton pattern for model instances
@@ -282,6 +284,7 @@ def load_steganography_model():
         steg_model = model
     
     return steg_model
+
 def load_busy_area_detector():
     """Load the busy area detector."""
     global busy_area_detector
@@ -295,6 +298,7 @@ def load_busy_area_detector():
 def allowed_file(filename):
     """Check if the file has an allowed extension."""
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 def preprocess_image(image_bytes):
     """
     Preprocess image for neural network input.
@@ -325,3 +329,12 @@ def preprocess_image(image_bytes):
     img_tensor = transform(img).unsqueeze(0)  # Add batch dimension
     
     return img_tensor, img_np
+
+
+# -------------- API Endpoints --------------
+
+@app.route('/health', methods=['GET'])
+def health_check():
+    """Health check endpoint."""
+    return jsonify({"status": "ok", "message": "Service is running"})
+
