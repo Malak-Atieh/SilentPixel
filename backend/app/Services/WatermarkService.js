@@ -66,7 +66,10 @@ class WatermarkService {
 
     static async extractWatermark(imageBuffer) {
         try {
+            //load image
+            const image = await loadImage(imageBuffer);
 
+            
         } catch (error) {
             return createResponse(500, 'Error extracting watermark', error);
         }
