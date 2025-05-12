@@ -295,3 +295,33 @@ def load_busy_area_detector():
 def allowed_file(filename):
     """Check if the file has an allowed extension."""
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+def preprocess_image(image_bytes):
+    """
+    Preprocess image for neural network input.
+    
+    Args:
+        image_bytes: Raw image bytes
+        
+    Returns:
+        Tensor ready for model input and original numpy array
+    """
+    # Open image from bytes
+    img = Image.open(io.BytesIO(image_bytes))
+    
+    # Convert to RGB if needed
+    if img.mode != 'RGB':
+        img = img.convert('RGB')
+    
+    # Convert to numpy for OpenCV processing
+    img_np = np.array(img)
+    
+    # Create tensor for deep learning model
+    transform = transforms.Compose([
+        transforms.Resize((256, 256)),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    ])
+    
+    img_tensor = transform(img).unsqueeze(0)  # Add batch dimension
+    
+    return img_tensor, img_np
