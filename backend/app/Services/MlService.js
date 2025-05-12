@@ -34,5 +34,30 @@ class MLService {
     }
   }
 
+    async detectBusyAreas(imageBuffer, sensitivity = 'medium') {
+    try {
+      const formData = new FormData();
+      formData.append('image', imageBuffer, { 
+        filename: 'image.png', 
+        contentType: 'image/png' 
+      });
+      formData.append('sensitivity', sensitivity);
+      
+      const response = await axios.post(
+        `${this.apiUrl}/detect-busy-areas`, 
+        formData, 
+        { 
+          headers: { ...formData.getHeaders() },
+          timeout: 30000
+        }
+      );
+      
+      return response.data.busyAreas || [];
+    } catch (error) {
+      console.error('ML Service error:', error.message);
+      return [];
+    }
+  }
+
 }
 module.exports = {  };
