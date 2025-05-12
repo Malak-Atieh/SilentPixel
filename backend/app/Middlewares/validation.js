@@ -26,5 +26,20 @@ const validateImageUpload = (req, res, next) => {
   
   next();
 }
-  module.exports = { validate };
+
+const validateMessageInput = (req, res, next) => {
+  const { message } = req.body;
+  
+  if (!message) {
+    throw new ValidationError('Message is required');
+  }
+  
+  if (message.length > 10000) { // Example limit
+    throw new ValidationError('Message is too long (max 10000 characters)');
+  }
+  
+  next();
+};
+
+module.exports = { validate };
   
