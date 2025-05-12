@@ -53,6 +53,7 @@ class WatermarkService {
         //store the watermark hash in the alpha channel corners
         this._storeWatermarkHash(ctx, watermarkHash, canvas.width, canvas.height);
 
-        
+        //convert the canvas to a buffer
+        const modifiedBuffer = canvas.toBuffer('image/png');
     }
 }
