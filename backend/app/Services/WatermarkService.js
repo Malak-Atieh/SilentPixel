@@ -69,6 +69,10 @@ class WatermarkService {
             //load image
             const image = await loadImage(imageBuffer);
 
+            //create a canvas
+            const canvas = createCanvas(image.width, image.height);
+            const ctx = canvas.getContext('2d');
+
             
         } catch (error) {
             return createResponse(500, 'Error extracting watermark', error);
