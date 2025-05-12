@@ -10,6 +10,41 @@ class PixelSelector {
     return this._getRandomizedIndices(width, height, dataLength);
   }
 
+  static _getOptimizedIndices(width, height, busyAreas, dataLength) {
+    // Get pixels from busy areas and sort them by "busyness" score if available
+    const busyPixels = [];
+    
+    // Process each busy area, weighting by the area's busyness score
+    for (const area of busyAreas) {
+      const areaScore = area.score || 1.0; // Default score if not provided
+      
+      for (let y = area.y; y < area.y + area.height; y++) {
+        for (let x = area.x; x < area.x + area.width; x++) {
+          if (x < width && y < height) {
+            busyPixels.push({
+              index: y * width + x,
+              score: areaScore
+            });
+          }
+        }
+      }
+    }
+    
+    // Sort by score (higher score = better hiding spot)
+    busyPixels.sort((a, b) => b.score - a.score);
+    
+    // Take the best spots first
+    const selectedIndices = busyPixels.slice(0, dataLength).map(pixel => pixel.index);
+    
+    // If we need more pixels than available in busy areas
+    if (selectedIndices.length < dataLength) {
+      this._fillRemainingIndices(selectedIndices, width, height, busyAreas, dataLength);
+    }
+    
+    return selectedIndices;
+  }
+
+  
   /*
     static getIndices(width, height, busyAreas = [], dataLength) {
       const indices = [];
