@@ -1,5 +1,5 @@
 const SteganoService = require('./SteganoService');
-const QRService = require('./QRService');
+const QRService = require('./qrService');
 const WatermarkService = require('./WatermarkService');
 const MLService = require('./MLService');
 const Image = require('../Models/Image');

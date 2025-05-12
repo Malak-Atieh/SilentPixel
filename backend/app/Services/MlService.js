@@ -1,21 +1,63 @@
 const axios = require('axios');
 const FormData = require('form-data');
+const { AppError } = require('../Traits/errors');
+class MLService {
+  constructor() {
+    this.apiUrl = process.env.ML_API_URL || 'http://localhost:5000/api';
+  }
 
-async function callPythonML({ type, image, message, password, watermark, generateQR }) {
-  const formData = new FormData();
-  formData.append('image', image, 'image.png');
-  if (message) formData.append('message', message);
-  if (password) formData.append('password', password);
-  if (watermark) formData.append('watermark', watermark);
-  if (generateQR !== undefined) formData.append('generateQR', generateQR.toString());
+   async detectSteganography(imageBuffer) {
+    try {
+      const formData = new FormData();
+      formData.append('image', imageBuffer, { 
+        filename: 'image.png',
+        contentType: 'image/png' 
+      });
+      
+      const response = await axios.post(
+        `${this.apiUrl}/analyze`, 
+        formData, 
+        { 
+          headers: { ...formData.getHeaders() },
+          timeout: 30000 // 30 second timeout
+        }
+      );
+      
+      return response.data;
+    } catch (error) {
+      console.error('ML Service error:', error.message);
+      if (error.response) {
+        throw new AppError(`ML Service: ${error.response.data.message || 'Analysis failed'}`, 
+                          error.response.status);
+      }
+      throw new AppError('ML Service unavailable. Please try again later.', 503);
+    }
+  }
 
-  const endpoint = type === 'encode' ? '/encode' : '/decode';
+    async detectBusyAreas(imageBuffer, sensitivity = 'medium') {
+    try {
+      const formData = new FormData();
+      formData.append('image', imageBuffer, { 
+        filename: 'image.png', 
+        contentType: 'image/png' 
+      });
+      formData.append('sensitivity', sensitivity);
+      
+      const response = await axios.post(
+        `${this.apiUrl}/detect-busy-areas`, 
+        formData, 
+        { 
+          headers: { ...formData.getHeaders() },
+          timeout: 30000
+        }
+      );
+      
+      return response.data.busyAreas || [];
+    } catch (error) {
+      console.error('ML Service error:', error.message);
+      return [];
+    }
+  }
 
-  const response = await axios.post(`http://localhost:5000/api/${endpoint}`, formData, {
-    headers: formData.getHeaders()
-  });
-
-  return response.data;
 }
-
-module.exports = { callPythonML };
+module.exports = new MLService();

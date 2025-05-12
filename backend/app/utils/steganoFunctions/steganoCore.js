@@ -51,9 +51,12 @@ class SteganoCore {
 
   static _extractBits(pixels, startIndex, length) {
     let bits = '';
+    const channels = [0, 1, 2]; 
     for (let i = 0; i < length; i++) {
       const pixelIndex = (startIndex + i) * 4;
-      bits += (pixels[pixelIndex + 2] & 1).toString(); // Using blue channel
+      for (const channel of channels) {
+        bits += (pixels[pixelIndex + channel] & 1).toString();
+      }
     }
     return bits;
   }
