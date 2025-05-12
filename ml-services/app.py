@@ -63,3 +63,15 @@ class SteganographyCNN(nn.Module):
             nn.ReLU(inplace=True),
             nn.MaxPool2d(kernel_size=2, stride=2),
         )
+        # Classification head
+        self.classifier = nn.Sequential(
+            nn.AdaptiveAvgPool2d((4, 4)),
+            nn.Flatten(),
+            nn.Linear(256 * 4 * 4, 512),
+            nn.ReLU(inplace=True),
+            nn.Dropout(0.5),
+            nn.Linear(512, 128),
+            nn.ReLU(inplace=True),
+            nn.Linear(128, 3)  # Three classes: no steganography, LSB steganography, DCT steganography
+        )
+        
