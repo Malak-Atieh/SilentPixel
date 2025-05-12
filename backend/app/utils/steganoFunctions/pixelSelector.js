@@ -1,4 +1,16 @@
 class PixelSelector {
+
+  static getIndices(width, height, busyAreas = [], dataLength) {
+    // If ML has identified busy areas, i prioritize them
+    if (busyAreas?.length > 0) {
+      return this._getOptimizedIndices(width, height, busyAreas, dataLength);
+    }
+    
+    // else basic pixel selection with some randomization
+    return this._getRandomizedIndices(width, height, dataLength);
+  }
+
+  /*
     static getIndices(width, height, busyAreas = [], dataLength) {
       const indices = [];
       
@@ -54,7 +66,7 @@ class PixelSelector {
         }
         return array;
       }
-    
+    */
 }
   
   module.exports = PixelSelector;

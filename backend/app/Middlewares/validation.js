@@ -1,14 +1,5 @@
 const { ValidationError } = require('../Traits/errors');
-/*
-const validate = (schema) => (req, res, next) => {
-    const { error } = schema.validate(req.body);
-    if (error) {
-      return res.status(400).json({ message: error.details[0].message });
-    }
-    next();
-  };
-  */
- 
+
 const validateImageUpload = (req, res, next) => {
   if (!req.file) {
     throw new ValidationError('Image file is required');
@@ -34,7 +25,7 @@ const validateMessageInput = (req, res, next) => {
     throw new ValidationError('Message is required');
   }
   
-  if (message.length > 10000) { // Example limit
+  if (message.length > 10000) { // for now limit
     throw new ValidationError('Message is too long (max 10000 characters)');
   }
   
