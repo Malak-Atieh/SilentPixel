@@ -1,6 +1,7 @@
 const {createCanvas, loadImage} = require ('canvas');
 const {createResponse} = require('../Traits/response');
 const crypto = require('crypto');
+const { parse } = require('path');
 
 class WatermarkService {
     static async addWatermark(imageBuffer, watermarkData) {
@@ -28,6 +29,23 @@ class WatermarkService {
         //determine watermark position
         const position = this._getWatermarkPosition(canvas.width, canvas.height, binaryWatermark.length);
 
-        
+        //embed watermark using phase coding technique 
+        for (let i=0; i< binaryWatermark.length; i++){
+            const pos = position[i];
+            const pixelIndex = pos * 4;
+
+            //modifying red & grn channels in opp dir to keep overall color
+            const bit = parseInt(binaryWatermark[i]);
+            if(bit==1){
+                //increase red a bit, dec grn same
+                pixels[pixelIndex]= Math.min(255, pixels[pixelIndex] + 1);    
+                pixels[pixelIndex + 1] = Math.max(0, pixels[pixelIndex + 1] - 1);
+            } else {
+                //dec red a bit, increase grn same
+                pixels[pixelIndex] = Math.max(0, pixels[pixelIndex] - 1);
+                pixels[pixelIndex + 1] = Math.min(255, pixels[pixelIndex + 1] + 1);
+            }
+            
+        }
     }
 }
