@@ -50,6 +50,12 @@ class QRService {
         }
     }
 
+    static async extractQRCode(imageBuffer) {
+        try {
 
+        } catch (error) {
+            return createResponse(500, 'Error extracting QR code', error);
+        }
+    }
 }
 module.exports = QRService;
