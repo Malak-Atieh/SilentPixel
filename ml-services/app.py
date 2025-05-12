@@ -109,4 +109,10 @@ class SteganographyCNN(nn.Module):
                 }
 class BusyAreaDetector:
     """Detects visually busy or complex regions in an image."""
-                
+    def __init__(self):
+        # Sensitivity presets (adjust based on empirical testing)
+        self.sensitivity_presets = {
+            'low': {'edge_threshold': 120, 'density_threshold': 0.3, 'sigma': 2.0},
+            'medium': {'edge_threshold': 100, 'density_threshold': 0.2, 'sigma': 1.5},
+            'high': {'edge_threshold': 80, 'density_threshold': 0.1, 'sigma': 1.0}
+        }           
