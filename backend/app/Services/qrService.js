@@ -33,6 +33,12 @@ class QRService {
             y: image.height - qrSize - padding,
         }
 
-        
+        //draw the QR code on the canvas with semi-transparent background
+        ctx.globalAlpha = 0.8;
+        ctx.drawImage(qrCanvas, qrPosition.x, qrPosition.y);
+        ctx.globalAlpha = 1;
+
+        //convert the canvas to a buffer
+        const modifiedBuffer = canvas.toBuffer('image/png');
     }
 }
