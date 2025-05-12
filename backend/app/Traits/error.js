@@ -11,3 +11,10 @@ class ValidationError extends AppError {
     super(message, 400);
   }
 }
+
+class AuthenticationError extends AppError {
+  constructor(message) {
+    super(message, 401);
+  }
+}
+
