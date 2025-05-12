@@ -107,3 +107,6 @@ class SteganographyCNN(nn.Module):
                         "dct": round(float(probabilities[2]) * 100, 2)
                     }
                 }
+class BusyAreaDetector:
+    """Detects visually busy or complex regions in an image."""
+                
