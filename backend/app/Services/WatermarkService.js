@@ -45,7 +45,9 @@ class WatermarkService {
                 pixels[pixelIndex] = Math.max(0, pixels[pixelIndex] - 1);
                 pixels[pixelIndex + 1] = Math.min(255, pixels[pixelIndex + 1] + 1);
             }
-            
         }
+
+        //update canvas with modified pixels
+        ctx.putImageData(imageData, 0, 0);
     }
 }
