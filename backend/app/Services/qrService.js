@@ -1,0 +1,23 @@
+const QECode= require('qrcode');
+const {createCanvas, loadImage} = require('canvas');
+const jsQR= require('jsqr');
+
+class QRService {
+
+    static async addQRCode(imageBuffer, data) {
+        const image =loadImage(imageBuffer);
+
+        //create a canvas
+        const canvas = createCanvas(image.width, image.height);
+        const ctx = canvas.getContext('2d');
+
+        //draw the image on the canvas
+        ctx.drawImage(image, 0, 0);
+
+        //generate the QR code
+        const qrSize = Math.min(image.width, image.height) *0.15; //15% of img lenght
+        const qrCanvas = createCanvas(qrSize, qrSize);
+
+        
+    }
+}
