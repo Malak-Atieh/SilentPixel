@@ -49,5 +49,10 @@ class WatermarkService {
 
         //update canvas with modified pixels
         ctx.putImageData(imageData, 0, 0);
+
+        //store the watermark hash in the alpha channel corners
+        this._storeWatermarkHash(ctx, watermarkHash, canvas.width, canvas.height);
+
+        
     }
 }
