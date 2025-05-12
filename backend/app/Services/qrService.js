@@ -52,7 +52,17 @@ class QRService {
 
     static async extractQRCode(imageBuffer) {
         try {
+            //load the image
+            const image =loadImage(imageBuffer);
 
+            //create a canvas
+            const canvas = createCanvas(image.width, image.height);
+            const ctx = canvas.getContext('2d');
+
+            //draw the image on the canvas
+            ctx.drawImage(image, 0, 0);
+
+            
         } catch (error) {
             return createResponse(500, 'Error extracting QR code', error);
         }
