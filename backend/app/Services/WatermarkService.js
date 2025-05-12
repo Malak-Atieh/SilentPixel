@@ -108,7 +108,19 @@ class WatermarkService {
             //convert binary to string
             const watermarkString = this._binaryToString(binaryWatermark);
 
-            
+            //validate watermark hash
+            const extractedHash = crypto.createHash('sha256').update(watermarkString).digest('hex');
+            if(extractedHash.substring(0,16) !== storedHash.substring(0,16)){ 
+                return createResponse(400, 'Watermark hash mismatch', null);
+            }
+
+            try{
+                //parse the watermark data
+                const watermarkData = JSON.parse(watermarkString);
+                return createResponse(200, 'Watermark extracted successfully', watermarkData);
+            } catch(e){
+                return createResponse(500, 'Error parsing watermark data', e);
+            }
         } catch (error) {
             return createResponse(500, 'Error extracting watermark', error);
         }
