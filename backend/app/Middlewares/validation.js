@@ -41,5 +41,8 @@ const validateMessageInput = (req, res, next) => {
   next();
 };
 
-module.exports = { validate };
+module.exports = { 
+  validateImageUpload,
+  validateMessageInput 
+};
   
