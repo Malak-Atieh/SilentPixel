@@ -252,3 +252,33 @@ class BusyAreaDetector:
                     break
             
             return merged    
+# -------------- Model Loading --------------
+
+# Singleton pattern for model instances
+steg_model = None
+busy_area_detector = None
+
+def load_steganography_model():
+    """Load the steganography detection model."""
+    global steg_model
+    
+    if steg_model is None:
+        logger.info("Loading steganography detection model...")
+        model = SteganographyCNN()
+        
+        # In production, load saved weights
+        model_path = os.environ.get('STEG_MODEL_PATH', 'models/steg_model.pth')
+        try:
+            # Try loading the model weights
+            if os.path.exists(model_path):
+                model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu')))
+                logger.info("Loaded steganography model from %s", model_path)
+            else:
+                logger.warning("Model file not found at %s. Using untrained model.", model_path)
+        except Exception as e:
+            logger.error("Failed to load steganography model: %s", str(e))
+        
+        model.eval()
+        steg_model = model
+    
+    return steg_model
