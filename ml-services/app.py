@@ -186,4 +186,26 @@ class BusyAreaDetector:
             # Sort by complexity (highest first)
             merged_areas.sort(key=lambda area: area['complexity'], reverse=True)
             
-            return merged_areas               
+            return merged_areas    
+            
+        def _merge_adjacent_areas(self, areas, cell_size):
+            """Merge adjacent busy areas to form larger regions."""
+            if not areas:
+                return []
+                
+            # Helper function to check if two areas overlap or are adjacent
+            def are_adjacent(a1, a2, tolerance=1.5):
+                # Expand the first area slightly to detect adjacency
+                expanded_a1 = {
+                    'x': a1['x'] - cell_size/tolerance,
+                    'y': a1['y'] - cell_size/tolerance,
+                    'width': a1['width'] + cell_size/tolerance*2,
+                    'height': a1['height'] + cell_size/tolerance*2
+                }
+                
+                # Check if a2 intersects with the expanded a1
+                return not (expanded_a1['x'] + expanded_a1['width'] < a2['x'] or
+                        a2['x'] + a2['width'] < expanded_a1['x'] or
+                        expanded_a1['y'] + expanded_a1['height'] < a2['y'] or
+                        a2['y'] + a2['height'] < expanded_a1['y'])
+                
