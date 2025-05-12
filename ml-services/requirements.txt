@@ -1,16 +1,9 @@
-# Core
-Flask==3.0.2
-python-multipart==0.0.6
-
-# Image Processing
-opencv-python==4.9.0.80
-Pillow==10.1.0
-numpy==1.26.4 
-
-# Steganography & Encryption
-stegano==0.11.3
-pycryptodome==3.20.0
-
-
-# Advanced ML 
-scikit-image==0.22.0  # Useful for DCT-based watermarking (Discrete Cosine Transform)
+flask==2.2.3
+flask-cors==3.0.10
+waitress==2.1.2
+pillow==9.5.0
+numpy>=1.24.0
+scipy==1.10.1
+torch==2.0.1
+torchvision==0.15.2
+opencv-python-headless==4.7.0.72
