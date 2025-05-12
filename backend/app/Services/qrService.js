@@ -26,6 +26,13 @@ class QRService {
             width: qrSize,
         });
 
+        //position the QR code on the image to the bottom right corner
+        const padding = 10;
+        const qrPosition = {
+            x: image.width - qrSize - padding,
+            y: image.height - qrSize - padding,
+        }
+
         
     }
 }
