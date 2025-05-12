@@ -208,4 +208,47 @@ class BusyAreaDetector:
                         a2['x'] + a2['width'] < expanded_a1['x'] or
                         expanded_a1['y'] + expanded_a1['height'] < a2['y'] or
                         a2['y'] + a2['height'] < expanded_a1['y'])
+            # Function to merge two areas
+            def merge(a1, a2):
+                x1 = min(a1['x'], a2['x'])
+                y1 = min(a1['y'], a2['y'])
+                x2 = max(a1['x'] + a1['width'], a2['x'] + a2['width'])
+                y2 = max(a1['y'] + a1['height'], a2['y'] + a2['height'])
                 
+                avg_complexity = (a1['complexity'] * (a1['width'] * a1['height']) + 
+                                a2['complexity'] * (a2['width'] * a2['height'])) / \
+                                ((x2 - x1) * (y2 - y1))
+                
+                return {
+                    'x': x1,
+                    'y': y1,
+                    'width': x2 - x1,
+                    'height': y2 - y1,
+                    'complexity': avg_complexity
+                }
+            
+            # Keep merging until no more merges are possible
+            merged = list(areas)
+            while True:
+                merged_this_round = False
+                
+                for i in range(len(merged)):
+                    if merged[i] is None:
+                        continue
+                    
+                    for j in range(i+1, len(merged)):
+                        if merged[j] is None:
+                            continue
+                        
+                        if are_adjacent(merged[i], merged[j]):
+                            merged[i] = merge(merged[i], merged[j])
+                            merged[j] = None  # Mark as merged
+                            merged_this_round = True
+                
+                # Remove all the None entries
+                merged = [area for area in merged if area is not None]
+                
+                if not merged_this_round:
+                    break
+            
+            return merged    
