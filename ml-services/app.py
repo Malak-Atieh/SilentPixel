@@ -74,39 +74,39 @@ class SteganographyCNN(nn.Module):
             nn.ReLU(inplace=True),
             nn.Linear(128, 3)  # Three classes: no steganography, LSB steganography, DCT steganography
         )
-        def forward(self, x):
-            x = self.features(x)
-            x = self.classifier(x)
-            return x
+    def forward(self, x):
+        x = self.features(x)
+        x = self.classifier(x)
+        return x
     
-        def detect(self, image):
-            """
-            Full detection pipeline
-            Returns dict with probabilities and detected method
-            """
-            self.eval()
-            with torch.no_grad():
-                output = self.forward(image)
-                probabilities = torch.softmax(output, dim=1)[0]
+    def detect(self, image):
+        """
+        Full detection pipeline
+        Returns dict with probabilities and detected method
+        """
+        self.eval()
+        with torch.no_grad():
+            output = self.forward(image)
+            probabilities = torch.softmax(output, dim=1)[0]
                     
-                # Get prediction
-                pred_class = torch.argmax(probabilities).item()
-                confidence = probabilities[pred_class].item() * 100
+            # Get prediction
+            pred_class = torch.argmax(probabilities).item()
+            confidence = probabilities[pred_class].item() * 100
                 
-                # Map class index to method name
-                methods = ["none", "lsb", "dct"]
-                detected_method = methods[pred_class]
+            # Map class index to method name
+            methods = ["none", "lsb", "dct"]
+            detected_method = methods[pred_class]
                 
-                return {
-                    "hasHiddenData": detected_method != "none",
-                    "confidence": round(confidence, 2),
-                    "method": detected_method if detected_method != "none" else None,
-                    "probabilities": {
-                        "none": round(float(probabilities[0]) * 100, 2),
-                        "lsb": round(float(probabilities[1]) * 100, 2),
-                        "dct": round(float(probabilities[2]) * 100, 2)
-                    }
+            return {
+                "hasHiddenData": detected_method != "none",
+                "confidence": round(confidence, 2),
+                "method": detected_method if detected_method != "none" else None,
+                "probabilities": {
+                    "none": round(float(probabilities[0]) * 100, 2),
+                    "lsb": round(float(probabilities[1]) * 100, 2),
+                    "dct": round(float(probabilities[2]) * 100, 2)
                 }
+            }
 class BusyAreaDetector:
     """Detects visually busy or complex regions in an image."""
     def __init__(self):

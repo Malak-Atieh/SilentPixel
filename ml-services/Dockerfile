@@ -1,4 +1,3 @@
-#building stage
 FROM python:3.9-slim
 
 WORKDIR /app
@@ -12,19 +11,20 @@ RUN apt-get update && apt-get install -y \
     libgl1-mesa-glx \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
-    
+
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirments.txt
 
-#runtime stage
-FROM python:3.9-bullseye-slim
-
-WORKDIR /app
-
-COPY --from=builder /usr/local/lib/python3.9 /usr/local/lib/python3.9
-COPY --from=builder /usr/local/bin /usr/local/bin
-RUN apt-get update && apt-get install -y libgl1 && rm -rf /var/lib/apt/lists/*
+# Copy code and model files
 COPY . . 
+
+# Create models directory if it doesn't exist
+RUN mkdir -p models
+
+# Environment variables
+ENV PYTHONUNBUFFERED=1
+ENV PORT=6000
+ENV STEG_MODEL_PATH=/app/models/steg_model.pth
 
 EXPOSE 6000
 
