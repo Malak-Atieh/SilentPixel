@@ -41,6 +41,10 @@ class _RevealMessageScreenState extends State<RevealMessageScreen> {
       });
     }
   }
+  bool get _canDecode =>
+      _selectedImage != null &&
+          _passwordController.text.length >= 8;
+
 
   @override
   Widget build(BuildContext context) {
@@ -127,6 +131,7 @@ class _RevealMessageScreenState extends State<RevealMessageScreen> {
                 ),
               ),
             ),
+
             const SizedBox(height: 20),
             if (_selectedImage != null)
               Column(
@@ -142,6 +147,28 @@ class _RevealMessageScreenState extends State<RevealMessageScreen> {
                       Text(_errorMessage!, style: const TextStyle(color: Colors.red)),
                 ],
               ),
+            SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: _canDecode ? () {} : null,
+              style: ElevatedButton.styleFrom(
+                backgroundColor:
+                _canDecode ? Color(0xFF0CCE6B) : Color(0xFFB4B4B4),
+                foregroundColor: _canDecode ? Color(0xFFF4F4F4) : Colors.grey[800],
+                minimumSize: Size(double.infinity, 50),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                splashFactory: _canDecode ? InkRipple.splashFactory : NoSplash.splashFactory,
+              ),
+              child: Text(
+                'Hide message',
+                style: TextStyle(
+                  fontFamily: 'Orbitron',
+                  fontWeight: FontWeight.w500,
+                  fontSize: 18,
+                ),
+              ),
+            ),
           ],
         )
       ),
