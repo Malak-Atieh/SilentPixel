@@ -91,9 +91,20 @@ class WatermarkService {
             const maxLength = 128 * 8 ; 
 
             //get watermark position
-            const position = this._getWatermarkPosition(canvas.width, canvas.height, maxLength);
+            const positions = this._getWatermarkPosition(canvas.width, canvas.height, maxLength);
 
-            
+            //extract binary watermark
+            let binaryWatermark = '';
+            for(i=0; i<positions.length; i++){
+                const pos = positions[i];
+                const pixelIndex = pos * 4;
+
+                const red= pixels[pixelIndex];
+                const green= pixels[pixelIndex + 1];
+
+                binaryWatermark += (red > green) ? '1' : '0';
+                
+            }
         } catch (error) {
             return createResponse(500, 'Error extracting watermark', error);
         }
