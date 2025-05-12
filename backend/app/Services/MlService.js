@@ -7,7 +7,31 @@ class MLService {
   }
 
    async detectSteganography(imageBuffer) {
-
+    try {
+      const formData = new FormData();
+      formData.append('image', imageBuffer, { 
+        filename: 'image.png',
+        contentType: 'image/png' 
+      });
+      
+      const response = await axios.post(
+        `${this.apiUrl}/analyze`, 
+        formData, 
+        { 
+          headers: { ...formData.getHeaders() },
+          timeout: 30000 // 30 second timeout
+        }
+      );
+      
+      return response.data;
+    } catch (error) {
+      console.error('ML Service error:', error.message);
+      if (error.response) {
+        throw new AppError(`ML Service: ${error.response.data.message || 'Analysis failed'}`, 
+                          error.response.status);
+      }
+      throw new AppError('ML Service unavailable. Please try again later.', 503);
+    }
   }
 
 }
