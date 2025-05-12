@@ -50,5 +50,6 @@ class QRService {
         }
     }
 
-    
+
 }
+module.exports = QRService;
