@@ -13,6 +13,11 @@ const validateImageUpload = (req, res, next) => {
   if (!req.file) {
     throw new ValidationError('Image file is required');
   }
+    
+  const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
+  if (!allowedMimeTypes.includes(req.file.mimetype)) {
+    throw new ValidationError('File must be a valid image (JPEG, PNG, or GIF)');
+  }
 }
   module.exports = { validate };
   
