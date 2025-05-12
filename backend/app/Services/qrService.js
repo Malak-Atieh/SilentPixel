@@ -62,7 +62,18 @@ class QRService {
             //draw the image on the canvas
             ctx.drawImage(image, 0, 0);
 
-            
+            //get the image data
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+            //scan the image for QR code
+            const code = jsQR(imageData.data, canvas.width, canvas.height);
+            let qrData = null;
+            if(code){
+                //parse the QR code data
+                 qrData = JSON.parse(code.data);
+            }
+            return createResponse(200, 'QR code extracted successfully', qrData);
+
         } catch (error) {
             return createResponse(500, 'Error extracting QR code', error);
         }
