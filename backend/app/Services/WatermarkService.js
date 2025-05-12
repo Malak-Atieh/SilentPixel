@@ -19,6 +19,15 @@ class WatermarkService {
         const pixels = imageData.data;
 
         //create a digest of the image data
+        const watermarkString = JSON.stringify(watermarkData);
+        const watermarkHash = crypto.createHash('sha256').update(watermarkString).digest('hex'); 
+        
+        //convert watermark data to binary(using 128 of hash)
+        const binaryWatermark = this._stringToBinary(watermarkString.substring(0, 128));
+
+        //determine watermark position
+        const position = this._getWatermarkPosition(canvas.width, canvas.height, binaryWatermark.length);
+
         
     }
 }
