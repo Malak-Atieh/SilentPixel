@@ -23,3 +23,10 @@ class ResourceNotFoundError extends AppError {
     super(message, 404);
   }
 }
+
+module.exports = {
+  AppError,
+  ValidationError,
+  AuthenticationError,
+  ResourceNotFoundError
+};
