@@ -44,6 +44,12 @@ class PixelSelector {
     return selectedIndices;
   }
 
+  static _getRandomizedIndices(width, height, dataLength) {
+    // Create array of all pixel indices and shuffle
+    const allIndices = Array.from({length: width * height}, (_, i) => i);
+    return this._shuffleArray(allIndices).slice(0, dataLength);
+  }
+  
   
   /*
     static getIndices(width, height, busyAreas = [], dataLength) {
