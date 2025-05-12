@@ -19,7 +19,14 @@ class SteganoController {
     }
   }
 
-  
+    static async decode(req, res) {
+    try {
+      const message = await SteganographyService.handleDecoding(req);
+      return createResponse(res, 200, 'Message decoded successfully', message);
+    } catch (err) {
+      return createResponse(res, err.status || 500, err.message);
+    }
+  }
 /*
   static async encode(req, res) {
     
