@@ -18,6 +18,14 @@ class QRService {
         const qrSize = Math.min(image.width, image.height) *0.15; //15% of img lenght
         const qrCanvas = createCanvas(qrSize, qrSize);
 
+        //generate the QR code with the data
+        await this.addQRCode.toCanvas(qrCanvas, JSON.stringify(data), {
+            errorCorrectionLevel: 'H',
+            margin: 1,
+            scale: 1,
+            width: qrSize,
+        });
+
         
     }
 }
