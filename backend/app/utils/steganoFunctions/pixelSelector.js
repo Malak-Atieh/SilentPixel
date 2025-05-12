@@ -74,7 +74,20 @@ class PixelSelector {
       throw new Error('Not enough pixels to embed the full message');
     }
   }
-  
+
+  static _isInBusyAreas(index, width, busyAreas) {
+    const x = index % width;
+    const y = Math.floor(index / width);
+    
+    for (const area of busyAreas) {
+      if (x >= area.x && x < area.x + area.width && 
+          y >= area.y && y < area.y + area.height) {
+        return true;
+      }
+    }
+    
+    return false;
+  }
   /*
     static getIndices(width, height, busyAreas = [], dataLength) {
       const indices = [];
