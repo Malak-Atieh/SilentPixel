@@ -432,3 +432,17 @@ def detect_busy_areas():
     except Exception as e:
         logger.error("Error detecting busy areas: %s", str(e), exc_info=True)
         return jsonify({"error": "Failed to detect busy areas", "message": str(e)}), 500
+
+# -------------- Main Application --------------
+
+if __name__ == '__main__':
+    # Load models at startup
+    load_steganography_model()
+    load_busy_area_detector()
+    
+    # Get port from environment or use default
+    port = int(os.environ.get('PORT', 5000))
+    
+    # Use Waitress for production-ready WSGI server
+    logger.info(f"Starting ML microservice on port {port}")
+    serve(app, host='0.0.0.0', port=port)
