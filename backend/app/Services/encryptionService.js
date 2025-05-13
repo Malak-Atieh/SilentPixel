@@ -1,16 +1,21 @@
 const crypto = require('crypto');
-
+const { AppError } = require('Traits/errors');
 class EncryptionService {
+
   static encrypt(message, password) {
-    const salt = crypto.randomBytes(16);
-    const key = crypto.scryptSync(password, salt, 32);
-    const iv = crypto.randomBytes(16);
-    const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
-    
-    let encrypted = cipher.update(message, 'utf8', 'hex');
-    encrypted += cipher.final('hex');
-    
-    return salt.toString('hex') + iv.toString('hex') + encrypted;
+    try{
+      const salt = crypto.randomBytes(16);
+      const key = crypto.scryptSync(password, salt, 32);
+      const iv = crypto.randomBytes(16);
+      const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
+      
+      let encrypted = cipher.update(message, 'utf8', 'hex');
+      encrypted += cipher.final('hex');
+      
+      return salt.toString('hex') + iv.toString('hex') + encrypted;
+    } catch (error) {
+      throw new AppError(`Encryption failed: ${error.message}`, 500);
+    }   
   }
 
   static decrypt(encryptedMsg, password) {
