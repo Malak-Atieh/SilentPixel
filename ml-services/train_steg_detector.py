@@ -78,3 +78,101 @@ class SteganographyDataset(Dataset):
         
         return image, class_label
 
+# Training function
+def train_model(model, train_loader, val_loader, criterion, optimizer, 
+                scheduler, num_epochs, device):
+    """
+    Train the steganography detection model.
+    
+    Args:
+        model: Model to train
+        train_loader: DataLoader for training data
+        val_loader: DataLoader for validation data
+        criterion: Loss function
+        optimizer: Optimizer
+        scheduler: Learning rate scheduler
+        num_epochs: Number of epochs to train
+        device: Device to train on
+    
+    Returns:
+        Trained model, training history
+    """
+    model = model.to(device)
+    
+    # For tracking best model
+    best_val_acc = 0.0
+    best_model_wts = model.state_dict()
+    
+    # History
+    history = {
+        'train_loss': [],
+        'train_acc': [],
+        'val_loss': [],
+        'val_acc': []
+    }
+    
+    for epoch in range(num_epochs):
+        logger.info(f'Epoch {epoch+1}/{num_epochs}')
+        logger.info('-' * 10)
+        
+        for phase in ['train', 'val']:
+            if phase == 'train':
+                model.train()
+                dataloader = train_loader
+            else:
+                model.eval()
+                dataloader = val_loader
+            
+            running_loss = 0.0
+            running_corrects = 0
+            
+            # Batch loop
+            for inputs, labels in dataloader:
+                inputs = inputs.to(device)
+                labels = labels.to(device)
+                
+                # Zero the parameter gradients
+                optimizer.zero_grad()
+                
+                # Forward pass
+                with torch.set_grad_enabled(phase == 'train'):
+                    outputs = model(inputs)
+                    _, preds = torch.max(outputs, 1)
+                    loss = criterion(outputs, labels)
+                    
+                    # Backward + optimize only if in training phase
+                    if phase == 'train':
+                        loss.backward()
+                        optimizer.step()
+                
+                # Statistics
+                running_loss += loss.item() * inputs.size(0)
+                running_corrects += torch.sum(preds == labels)
+            
+            if phase == 'train' and scheduler is not None:
+                scheduler.step()
+            
+            epoch_loss = running_loss / len(dataloader.dataset)
+            epoch_acc = running_corrects.double() / len(dataloader.dataset)
+            
+            # Record history
+            if phase == 'train':
+                history['train_loss'].append(epoch_loss)
+                history['train_acc'].append(epoch_acc.item())
+            else:
+                history['val_loss'].append(epoch_loss)
+                history['val_acc'].append(epoch_acc.item())
+            
+            logger.info(f'{phase.capitalize()} Loss: {epoch_loss:.4f} Acc: {epoch_acc:.4f}')
+            
+            # Save the best model
+            if phase == 'val' and epoch_acc > best_val_acc:
+                best_val_acc = epoch_acc
+                best_model_wts = model.state_dict()
+                
+        logger.info('')
+    
+    # Load best model weights
+    model.load_state_dict(best_model_wts)
+    return model, history
+
