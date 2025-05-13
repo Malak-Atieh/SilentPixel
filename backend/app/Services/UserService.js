@@ -65,5 +65,26 @@ class UserService {
       throw new Error(`Authentication failed: ${error.message}`);
     }
   }
+
+    static async getUserById(userId) {
+    try {
+      const user = await User.findById(userId);
+      
+      if (!user) {
+        throw new ValidationError('User not found');
+      }
+      
+      // Return user without password
+      const userObject = user.toObject();
+      delete userObject.password;
+      
+      return userObject;
+    } catch (error) {
+      if (error instanceof ValidationError) {
+        throw error;
+      }
+      throw new Error(`Failed to get user: ${error.message}`);
+    }
+  }
 }
 module.exports = UserService;
