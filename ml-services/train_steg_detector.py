@@ -224,3 +224,35 @@ def evaluate_model(model, test_loader, device):
     }
     
     return metrics, all_preds, all_labels
+
+
+# Plot training history
+def plot_history(history, save_path=None):
+    """Plot training and validation metrics."""
+    plt.figure(figsize=(12, 5))
+    
+    # Plot accuracy
+    plt.subplot(1, 2, 1)
+    plt.plot(history['train_acc'], label='Train Accuracy')
+    plt.plot(history['val_acc'], label='Validation Accuracy')
+    plt.xlabel('Epoch')
+    plt.ylabel('Accuracy')
+    plt.title('Training and Validation Accuracy')
+    plt.legend()
+    
+    # Plot loss
+    plt.subplot(1, 2, 2)
+    plt.plot(history['train_loss'], label='Train Loss')
+    plt.plot(history['val_loss'], label='Validation Loss')
+    plt.xlabel('Epoch')
+    plt.ylabel('Loss')
+    plt.title('Training and Validation Loss')
+    plt.legend()
+    
+    plt.tight_layout()
+    
+    if save_path:
+        plt.savefig(save_path)
+    
+    plt.show()
+
