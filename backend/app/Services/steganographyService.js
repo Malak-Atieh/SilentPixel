@@ -89,8 +89,14 @@ class SteganographyService {
     try {
       try{
         const qrData = await QRService.extractQRData(buffer);
-    }
+        if (qrData) {
+          return await SteganoUtils.extractMessageWithQR(buffer, password, qrData);
+        }
+      } catch (qrError) {
+        // QR extraction failed, falling back to standard extraction
+      }
 
+  
   }
 }
 
