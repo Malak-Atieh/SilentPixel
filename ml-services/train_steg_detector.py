@@ -36,3 +36,45 @@ def set_seed(seed=42):
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
 
+# Steganography dataset
+class SteganographyDataset(Dataset):
+    """Dataset for steganography detection training."""
+    
+    def __init__(self, data_dir, transform=None):
+        """
+        Args:
+            data_dir: Directory with subdirectories: 'clean', 'lsb', 'dct'
+            transform: Optional transform to be applied to images
+        """
+        self.data_dir = Path(data_dir)
+        self.transform = transform
+        
+        # Find all image files in each class directory
+        self.clean_files = list((self.data_dir / 'clean').glob('*.png')) + \
+                         list((self.data_dir / 'clean').glob('*.jpg'))
+        self.lsb_files = list((self.data_dir / 'lsb').glob('*.png')) + \
+                       list((self.data_dir / 'lsb').glob('*.jpg'))
+        self.dct_files = list((self.data_dir / 'dct').glob('*.png')) + \
+                       list((self.data_dir / 'dct').glob('*.jpg'))
+        
+        # Create list of (file_path, class_label) pairs
+        self.files = [(file, 0) for file in self.clean_files] + \
+                   [(file, 1) for file in self.lsb_files] + \
+                   [(file, 2) for file in self.dct_files]
+        
+        logger.info(f"Found {len(self.clean_files)} clean images, "
+                   f"{len(self.lsb_files)} LSB steganography images, "
+                   f"{len(self.dct_files)} DCT steganography images")
+    
+    def __len__(self):
+        return len(self.files)
+    
+    def __getitem__(self, idx):
+        img_path, class_label = self.files[idx]
+        image = Image.open(img_path).convert('RGB')
+        
+        if self.transform:
+            image = self.transform(image)
+        
+        return image, class_label
+
