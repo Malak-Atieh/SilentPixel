@@ -16,10 +16,11 @@ class SteganoController {
     } catch (err) {
       return createResponse(res, err.status || 500, err.message);
     }
-    
+
   }
 
   static async decode(req, res) {
+    
     try {
 
       const message = await SteganographyService.handleDecoding(req);
@@ -29,6 +30,7 @@ class SteganoController {
     } catch (err) {
       return createResponse(res, err.status || 500, err.message);
     }
+
   }
 
   static async analyzeImage(req, res) {
