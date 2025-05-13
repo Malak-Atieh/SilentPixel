@@ -29,6 +29,13 @@ class SteganoUtils {
       throw new AppError('Message integrity verification failed. The image may have been tampered with.', 400);
     }
   }
+
+    static generateMessageHash(message, password) {
+      const crypto = require('crypto');
+      return crypto.createHash('sha256')
+        .update(message + (password || ''))
+        .digest('hex');
+  }
 }
 
 module.exports = SteganoUtils;
