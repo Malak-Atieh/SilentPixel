@@ -9,11 +9,13 @@ RUN apt-get update && apt-get install -y \
     libxext6 \
     libxrender-dev \
     libgl1-mesa-glx \
+    build-essential \
+    python3-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirments.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy code and model files
 COPY . . 
@@ -28,4 +30,5 @@ ENV STEG_MODEL_PATH=/app/models/steg_model.pth
 
 EXPOSE 6000
 
-CMD ["python", "app.py"]
+ENTRYPOINT ["python"]
+CMD ["app.py"]
