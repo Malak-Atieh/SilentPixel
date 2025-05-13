@@ -29,7 +29,8 @@ class SteganographyService {
       });
 
       if (addWatermark === 'true') {
-        processedImage = await WatermarkService.addWatermark(processedImage, {
+        processedImage = await WatermarkService.addWatermark(
+          processedImage, {
           email: user.email,
           timestamp: new Date().toISOString(),
         });
