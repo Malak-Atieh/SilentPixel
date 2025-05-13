@@ -70,12 +70,13 @@ class SteganographyService {
 
       await imageDoc.save();
 
-    } catch (error){
-      throw new AppError(`Image analysis failed: ${error.message}`, 
+      return processedImage;
+    } catch (error) {
+      throw new AppError(`Encoding failed: ${error.message}`, 
         error.status || 500);
     }
-
   }
+
 }
 
 module.exports = SteganographyService;
