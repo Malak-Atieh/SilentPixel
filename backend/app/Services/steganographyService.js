@@ -37,8 +37,7 @@ class SteganographyService {
       }
 
       if (addQRCode === 'true') {
-        processedImage = await QRService.addQRCode(
-          processedImage, {
+        processedImage = await QRService.addQRCode(processedImage, {
           messageHash: SteganoUtils.generateMessageHash(message, password),
           timestamp: new Date().toISOString(),
         });
