@@ -138,7 +138,7 @@ class BusyAreaDetector:
         # Edge detection
         edges = cv2.Canny(gray, params['edge_threshold'], params['edge_threshold'] * 2)
             
-        # 2. Texture complexity analysis (using gradients)
+        # Texture complexity analysis (using gradients)
         sobelx = cv2.Sobel(gray, cv2.CV_64F, 1, 0, ksize=3)
         sobely = cv2.Sobel(gray, cv2.CV_64F, 0, 1, ksize=3)
         gradient_magnitude = np.sqrt(sobelx**2 + sobely**2)
