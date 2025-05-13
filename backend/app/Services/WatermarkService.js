@@ -47,55 +47,48 @@ class WatermarkService {
     }
 
     static async extractWatermark(imageBuffer) {
-        try {
-            const { canvas, ctx } = await ImageProcessor.loadImageToCanvas(imageBuffer);
-            const imageData = ImageProcessor.getImageData(ctx, canvas.width, canvas.height);
-            
-            const pixels = imageData.data;
+    try {
+        const image = await Jimp.read(imageBuffer);
+        const { width, height, data } = image.bitmap;
 
-            //retrieve watermark hash from alpha channel corners
-            const storedHash = this._retrieveWatermarkHash(ctx, canvas.width, canvas.height);   
-
-            if(!storedHash) {
-                return createResponse(400, 'No watermark found',null);
-            }
-
-            //max length of watermark data
-            const maxLength = 128 * 8 ; 
-
-            //get watermark position
-            const positions = this._getWatermarkPosition(canvas.width, canvas.height, maxLength);
-
-            //extract binary watermark
-            let binaryWatermark = '';
-            for(i=0; i<positions.length; i++){
-                const pos = positions[i];
-                const pixelIndex = pos * 4;
-
-                const red= pixels[pixelIndex];
-                const green= pixels[pixelIndex + 1];
-
-                binaryWatermark += (red > green) ? '1' : '0';
-            }
-
-            //convert binary to string
-            const watermarkString = BinaryConverter.binaryToText(binaryWatermark);
-
-            //validate watermark hash
-            const extractedHash = crypto.createHash('sha256').update(watermarkString).digest('hex');
-            if(extractedHash.substring(0,16) !== storedHash.substring(0,16)){ 
-                return createResponse(400, 'Watermark hash mismatch', null);
-            }
-
-            try{
-                //parse the watermark data
-                const watermarkData = JSON.parse(watermarkString);
-                return createResponse(200, 'Watermark extracted successfully', watermarkData);
-            } catch(e){
-                return createResponse(500, 'Error parsing watermark data', e);
-            }
-        } catch (error) {
-            return createResponse(500, 'Error extracting watermark', error);
+        // Retrieve watermark hash
+        const storedHash = this.retrieve(image);
+        if (!storedHash) {
+        return createResponse(400, 'No watermark found', null);
         }
+
+        const maxLength = 128 * 8;
+        const positions = this._getWatermarkPosition(width, height, maxLength);
+
+        let binaryWatermark = '';
+        for (let pos of positions) {
+        const x = pos % width;
+        const y = Math.floor(pos / width);
+
+        const color = image.getPixelColor(x, y);
+        const red = (color >> 16) & 0xff;
+        const green = (color >> 8) & 0xff;
+
+        binaryWatermark += (red > green) ? '1' : '0';
+        }
+
+        const watermarkString = BinaryConverter.binaryToText(binaryWatermark);
+
+        const extractedHash = crypto.createHash('sha256').update(watermarkString).digest('hex');
+        if (extractedHash.substring(0, 16) !== storedHash.substring(0, 16)) {
+        return createResponse(400, 'Watermark hash mismatch', null);
+        }
+
+        try {
+        const watermarkData = JSON.parse(watermarkString);
+        return createResponse(200, 'Watermark extracted successfully', watermarkData);
+        } catch (e) {
+        return createResponse(500, 'Error parsing watermark data', e);
+        }
+
+    } catch (error) {
+        return createResponse(500, 'Error extracting watermark', error);
     }
+    }
+
 }
