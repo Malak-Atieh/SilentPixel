@@ -118,7 +118,12 @@ class SteganographyService {
       } catch (watermarkError) {
       }
 
-
+      return {
+        likelyContainsHiddenData: analysis.hiddenDataProbability > 0.7,
+        hiddenDataProbability: analysis.hiddenDataProbability,
+        watermarkData,
+        recommendedBusyAreas: analysis.busyAreas || [],
+      };
     } catch (error){
       throw new AppError(`Image analysis failed: ${error.message}`, 
         error.status || 500);
