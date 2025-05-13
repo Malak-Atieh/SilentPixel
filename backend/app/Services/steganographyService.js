@@ -27,6 +27,11 @@ class SteganographyService {
         password,
         busyAreas: JSON.parse(busyAreas || '[]'),
       });
+
+     
+    } catch (error){
+      throw new AppError(`Image analysis failed: ${error.message}`, 
+        error.status || 500);
     }
 
   }
