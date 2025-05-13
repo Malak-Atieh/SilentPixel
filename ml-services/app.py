@@ -135,7 +135,7 @@ class BusyAreaDetector:
         else:
             gray = image_np
                 
-        # 1. Edge detection
+        # Edge detection
         edges = cv2.Canny(gray, params['edge_threshold'], params['edge_threshold'] * 2)
             
         # 2. Texture complexity analysis (using gradients)
