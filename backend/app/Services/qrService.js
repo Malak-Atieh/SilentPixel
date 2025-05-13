@@ -40,11 +40,11 @@ class QRService {
 
     static async extractQRCode(imageBuffer) {
         try {
-            const { canvas, ctx } = await ImageProcessor.loadImageToCanvas(imageBuffer);
-            const imageData = ImageProcessor.getImageData(ctx, canvas.width, canvas.height);
-    
+      const image = await Jimp.read(imageBuffer);
+      const { data, width, height } = image.bitmap;
+
             //scan the image for QR code
-            const code = jsQR(imageData.data, canvas.width, canvas.height);
+            const code = jsQR(data, width, height);
             let qrData = null;
             if(code){
                 //parse the QR code data
