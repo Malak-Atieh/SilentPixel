@@ -3,6 +3,7 @@ class AppError extends Error {
     super(message);
     this.status = status;
     this.name = this.constructor.name;
+    Error.captureStackTrace(this, this.constructor);
   }
 }
 
@@ -12,21 +13,36 @@ class ValidationError extends AppError {
   }
 }
 
-class AuthenticationError extends AppError {
+class AuthError extends AppError {
   constructor(message) {
     super(message, 401);
   }
 }
 
-class ResourceNotFoundError extends AppError {
+class ForbiddenError extends AppError {
+  constructor(message) {
+    super(message, 403);
+  }
+}
+
+class NotFoundError extends AppError {
   constructor(message) {
     super(message, 404);
   }
 }
 
+class ServiceUnavailableError extends AppError {
+  constructor(message) {
+    super(message || 'Service is currently unavailable. Please try again later.');
+  }
+}
+
+
 module.exports = {
   AppError,
   ValidationError,
-  AuthenticationError,
-  ResourceNotFoundError
+  AuthError,
+  ForbiddenError,
+  NotFoundError,
+  ServiceUnavailableError
 };
