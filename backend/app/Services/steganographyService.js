@@ -20,7 +20,6 @@ class SteganographyService {
 
     const imageBuffer = req.file.buffer;
     let processedImage ;
-    
     try {
       processedImage = await SteganoUtils.embedMessage({
         imageBuffer,
@@ -28,6 +27,13 @@ class SteganographyService {
         password,
         busyAreas: JSON.parse(busyAreas || '[]'),
       });
+
+      if (addWatermark === 'true') {
+        processedImage = await WatermarkService.addWatermark(processedImage, {
+          email: user.email,
+          timestamp: new Date().toISOString(),
+        });
+      }
 
     } catch (error){
       throw new AppError(`Image analysis failed: ${error.message}`, 
