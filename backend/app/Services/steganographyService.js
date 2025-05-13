@@ -105,8 +105,9 @@ class SteganographyService {
 
   static async handleAnalysis(req) {
     if (!req.file){
-
+      throw new ValidationError('Image is required');
     }
+
 
   }
 }
