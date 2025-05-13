@@ -20,7 +20,7 @@ class MLService {
         formData, 
         { 
           headers: { ...formData.getHeaders() },
-          timeout: 30000 // 30 second timeout
+          timeout: this.defaultTimeout
         }
       );
       
@@ -28,8 +28,10 @@ class MLService {
     } catch (error) {
       console.error('ML Service error:', error.message);
       if (error.response) {
-        throw new AppError(`ML Service: ${error.response.data.message || 'Analysis failed'}`, 
-                          error.response.status);
+        throw new AppError(
+          `ML Service: ${error.response.data.message || 'Analysis failed'}`, 
+                          error.response.status
+                        );
       }
       throw new AppError('ML Service unavailable. Please try again later.', 503);
     }
@@ -49,7 +51,7 @@ class MLService {
         formData, 
         { 
           headers: { ...formData.getHeaders() },
-          timeout: 30000
+          timeout: this.defaultTimeout
         }
       );
       
