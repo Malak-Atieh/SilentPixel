@@ -20,6 +20,7 @@ class SteganographyService {
 
     const imageBuffer = req.file.buffer;
     let processedImage ;
+    
     try {
       processedImage = await SteganoUtils.embedMessage({
         imageBuffer,
@@ -28,7 +29,6 @@ class SteganographyService {
         busyAreas: JSON.parse(busyAreas || '[]'),
       });
 
-     
     } catch (error){
       throw new AppError(`Image analysis failed: ${error.message}`, 
         error.status || 500);
