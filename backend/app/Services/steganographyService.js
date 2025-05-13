@@ -77,6 +77,9 @@ class SteganographyService {
     }
   }
 
+  static async handleDecoding(req) {
+
+  }
 }
 
 module.exports = SteganographyService;
