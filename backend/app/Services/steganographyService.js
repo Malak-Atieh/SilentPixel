@@ -18,7 +18,8 @@ class SteganographyService {
       throw new ValidationError('Message is required');
     }
 
-
+    const imageBuffer = req.file.buffer;
+    
   }
 }
 
