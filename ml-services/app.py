@@ -147,14 +147,14 @@ class BusyAreaDetector:
         if gradient_magnitude.max() > 0:
             gradient_magnitude = gradient_magnitude / gradient_magnitude.max()
             
-        # 3. Combine edge and gradient information
+        # Combine edge and gradient information
         complexity_map = edges.astype(float) / 255 + gradient_magnitude
         complexity_map = np.clip(complexity_map, 0, 1)
             
-        # 4. Apply Gaussian smoothing to the map
+        # Apply Gaussian smoothing to the map
         complexity_map = gaussian_filter(complexity_map, sigma=params['sigma'])
             
-        # 5. Segment the image into grid cells and analyze each cell
+        # Segment the image into grid cells and analyze each cell
         h, w = complexity_map.shape
         cell_size = min(h, w) // 10  # Divide image into approximately 10x10 grid
         cell_size = max(cell_size, 20)  # Minimum cell size of 20px
