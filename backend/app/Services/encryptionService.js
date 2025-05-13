@@ -1,5 +1,5 @@
 const crypto = require('crypto');
-const { AppError } = require('Traits/errors');
+const { AppError } = require('../Traits/errors');
 class EncryptionService {
 
   static encrypt(message, password) {
