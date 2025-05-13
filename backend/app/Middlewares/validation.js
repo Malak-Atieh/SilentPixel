@@ -5,9 +5,9 @@ const validateImageUpload = (req, res, next) => {
     throw new ValidationError('Image file is required');
   }
     
-  const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
+  const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/jpg'];
   if (!allowedMimeTypes.includes(req.file.mimetype)) {
-    throw new ValidationError('File must be a valid image (JPEG, PNG, or GIF)');
+    throw new ValidationError('File must be a valid image (JPEG, PNG, or JPG)');
   }
 
   const maxSize = 10 * 1024 * 1024; 
