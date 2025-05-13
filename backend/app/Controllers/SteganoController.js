@@ -5,6 +5,7 @@ class SteganoController {
 
   static async encode(req, res) {
     try {
+      
       const processedImage = await SteganographyService.handleEncoding(req);
       
       res.set('Content-Type', req.file.mimetype);
