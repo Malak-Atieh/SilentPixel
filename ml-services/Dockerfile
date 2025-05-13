@@ -25,10 +25,10 @@ RUN mkdir -p models
 
 # Environment variables
 ENV PYTHONUNBUFFERED=1
-ENV PORT=6000
+ENV PORT=5000
 ENV STEG_MODEL_PATH=/app/models/steg_model.pth
 
-EXPOSE 6000
+EXPOSE 5000
 
 ENTRYPOINT ["python"]
 CMD ["app.py"]
