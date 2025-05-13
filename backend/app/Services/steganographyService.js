@@ -51,7 +51,8 @@ class SteganographyService {
           },
           stegoDetails: {
             hasHiddenContent: true,
-
+            messageLength: message.length,
+           
     } catch (error){
       throw new AppError(`Image analysis failed: ${error.message}`, 
         error.status || 500);
