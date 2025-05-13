@@ -34,7 +34,7 @@ class SteganographyCNN(nn.Module):
     
     def __init__(self):
         super(SteganographyCNN, self).__init__()
-                # Rich feature extraction
+        # Rich feature extraction
         self.features = nn.Sequential(
             # First block - detect basic artifacts
             nn.Conv2d(3, 64, kernel_size=3, padding=1),
