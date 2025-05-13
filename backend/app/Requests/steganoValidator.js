@@ -1,3 +1,6 @@
+const EncryptionService = require('../Services/EncryptionService');
+const { ValidationError } = require('../Traits/errors');
+
 class SteganoValidator {
     static validateCapacity(width, height, busyAreas, requiredBits) {
       const availablePixels = PixelSelector.getIndices(width, height, busyAreas, requiredBits);
