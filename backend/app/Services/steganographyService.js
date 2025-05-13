@@ -49,7 +49,8 @@ class SteganographyService {
             contentType: req.file.mimetype,
             size: req.file.size
           },
-
+          stegoDetails: {
+  
     } catch (error){
       throw new AppError(`Image analysis failed: ${error.message}`, 
         error.status || 500);
