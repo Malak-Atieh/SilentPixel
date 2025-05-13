@@ -81,8 +81,9 @@ class SteganographyService {
     const { password } = req.body;
 
     if (!req.file)  {
-      
+      throw new ValidationError('No image uploaded');
     }
+
 
   }
 }
