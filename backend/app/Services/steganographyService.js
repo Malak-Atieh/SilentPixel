@@ -29,8 +29,7 @@ class SteganographyService {
       });
 
       if (addWatermark === 'true') {
-        processedImage = await WatermarkService.addWatermark(
-          processedImage, {
+        processedImage = await WatermarkService.addWatermark(processedImage, {
           email: user.email,
           timestamp: new Date().toISOString(),
         });
@@ -44,7 +43,8 @@ class SteganographyService {
       }
 
       const imageDoc = new Image({
-         
+          userId: user._id,
+
     } catch (error){
       throw new AppError(`Image analysis failed: ${error.message}`, 
         error.status || 500);
