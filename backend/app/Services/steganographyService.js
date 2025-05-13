@@ -89,7 +89,6 @@ class SteganographyService {
     try {
       try{
         const qrData = await QRService.extractQRData(buffer);
-
     }
 
   }
