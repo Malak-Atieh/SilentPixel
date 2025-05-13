@@ -440,7 +440,7 @@ if __name__ == '__main__':
     load_busy_area_detector()
     
     # Get port from environment or use default
-    port = int(os.environ.get('PORT', 5000))
+    port = int(os.environ.get('PORT', 5001))
     
     # Use Waitress for production-ready WSGI server
     logger.info(f"Starting ML microservice on port {port}")
