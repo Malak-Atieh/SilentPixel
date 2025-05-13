@@ -16,7 +16,7 @@ class SteganoUtils {
     try {
       return await SteganoCore.extract(imageBuffer, password);
     } catch (error) {
-      throw new Error(`Decoding failed: ${error.message}`);
+      throw new AppError(`Extraction failed: ${error.message}`, 400);
     }
   }
 
