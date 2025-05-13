@@ -14,7 +14,11 @@ class SteganographyService {
     if (!req.file){
       throw new ValidationError('Image file is required');
     } 
-    
+    if (!message){
+      throw new ValidationError('Message is required');
+    }
+
+
   }
 }
 
