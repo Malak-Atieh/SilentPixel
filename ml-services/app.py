@@ -27,8 +27,7 @@ MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16MB max image size
 app.config['MAX_CONTENT_LENGTH'] = MAX_CONTENT_LENGTH
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp'}
 
-# -------------- Model Definitions --------------
-
+#Model Definitions
 class SteganographyCNN(nn.Module):
     """Deep learning model for steganography detection."""
     
