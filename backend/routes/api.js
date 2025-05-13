@@ -3,7 +3,7 @@ const router = express.Router();
 const AuthController = require('../app/Controllers/AuthController');
 const SteganoController = require('../app/Controllers/SteganoController');
 const { validate } = require('../app/Middlewares/validate');
-const { auth } = require('../app/Middlewares/auth');
+const { auth } = require('../app/Middlewares/Auth');
 const { 
   loginSchema, 
   registerSchema, 
