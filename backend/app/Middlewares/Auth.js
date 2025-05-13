@@ -1,10 +1,11 @@
 const jwt = require('jsonwebtoken');
+const {AuthError } = require('../Traits/AuthError');
 
 const auth = (req, res, next) => {
   const token = req.header('Authorization')?.replace('Bearer ', '');
 
   if (!token) {
-    return res.status(401).json({ message: 'Access denied. No token provided.' });
+    throw new AuthError('Access denied. No token provided.');
   }
 
   try {
@@ -12,7 +13,7 @@ const auth = (req, res, next) => {
     req.user = decoded; 
     next();
   } catch (err) {
-    return res.status(401).json({ message: 'Invalid token.' });
+    throw new AuthError('Invalid token.');
   }
 };
 
