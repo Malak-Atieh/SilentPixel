@@ -7,7 +7,8 @@ const { ValidationError, AppError } = require('../Traits/errors');
 
 class SteganographyService {
 
-  
+  static async handleEncoding(req) {
+  }
 }
 
 module.exports = SteganographyService;
