@@ -227,3 +227,60 @@ def process_image(args):
     except Exception as e:
         logger.error(f"Error processing {image_path}: {str(e)}")
         return image_path, False
+
+
+def generate_dataset(input_dir, output_dir, num_workers=4, delimiter='#####'):
+    """
+    Generate steganography dataset from clean images
+    
+    Args:
+        input_dir: Directory with input images
+        output_dir: Directory to save generated dataset
+        num_workers: Number of parallel workers
+        delimiter: Delimiter for LSB steganography
+    """
+    # Create output directories
+    for subdir in ['clean', 'lsb', 'dct']:
+        os.makedirs(os.path.join(output_dir, subdir), exist_ok=True)
+    
+    # Get all image files
+    image_files = []
+    for ext in ['*.jpg', '*.jpeg', '*.png']:
+        image_files.extend(list(Path(input_dir).glob(ext)))
+    
+    if not image_files:
+        logger.error(f"No images found in {input_dir}")
+        return
+    
+    logger.info(f"Found {len(image_files)} images in {input_dir}")
+    
+    # Prepare arguments for parallel processing
+    args_list = [(str(img_path), output_dir, delimiter) for img_path in image_files]
+    
+    # Process images in parallel
+    successful = 0
+    failed = 0
+    
+    with ProcessPoolExecutor(max_workers=num_workers) as executor:
+        futures = [executor.submit(process_image, args) for args in args_list]
+        
+        for future in tqdm(as_completed(futures), total=len(futures), desc="Generating dataset"):
+            img_path, success = future.result()
+            if success:
+                successful += 1
+            else:
+                failed += 1
+    
+    logger.info(f"Processing complete: {successful} successful, {failed} failed")
+    logger.info(f"Dataset generated at {output_dir}")
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Generate steganography dataset")
+    parser.add_argument("--input", required=True, help="Directory with input images")
+    parser.add_argument("--output", required=True, help="Directory to save generated dataset")
+    parser.add_argument("--workers", type=int, default=4, help="Number of parallel workers")
+    parser.add_argument("--delimiter", default="#####", help="Delimiter for LSB steganography")
+    
+    args = parser.parse_args()
+    
+    generate_dataset(args.input, args.output, args.workers, args.delimiter)
