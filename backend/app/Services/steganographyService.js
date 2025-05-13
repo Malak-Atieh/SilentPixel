@@ -103,7 +103,9 @@ class SteganographyService {
     }
   }
 
-
+  static async handleAnalysis(req) {
+   
+  }
 }
 
 module.exports = SteganographyService;
