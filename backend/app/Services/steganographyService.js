@@ -19,56 +19,62 @@ class SteganographyService {
     }
 
     const imageBuffer = req.file.buffer;
-    let processedImage = await SteganoUtils.embedMessage({
-      imageBuffer,
-      message,
-      password,
-      busyAreas: JSON.parse(busyAreas || '[]'),
-    });
-
-    if (addWatermark === 'true') {
-      processedImage = await WatermarkService.addWatermark(processedImage, {
-        email: user.email,
-        timestamp: new Date().toISOString(),
+    let processedImage ;
+    try {
+      processedImage = await SteganoUtils.embedMessage({
+        imageBuffer,
+        message,
+        password,
+        busyAreas: JSON.parse(busyAreas || '[]'),
       });
-    }
 
-    if (addQRCode === 'true') {
-      processedImage = await QRService.addQRCode(processedImage, {
-        messageHash: SteganoUtils.generateMessageHash(message, password),
-        timestamp: new Date().toISOString(),
+      if (addWatermark === 'true') {
+        processedImage = await WatermarkService.addWatermark(processedImage, {
+          email: user.email,
+          timestamp: new Date().toISOString(),
+        });
+      }
+
+      if (addQRCode === 'true') {
+        processedImage = await QRService.addQRCode(processedImage, {
+          messageHash: SteganoUtils.generateMessageHash(message, password),
+          timestamp: new Date().toISOString(),
+        });
+      }
+
+      const imageDoc = new Image({
+          userId: user._id,
+          originalImage: {
+            filename: req.file.originalname,
+            contentType: req.file.mimetype,
+            size: req.file.size
+          },
+          stegoDetails: {
+            hasHiddenContent: true,
+            messageLength: message.length,
+            isPasswordProtected: !!password
+          },
+          watermark: {
+            hasWatermark: addWatermark === 'true',
+            watermarkType: addWatermark === 'true' ? 'invisible' : 'none',
+            timestamp: new Date()
+          },
+          qrCode: {
+            hasQRCode: addQRCode === 'true'
+          },
+          processingDetails: {
+            processedAt: new Date(),
+            stegoMethod: 'lsb'
+          }
       });
+
+      await imageDoc.save();
+
+      return processedImage;
+    } catch (error) {
+      throw new AppError(`Encoding failed: ${error.message}`, 
+        error.status || 500);
     }
-
-    const imageDoc = new Image({
-        userId: user._id,
-        originalImage: {
-          filename: req.file.originalname,
-          contentType: req.file.mimetype,
-          size: req.file.size
-        },
-        stegoDetails: {
-          hasHiddenContent: true,
-          messageLength: message.length,
-          isPasswordProtected: !!password
-        },
-        watermark: {
-          hasWatermark: addWatermark === 'true',
-          watermarkType: addWatermark === 'true' ? 'invisible' : 'none',
-          timestamp: new Date()
-        },
-        qrCode: {
-          hasQRCode: addQRCode === 'true'
-        },
-        processingDetails: {
-          processedAt: new Date(),
-          stegoMethod: 'lsb'
-        }
-    });
-
-    await imageDoc.save();
-
-    return processedImage;
   }
 
   static async handleDecoding(req) {
