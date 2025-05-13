@@ -39,13 +39,31 @@ class UserService {
   }
 
   static async authenticateUser(email, password) {
-    const user = await User.findOne({ email });
-    if (!user) throw new Error('Invalid credentials');
-    
-    const isMatch = await comparePassword(password, user.password);
-    if (!isMatch) throw new Error('Invalid credentials');
+    try {
+      if (!email || !password) {
+        throw new ValidationError('Email and password are required');
+      }
+      
+      const user = await User.findOne({ email });
+      if (!user) {
+        throw new AuthError('Invalid credentials');
+      }
+      
+      const isMatch = await comparePassword(password, user.password);
+      if (!isMatch) {
+        throw new AuthError('Invalid credentials');
+      }
 
-    return user;
+      const userObject = user.toObject();
+      delete userObject.password;
+      
+      return userObject;
+    } catch (error) {
+      if (error instanceof AuthError || error instanceof ValidationError) {
+        throw error;
+      }
+      throw new Error(`Authentication failed: ${error.message}`);
+    }
   }
 }
 module.exports = UserService;
