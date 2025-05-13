@@ -1,4 +1,4 @@
-class SteganoValidate {
+class SteganoValidator {
     static validateCapacity(width, height, busyAreas, requiredBits) {
       const availablePixels = PixelSelector.getIndices(width, height, busyAreas, requiredBits);
       if (availablePixels.length < requiredBits) {
@@ -14,4 +14,4 @@ class SteganoValidate {
     }
   }
   
-  module.exports = SteganoValidate;
+  module.exports = SteganoValidator;
