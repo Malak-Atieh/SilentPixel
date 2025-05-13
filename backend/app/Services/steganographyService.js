@@ -104,24 +104,32 @@ class SteganographyService {
   }
 
   static async handleAnalysis(req) {
-    if (!req.file) throw new Error('Image is required');
-    const imageBuffer = req.file.buffer;
-
-    const analysis = await MLService.detectSteganography(imageBuffer);
-
-    let watermarkData = null;
-    try {
-      watermarkData = await WatermarkService.extractWatermark(imageBuffer);
-    } catch (_) {
-      watermarkData = null;
+    if (!req.file){
+      throw new ValidationError('Image is required');
     }
 
-    return {
-      likelyContainsHiddenData: analysis.hiddenDataProbability > 0.7,
-      hiddenDataProbability: analysis.hiddenDataProbability,
-      watermarkData,
-      recommendedBusyAreas: analysis.busyAreas || [],
-    };
+    const imageBuffer = req.file.buffer;
+
+    try{
+      const analysis = await MLService.detectSteganography(imageBuffer);
+      let watermarkData = null;
+      try {
+        watermarkData = await WatermarkService.extractWatermark(imageBuffer);
+      } catch (watermarkError) {
+        watermarkData = null;
+      }
+
+      return {
+        likelyContainsHiddenData: analysis.hiddenDataProbability > 0.7,
+        hiddenDataProbability: analysis.hiddenDataProbability,
+        watermarkData,
+        recommendedBusyAreas: analysis.busyAreas || [],
+      };
+    } catch (error){
+      throw new AppError(`Image analysis failed: ${error.message}`, 
+        error.status || 500);
+    }
+
   }
 }
 
