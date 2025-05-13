@@ -44,7 +44,8 @@ class SteganographyService {
 
       const imageDoc = new Image({
           userId: user._id,
-
+          originalImage: {
+  
     } catch (error){
       throw new AppError(`Image analysis failed: ${error.message}`, 
         error.status || 500);
