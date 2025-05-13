@@ -4,14 +4,8 @@ const AuthController = require('../app/Controllers/AuthController');
 const SteganoController = require('../app/Controllers/SteganoController');
 const { validate } = require('../app/Middlewares/validate');
 const { auth } = require('../app/Middlewares/Auth');
-const { 
-  loginSchema, 
-  registerSchema, 
-} = require('../app/Requests/Auth');
 const multer = require('multer');
 const upload = multer();
-const encodeSchema= require('../app/Requests/EncodeRequest'); 
-const decodeSchema = require('../app/Requests/DecodeRequest');
 
 // Auth Routes
 router.post('/register', validate(registerSchema), AuthController.register);
