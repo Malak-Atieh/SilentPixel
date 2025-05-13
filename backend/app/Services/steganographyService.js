@@ -56,7 +56,8 @@ class SteganographyService {
           },
           watermark: {
             hasWatermark: addWatermark === 'true',
-            
+            watermarkType: addWatermark === 'true' ? 'invisible' : 'none',
+
     } catch (error){
       throw new AppError(`Image analysis failed: ${error.message}`, 
         error.status || 500);
