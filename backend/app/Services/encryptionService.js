@@ -20,21 +20,22 @@ class EncryptionService {
 
   static decrypt(encryptedMsg, password) {
     try {
-    const salt = Buffer.from(encryptedMsg.substring(0, 32), 'hex');
-    const iv = Buffer.from(encryptedMsg.substring(32, 64), 'hex');
-    const ciphertext = encryptedMsg.substring(64);
-    const key = crypto.scryptSync(password, salt, 32);
+      const salt = Buffer.from(encryptedMsg.substring(0, 32), 'hex');
+      const iv = Buffer.from(encryptedMsg.substring(32, 64), 'hex');
+      const ciphertext = encryptedMsg.substring(64);
+      const key = crypto.scryptSync(password, salt, 32);
 
-    const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
-    let decrypted = decipher.update(ciphertext, 'hex', 'utf8');
+      const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
+      let decrypted = decipher.update(ciphertext, 'hex', 'utf8');
 
-    decrypted += decipher.final('utf8');
-    
-    return decrypted;
+      decrypted += decipher.final('utf8');
+      
+      return decrypted;
     } catch (error) {
-      throw new Error('Decryption failed. Invalid message or password.');
+      throw new AppError('Decryption failed. Invalid message or password.', 400);
     }
   }
+
 
   static generateHash(message, password) {
     return crypto.createHash('sha256')
