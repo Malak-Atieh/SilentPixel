@@ -256,3 +256,19 @@ def plot_history(history, save_path=None):
     
     plt.show()
 
+# Plot confusion matrix
+def plot_confusion_matrix(cm, classes, save_path=None):
+    """Plot confusion matrix."""
+    plt.figure(figsize=(10, 8))
+    
+    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues',
+                xticklabels=classes, yticklabels=classes)
+    
+    plt.title('Confusion Matrix')
+    plt.ylabel('True Label')
+    plt.xlabel('Predicted Label')
+    
+    if save_path:
+        plt.savefig(save_path)
+    
+    plt.show()
