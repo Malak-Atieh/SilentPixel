@@ -96,7 +96,13 @@ class SteganographyService {
         // QR extraction failed, falling back to standard extraction
       }
 
-  
+      return await SteganoUtils.extractMessage(buffer, password);
+   
+    } catch (error){
+      throw new AppError(`Image analysis failed: ${error.message}`, 
+        error.status || 500);
+    }
+
   }
 }
 
