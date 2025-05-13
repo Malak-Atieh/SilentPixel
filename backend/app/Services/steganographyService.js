@@ -29,8 +29,21 @@ class SteganographyService {
       });
 
       if (addWatermark === 'true') {
- 
-      };
+        processedImage = await WatermarkService.addWatermark(
+          processedImage, {
+          email: user.email,
+          timestamp: new Date().toISOString(),
+        });
+      }
+
+      if (addQRCode === 'true') {
+        processedImage = await QRService.addQRCode(
+          processedImage, {
+          messageHash: SteganoUtils.generateMessageHash(message, password),
+          timestamp: new Date().toISOString(),
+        });
+      }
+
     } catch (error){
       throw new AppError(`Image analysis failed: ${error.message}`, 
         error.status || 500);
