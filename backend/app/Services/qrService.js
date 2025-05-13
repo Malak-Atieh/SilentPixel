@@ -1,42 +1,37 @@
 const QECode= require('qrcode');
-const {createCanvas, loadImage} = require('canvas');
+const Jimp = require('jimp');
 const jsQR= require('jsqr');
-const ImageProcessor = require('../utils/steganoFunctions/imageProcessor');
 const {createResponse} = require('../Traits/response');
 class QRService {
 
     static async addQRCode(imageBuffer, data) {
 
         try {
-            const { canvas, ctx } = await ImageProcessor.loadImageToCanvas(imageBuffer);
+            const image = await Jimp.read(imageBuffer);
     
             //generate the QR code
             const qrSize = Math.min(image.width, image.height) *0.15; //15% of img lenght
-            const qrCanvas = createCanvas(qrSize, qrSize);
 
             //generate the QR code with the data
-            await this.addQRCode.toCanvas(qrCanvas, JSON.stringify(data), {
+            const qrDataUrl = await QRCode.toDataURL(JSON.stringify(data), {
                 errorCorrectionLevel: 'H',
                 margin: 1,
                 scale: 1,
                 width: qrSize,
             });
 
-            //position the QR code on the image to the bottom right corner
+            // Load QR code image into Jimp
+            const qrImage = await Jimp.read(Buffer.from(qrDataUrl.split(",")[1], 'base64'));
+
             const padding = 10;
-            const qrPosition = {
-                x: image.width - qrSize - padding,
-                y: image.height - qrSize - padding,
-            }
+            const x = image.bitmap.width - qrSize - padding;
+            const y = image.bitmap.height - qrSize - padding;
 
-            //draw the QR code on the canvas with semi-transparent background
-            ctx.globalAlpha = 0.8;
-            ctx.drawImage(qrCanvas, qrPosition.x, qrPosition.y);
-            ctx.globalAlpha = 1;
+            // Composite QR onto the original image with alpha (transparency)
+            qrImage.opacity(0.8);
+            image.composite(qrImage, x, y);
 
-            //convert the canvas to a buffer
-            const modifiedBuffer = canvas.toBuffer('image/png');
-
+            const modifiedBuffer = await image.getBufferAsync(Jimp.MIME_PNG);
             return createResponse(200, 'QR code added successfully', modifiedBuffer);
         } catch (error) {
             return createResponse(500, 'Error adding QR code', error);
