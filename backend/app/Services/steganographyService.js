@@ -87,7 +87,9 @@ class SteganographyService {
     const buffer = req.file.buffer;
 
     try {
-
+      try{
+        
+    }
 
   }
 }
