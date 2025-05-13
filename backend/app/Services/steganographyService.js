@@ -84,6 +84,7 @@ class SteganographyService {
       throw new ValidationError('No image uploaded');
     }
 
+    const buffer = req.file.buffer;
 
   }
 }
