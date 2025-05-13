@@ -35,3 +35,64 @@ def to_binary(data):
         return format(data, '08b')
     else:
         raise TypeError("Type not supported.")
+
+
+def encode_lsb(image, secret_data, delimiter='#####'):
+    """
+    Encode data into image using Least Significant Bit steganography
+    
+    Args:
+        image: NumPy array of image
+        secret_data: String to hide in the image
+        delimiter: String delimiter to mark the end of hidden data
+        
+    Returns:
+        Modified image with hidden data
+    """
+    # Add delimiter to the secret data
+    secret_data += delimiter
+    
+    # Convert secret data to binary
+    binary_secret_data = to_binary(secret_data)
+    
+    # Calculate required pixels
+    data_len = len(binary_secret_data)
+    
+    # Get image dimensions
+    height, width, channels = image.shape
+    
+    # Check if the image has enough pixels
+    if height * width * channels < data_len:
+        raise ValueError("Image too small to hold this data")
+    
+    # Create copy of image to modify
+    encoded_image = np.copy(image)
+    
+    # Counter for binary data index
+    data_index = 0
+    
+    # Encode data into image
+    for row in range(height):
+        for col in range(width):
+            for channel in range(channels):
+                if data_index < data_len:
+                    # Get the pixel value
+                    pixel = encoded_image[row, col, channel]
+                    
+                    # Convert pixel to binary
+                    binary_pixel = to_binary(pixel)
+                    
+                    # Replace LSB with current bit of secret data
+                    new_binary = binary_pixel[:-1] + binary_secret_data[data_index]
+                    
+                    # Convert binary back to integer
+                    encoded_image[row, col, channel] = int(new_binary, 2)
+                    
+                    # Move to next bit of secret data
+                    data_index += 1
+                else:
+                    # All data has been hidden
+                    break
+    
+    return encoded_image
+
