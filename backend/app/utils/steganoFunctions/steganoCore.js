@@ -1,33 +1,33 @@
 const BinaryConverter = require('./binaryConverter');
 const PixelSelector = require('./pixelSelector');
 const EncryptionService = require('../../Services/EncryptionService');
-const ImageProcessor = require('./imageProcessor');
+const Jimp = require('jimp');
 
 class SteganoCore {
   static async embed(imageBuffer, message, password, busyAreas = []) {
-    const { canvas, ctx } = await ImageProcessor.loadImageToCanvas(imageBuffer);
-    const imageData = ImageProcessor.getImageData(ctx, canvas.width, canvas.height);
-    
+    const image = await Jimp.read(imageBuffer);
+    const { width, height, data } = image.bitmap;
+
     const encryptedMsg = EncryptionService.encrypt(message, password);
     const binaryMsg = BinaryConverter.textToBinary(encryptedMsg);
     const header = BinaryConverter.numberToBinary(binaryMsg.length, 32);
     const dataToHide = header + binaryMsg;
     
     const pixelIndices = PixelSelector.getIndices(
-      canvas.width, 
-      canvas.height, 
+      width, 
+      height, 
       busyAreas, 
       dataToHide.length
     );
     
     this._embedData(imageData.data, pixelIndices, dataToHide);
     
-    ImageProcessor.updateImageData(ctx, imageData);
-    return ImageProcessor.canvasToBuffer(canvas);
+    return await image.getBufferAsync(Jimp.MIME_PNG);
   }
+
   static async extract(imageBuffer, password) {
-    const { canvas, ctx } = await ImageProcessor.loadImageToCanvas(imageBuffer);
-    const imageData = ImageProcessor.getImageData(ctx, canvas.width, canvas.height);
+     const image = await Jimp.read(imageBuffer);
+    const { data } = image.bitmap;
     
     const binaryHeader = this._extractBits(imageData.data, 0, 32);
     const messageLength = parseInt(binaryHeader, 2);
