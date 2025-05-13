@@ -19,12 +19,12 @@ class SteganographyService {
     }
 
     const imageBuffer = req.file.buffer;
-    let processedImage = await SteganoUtils.embedMessage(
+    let processedImage = await SteganoUtils.embedMessage({
       imageBuffer,
       message,
       password,
-      JSON.parse(busyAreas || '[]')
-    );
+      busyAreas: JSON.parse(busyAreas || '[]'),
+    });
 
     if (addWatermark === 'true') {
       processedImage = await WatermarkService.addWatermark(processedImage, {
@@ -41,13 +41,29 @@ class SteganographyService {
     }
 
     const imageDoc = new Image({
-      userId: user._id,
-      filename: req.file.originalname,
-      contentType: req.file.mimetype,
-      hasWatermark: addWatermark === 'true',
-      hasQRCode: addQRCode === 'true',
-      processingDate: new Date(),
-      messageLength: message.length,
+        userId: user._id,
+        originalImage: {
+          filename: req.file.originalname,
+          contentType: req.file.mimetype,
+          size: req.file.size
+        },
+        stegoDetails: {
+          hasHiddenContent: true,
+          messageLength: message.length,
+          isPasswordProtected: !!password
+        },
+        watermark: {
+          hasWatermark: addWatermark === 'true',
+          watermarkType: addWatermark === 'true' ? 'invisible' : 'none',
+          timestamp: new Date()
+        },
+        qrCode: {
+          hasQRCode: addQRCode === 'true'
+        },
+        processingDetails: {
+          processedAt: new Date(),
+          stegoMethod: 'lsb'
+        }
     });
 
     await imageDoc.save();
