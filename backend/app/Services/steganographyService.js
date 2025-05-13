@@ -11,6 +11,10 @@ class SteganographyService {
     const { message, password, addWatermark, addQRCode, busyAreas } = req.body;
     const user = req.user;
 
+    if (!req.file){
+      throw new ValidationError('Image file is required');
+    } 
+    
   }
 }
 
