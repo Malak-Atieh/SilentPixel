@@ -116,101 +116,101 @@ class BusyAreaDetector:
             'medium': {'edge_threshold': 100, 'density_threshold': 0.2, 'sigma': 1.5},
             'high': {'edge_threshold': 80, 'density_threshold': 0.1, 'sigma': 1.0}
         }
-        def detect(self, image_np, sensitivity='medium'):
-            """
-            Detects busy areas in the image using edge detection and gradient analysis.
+    def detect(self, image_np, sensitivity='medium'):
+        """
+        Detects busy areas in the image using edge detection and gradient analysis.
             
-            Args:
-                image_np: numpy array of image
-                sensitivity: 'low', 'medium', or 'high'
+        Args:
+            image_np: numpy array of image
+            sensitivity: 'low', 'medium', or 'high'
                 
-            Returns:
-                List of dictionaries with busy area coordinates
-            """
-            # Get parameters based on sensitivity
-            params = self.sensitivity_presets.get(sensitivity, self.sensitivity_presets['medium'])
+        Returns:
+            List of dictionaries with busy area coordinates
+        """
+        # Get parameters based on sensitivity
+        params = self.sensitivity_presets.get(sensitivity, self.sensitivity_presets['medium'])
             
-            # Convert to grayscale if it's not already
-            if len(image_np.shape) == 3 and image_np.shape[2] == 3:
-                gray = cv2.cvtColor(image_np, cv2.COLOR_RGB2GRAY)
-            else:
-                gray = image_np
+        # Convert to grayscale if it's not already
+        if len(image_np.shape) == 3 and image_np.shape[2] == 3:
+            gray = cv2.cvtColor(image_np, cv2.COLOR_RGB2GRAY)
+        else:
+            gray = image_np
                 
-            # 1. Edge detection
-            edges = cv2.Canny(gray, params['edge_threshold'], params['edge_threshold'] * 2)
+        # 1. Edge detection
+        edges = cv2.Canny(gray, params['edge_threshold'], params['edge_threshold'] * 2)
             
-            # 2. Texture complexity analysis (using gradients)
-            sobelx = cv2.Sobel(gray, cv2.CV_64F, 1, 0, ksize=3)
-            sobely = cv2.Sobel(gray, cv2.CV_64F, 0, 1, ksize=3)
-            gradient_magnitude = np.sqrt(sobelx**2 + sobely**2)
+        # 2. Texture complexity analysis (using gradients)
+        sobelx = cv2.Sobel(gray, cv2.CV_64F, 1, 0, ksize=3)
+        sobely = cv2.Sobel(gray, cv2.CV_64F, 0, 1, ksize=3)
+        gradient_magnitude = np.sqrt(sobelx**2 + sobely**2)
             
-            # Normalize gradient magnitude
-            if gradient_magnitude.max() > 0:
-                gradient_magnitude = gradient_magnitude / gradient_magnitude.max()
+        # Normalize gradient magnitude
+        if gradient_magnitude.max() > 0:
+            gradient_magnitude = gradient_magnitude / gradient_magnitude.max()
             
-            # 3. Combine edge and gradient information
-            complexity_map = edges.astype(float) / 255 + gradient_magnitude
-            complexity_map = np.clip(complexity_map, 0, 1)
+        # 3. Combine edge and gradient information
+        complexity_map = edges.astype(float) / 255 + gradient_magnitude
+        complexity_map = np.clip(complexity_map, 0, 1)
             
-            # 4. Apply Gaussian smoothing to the map
-            complexity_map = gaussian_filter(complexity_map, sigma=params['sigma'])
+        # 4. Apply Gaussian smoothing to the map
+        complexity_map = gaussian_filter(complexity_map, sigma=params['sigma'])
             
-            # 5. Segment the image into grid cells and analyze each cell
-            h, w = complexity_map.shape
-            cell_size = min(h, w) // 10  # Divide image into approximately 10x10 grid
-            cell_size = max(cell_size, 20)  # Minimum cell size of 20px
+        # 5. Segment the image into grid cells and analyze each cell
+        h, w = complexity_map.shape
+        cell_size = min(h, w) // 10  # Divide image into approximately 10x10 grid
+        cell_size = max(cell_size, 20)  # Minimum cell size of 20px
             
-            busy_areas = []
+        busy_areas = []
             
-            # Iterate through grid cells
-            for y in range(0, h - cell_size + 1, cell_size):
-                for x in range(0, w - cell_size + 1, cell_size):
-                    cell = complexity_map[y:y+cell_size, x:x+cell_size]
+        # Iterate through grid cells
+        for y in range(0, h - cell_size + 1, cell_size):
+            for x in range(0, w - cell_size + 1, cell_size):
+                cell = complexity_map[y:y+cell_size, x:x+cell_size]
                     
-                    # Calculate average complexity in this cell
-                    avg_complexity = np.mean(cell)
+                # Calculate average complexity in this cell
+                avg_complexity = np.mean(cell)
                     
-                    # If complexity is above threshold, mark as busy area
-                    if avg_complexity > params['density_threshold']:
-                        busy_areas.append({
-                            'x': int(x),
-                            'y': int(y),
-                            'width': int(cell_size),
-                            'height': int(cell_size),
-                            'complexity': float(avg_complexity)
-                        })
+                # If complexity is above threshold, mark as busy area
+                if avg_complexity > params['density_threshold']:
+                    busy_areas.append({
+                        'x': int(x),
+                        'y': int(y),
+                        'width': int(cell_size),
+                        'height': int(cell_size),
+                        'complexity': float(avg_complexity)
+                    })
             
-            # 6. Merge adjacent busy areas
-            merged_areas = self._merge_adjacent_areas(busy_areas, cell_size)
+        # 6. Merge adjacent busy areas
+        merged_areas = self._merge_adjacent_areas(busy_areas, cell_size)
             
-            # Sort by complexity (highest first)
-            merged_areas.sort(key=lambda area: area['complexity'], reverse=True)
+        # Sort by complexity (highest first)
+        merged_areas.sort(key=lambda area: area['complexity'], reverse=True)
             
-            return merged_areas    
+        return merged_areas    
             
-        def _merge_adjacent_areas(self, areas, cell_size):
-            """Merge adjacent busy areas to form larger regions."""
-            if not areas:
-                return []
+    def _merge_adjacent_areas(self, areas, cell_size):
+        """Merge adjacent busy areas to form larger regions."""
+        if not areas:
+            return []
                 
-            # Helper function to check if two areas overlap or are adjacent
-            def are_adjacent(a1, a2, tolerance=1.5):
-                # Expand the first area slightly to detect adjacency
-                expanded_a1 = {
-                    'x': a1['x'] - cell_size/tolerance,
-                    'y': a1['y'] - cell_size/tolerance,
-                    'width': a1['width'] + cell_size/tolerance*2,
-                    'height': a1['height'] + cell_size/tolerance*2
-                }
+        # Helper function to check if two areas overlap or are adjacent
+        def are_adjacent(a1, a2, tolerance=1.5):
+            # Expand the first area slightly to detect adjacency
+            expanded_a1 = {
+                'x': a1['x'] - cell_size/tolerance,
+                'y': a1['y'] - cell_size/tolerance,
+                'width': a1['width'] + cell_size/tolerance*2,
+                'height': a1['height'] + cell_size/tolerance*2
+            }
                 
-                # Check if a2 intersects with the expanded a1
-                return not (expanded_a1['x'] + expanded_a1['width'] < a2['x'] or
-                        a2['x'] + a2['width'] < expanded_a1['x'] or
-                        expanded_a1['y'] + expanded_a1['height'] < a2['y'] or
-                        a2['y'] + a2['height'] < expanded_a1['y'])
+            # Check if a2 intersects with the expanded a1
+            return not (expanded_a1['x'] + expanded_a1['width'] < a2['x'] or
+                    a2['x'] + a2['width'] < expanded_a1['x'] or
+                    expanded_a1['y'] + expanded_a1['height'] < a2['y'] or
+                    a2['y'] + a2['height'] < expanded_a1['y'])
             
-            # Function to merge two areas
-            def merge(a1, a2):
+        # Function to merge two areas
+        def merge(a1, a2):
                 x1 = min(a1['x'], a2['x'])
                 y1 = min(a1['y'], a2['y'])
                 x2 = max(a1['x'] + a1['width'], a2['x'] + a2['width'])
@@ -229,30 +229,30 @@ class BusyAreaDetector:
                 }
             
             # Keep merging until no more merges are possible
-            merged = list(areas)
-            while True:
-                merged_this_round = False
+        merged = list(areas)
+        while True:
+            merged_this_round = False
                 
-                for i in range(len(merged)):
-                    if merged[i] is None:
-                        continue
+            for i in range(len(merged)):
+                if merged[i] is None:
+                    continue
                     
-                    for j in range(i+1, len(merged)):
-                        if merged[j] is None:
-                            continue
+                for j in range(i+1, len(merged)):
+                    if merged[j] is None:
+                        continue
                         
-                        if are_adjacent(merged[i], merged[j]):
-                            merged[i] = merge(merged[i], merged[j])
-                            merged[j] = None  # Mark as merged
-                            merged_this_round = True
+                    if are_adjacent(merged[i], merged[j]):
+                        merged[i] = merge(merged[i], merged[j])
+                        merged[j] = None  # Mark as merged
+                        merged_this_round = True
                 
-                # Remove all the None entries
-                merged = [area for area in merged if area is not None]
+            # Remove all the None entries
+            merged = [area for area in merged if area is not None]
                 
-                if not merged_this_round:
-                    break
+            if not merged_this_round:
+                break
             
-            return merged    
+        return merged    
         
 # -------------- Model Loading --------------
 
