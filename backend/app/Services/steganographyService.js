@@ -79,20 +79,28 @@ class SteganographyService {
 
   static async handleDecoding(req) {
     const { password } = req.body;
-    if (!req.file) throw new Error('No image uploaded');
+
+    if (!req.file)  {
+      throw new ValidationError('No image uploaded');
+    }
 
     const buffer = req.file.buffer;
 
     try {
-      const qrData = await QRService.extractQRData(buffer);
-      if (qrData) {
-        return await SteganoUtils.extractMessageWithQR(buffer, password, qrData);
+      try{
+        const qrData = await QRService.extractQRData(buffer);
+        if (qrData) {
+          return await SteganoUtils.extractMessageWithQR(buffer, password, qrData);
+        }
+      } catch (qrError) {
+        // QR extraction failed, falling back to standard extraction
       }
-    } catch (_) {
-      // QR decode failed; fallback
-    }
 
-    return await SteganoUtils.extractMessage(buffer, password);
+      return await SteganoUtils.extractMessage(buffer, password);
+    } catch(error){
+      throw new AppError(`Decoding failed: ${error.message}`, 
+      error.status || 400);
+    }
   }
 
   static async handleAnalysis(req) {
