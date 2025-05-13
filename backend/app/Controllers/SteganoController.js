@@ -14,7 +14,9 @@ class SteganoController {
       return createResponse(res, 200, 'Image encoded successfully', processedImage);
 
     } catch (err) {
+
       return createResponse(res, err.status || 500, err.message);
+    
     }
 
   }
@@ -28,7 +30,9 @@ class SteganoController {
       return createResponse(res, 200, 'Message decoded successfully', message);
 
     } catch (err) {
+
       return createResponse(res, err.status || 500, err.message);
+    
     }
 
   }
@@ -42,7 +46,9 @@ class SteganoController {
       return createResponse(res, 200, 'Image analysis complete', analysis);
     
     } catch (err) {
+
       return createResponse(res, err.status || 500, err.message);
+    
     }
 
   }
