@@ -6,7 +6,7 @@ const cors = require('cors');
 const morgan = require('morgan');
 const helmet = require('helmet');
 const fileUpload = require('express-fileupload');
-const errorHandler = require('./Middleware/errorHandler');
+const errorHandler = require('./Middlewares/errorHandler');
 
 // Initialize app
 const app = express();
