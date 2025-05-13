@@ -1,16 +1,12 @@
-const {createCanvas, loadImage} = require ('canvas');
 const {createResponse} = require('../Traits/response');
 const crypto = require('crypto');
-const ImageProcessor = require('../utils/steganoFunctions/imageProcessor');
+const Jimp = require('jimp');
 const BinaryConverter = require('../utils/steganoFunctions/binaryConverter');
 class WatermarkService {
     static async addWatermark(imageBuffer, watermarkData) {
         try {
-
-            const { canvas, ctx } = await ImageProcessor.loadImageToCanvas(imageBuffer);
-            const imageData = ImageProcessor.getImageData(ctx, canvas.width, canvas.height);
-            
-            const pixels = imageData.data;
+            const image = await Jimp.read(imageBuffer);
+            const { data, width, height } = image.bitmap;
 
             //create a digest of the image data
             const watermarkString = JSON.stringify(watermarkData);
@@ -20,7 +16,7 @@ class WatermarkService {
             const binaryWatermark = BinaryConverter.textToBinary(watermarkString.substring(0, 128));
 
             //determine watermark position
-            const position = this._getWatermarkPosition(canvas.width, canvas.height, binaryWatermark.length);
+            const position = this._getWatermarkPosition(width, height, binaryWatermark.length);
 
             //embed watermark using phase coding technique 
             for (let i=0; i< binaryWatermark.length; i++){
@@ -39,16 +35,11 @@ class WatermarkService {
                     pixels[pixelIndex + 1] = Math.min(255, pixels[pixelIndex + 1] + 1);
                 }
             }
-
-            //update canvas with modified pixels
-            ctx.putImageData(imageData, 0, 0);
-
             //store the watermark hash in the alpha channel corners
-            this._storeWatermarkHash(ctx, watermarkHash, canvas.width, canvas.height);
+            this._storeWatermarkHash(data, watermarkHash, width, height);
 
             //convert the canvas to a buffer
-            const modifiedBuffer = canvas.toBuffer('image/png');
-
+            const modifiedBuffer = await image.getBufferAsync(Jimp.MIME_PNG);
             return createResponse(200, 'Watermark added successfully', modifiedBuffer);
         } catch (error) {
             createResponse(500, 'Error adding watermark', error);
