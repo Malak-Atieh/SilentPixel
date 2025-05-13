@@ -115,6 +115,9 @@ class SteganographyService {
       let watermarkData = null;
       try {
         watermarkData = await WatermarkService.extractWatermark(imageBuffer);
+      } catch (watermarkError) {
+      }
+
 
     } catch (error){
       throw new AppError(`Image analysis failed: ${error.message}`, 
