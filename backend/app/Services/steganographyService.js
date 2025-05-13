@@ -54,6 +54,8 @@ class SteganographyService {
             messageLength: message.length,
             isPasswordProtected: !!password
           },
+          watermark: {
+
     } catch (error){
       throw new AppError(`Image analysis failed: ${error.message}`, 
         error.status || 500);
