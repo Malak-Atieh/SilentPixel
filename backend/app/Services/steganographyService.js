@@ -68,7 +68,8 @@ class SteganographyService {
           }
       });
 
- 
+      await imageDoc.save();
+
     } catch (error){
       throw new AppError(`Image analysis failed: ${error.message}`, 
         error.status || 500);
