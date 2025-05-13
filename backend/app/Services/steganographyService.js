@@ -8,6 +8,9 @@ const { ValidationError, AppError } = require('../Traits/errors');
 class SteganographyService {
 
   static async handleEncoding(req) {
+    const { message, password, addWatermark, addQRCode, busyAreas } = req.body;
+    const user = req.user;
+
   }
 }
 
