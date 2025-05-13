@@ -1,4 +1,4 @@
-const QECode= require('qrcode');
+const QRCode= require('qrcode');
 const Jimp = require('jimp');
 const jsQR= require('jsqr');
 const {createResponse} = require('../Traits/response');
