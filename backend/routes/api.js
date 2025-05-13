@@ -4,6 +4,10 @@ const AuthController = require('../app/Controllers/AuthController');
 const SteganoController = require('../app/Controllers/SteganoController');
 const { validate } = require('../app/Middlewares/validate');
 const { auth } = require('../app/Middlewares/Auth');
+const {
+  validateImageUpload,
+  validateMessageInput
+} = require('../app/Middlewares/ValidateImageAndMessage');
 const multer = require('multer');
 const upload = multer();
 
@@ -16,6 +20,7 @@ router.post(
   '/analyze',
   auth,
   upload.single('image'),
+  validateImageUpload,
   SteganoController.analyzeImage
 );
 
@@ -23,12 +28,15 @@ router.post(
   '/encode', 
   auth, 
   upload.single('image'), 
+  validateImageUpload,
+  validateMessageInput,
   SteganoController.encode
 );
 
 router.post(
   '/decode', 
   auth, 
+  validateImageUpload,
   SteganoController.decode
 );
 
