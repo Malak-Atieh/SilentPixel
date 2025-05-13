@@ -8,23 +8,29 @@ const multer = require('multer');
 const upload = multer();
 
 // Auth Routes
-router.post('/register', validate(registerSchema), AuthController.register);
-router.post('/login', validate(loginSchema), AuthController.login);
+router.post('/register', AuthController.register);
+router.post('/login', AuthController.login);
 
 // Steganography Routes
+router.post(
+  '/analyze',
+  auth,
+  upload.single('image'),
+  SteganoController.analyzeImage
+);
+
 router.post(
   '/encode', 
   auth, 
   upload.single('image'), 
-  validate(encodeSchema), 
   SteganoController.encode
 );
 
 router.post(
   '/decode', 
   auth, 
-  validate(decodeSchema), 
   SteganoController.decode
 );
+
 
 module.exports = router;

@@ -1,4 +1,4 @@
-const jwt = require('jsonwebtoken');
+const {verifyToken} = require('../utils/jwt');
 const {AuthError } = require('../Traits/errors');
 
 const auth = (req, res, next) => {
@@ -9,7 +9,7 @@ const auth = (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = verifyToken(token, process.env.JWT_SECRET);
     req.user = decoded; 
     next();
   } catch (err) {
