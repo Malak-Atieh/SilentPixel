@@ -176,3 +176,51 @@ def train_model(model, train_loader, val_loader, criterion, optimizer,
     model.load_state_dict(best_model_wts)
     return model, history
 
+# Evaluate the model
+def evaluate_model(model, test_loader, device):
+    """
+    Evaluate the model on test data.
+    
+    Args:
+        model: Trained model
+        test_loader: DataLoader for test data
+        device: Device to evaluate on
+    
+    Returns:
+        Metrics dictionary, predictions, true labels
+    """
+    model = model.to(device)
+    model.eval()
+    
+    all_preds = []
+    all_labels = []
+    
+    with torch.no_grad():
+        for inputs, labels in test_loader:
+            inputs = inputs.to(device)
+            outputs = model(inputs)
+            _, preds = torch.max(outputs, 1)
+            
+            all_preds.extend(preds.cpu().numpy())
+            all_labels.extend(labels.numpy())
+    
+    # Convert to numpy arrays
+    all_preds = np.array(all_preds)
+    all_labels = np.array(all_labels)
+    
+    # Calculate metrics
+    accuracy = np.mean(all_preds == all_labels)
+    precision, recall, f1, _ = precision_recall_fscore_support(all_labels, all_preds, average='weighted')
+    
+    # Calculate confusion matrix
+    cm = confusion_matrix(all_labels, all_preds)
+    
+    metrics = {
+        'accuracy': accuracy,
+        'precision': precision,
+        'recall': recall,
+        'f1': f1,
+        'confusion_matrix': cm
+    }
+    
+    return metrics, all_preds, all_labels
