@@ -18,5 +18,21 @@ const generateToken = (userId, additionalData = {}) => {
   return jwt.sign(payload, process.env.JWT_SECRET, options);
 };
 
+const verifyToken = (token) => {
+  if (!token) {
+    throw new AuthError('No token provided');
+  }
+  
+  try {
+    return jwt.verify(token, process.env.JWT_SECRET);
+  } catch (error) {
+    if (error.name === 'TokenExpiredError') {
+      throw new AuthError('Token has expired');
+    }
+    throw new AuthError('Invalid token');
+  }
+};
 
-module.exports = { generateToken };
+
+module.exports = { generateToken,
+  verifyToken };
