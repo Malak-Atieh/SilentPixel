@@ -272,3 +272,137 @@ def plot_confusion_matrix(cm, classes, save_path=None):
         plt.savefig(save_path)
     
     plt.show()
+
+
+# Main function
+def main():
+    parser = argparse.ArgumentParser(description='Train steganography detection model')
+    parser.add_argument('--data_dir', type=str, required=True,
+                        help='Path to data directory with clean, lsb, dct subdirectories')
+    parser.add_argument('--output_dir', type=str, default='./models',
+                        help='Directory to save model and results')
+    parser.add_argument('--batch_size', type=int, default=32,
+                        help='Batch size for training')
+    parser.add_argument('--num_epochs', type=int, default=20,
+                        help='Number of epochs to train')
+    parser.add_argument('--learning_rate', type=float, default=0.001,
+                        help='Initial learning rate')
+    parser.add_argument('--weight_decay', type=float, default=1e-4,
+                        help='Weight decay for regularization')
+    parser.add_argument('--train_val_test_split', type=float, nargs=3, default=[0.7, 0.15, 0.15],
+                        help='Proportions for train/val/test split')
+    parser.add_argument('--random_seed', type=int, default=42,
+                        help='Random seed for reproducibility')
+    parser.add_argument('--no_cuda', action='store_true',
+                        help='Disable CUDA even if available')
+    args = parser.parse_args()
+    
+    # Set random seed
+    set_seed(args.random_seed)
+    
+    # Create output directory
+    os.makedirs(args.output_dir, exist_ok=True)
+    
+    # Set device
+    device = torch.device('cuda' if torch.cuda.is_available() and not args.no_cuda else 'cpu')
+    logger.info(f'Using device: {device}')
+    
+    # Data transforms
+    data_transforms = transforms.Compose([
+        transforms.Resize((256, 256)),
+        transforms.RandomHorizontalFlip(),
+        transforms.RandomRotation(10),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    ])
+    
+    test_transforms = transforms.Compose([
+        transforms.Resize((256, 256)),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    ])
+    
+    # Create dataset
+    full_dataset = SteganographyDataset(args.data_dir, transform=data_transforms)
+    
+    # Split dataset
+    dataset_size = len(full_dataset)
+    train_size = int(dataset_size * args.train_val_test_split[0])
+    val_size = int(dataset_size * args.train_val_test_split[1])
+    test_size = dataset_size - train_size - val_size
+    
+    train_dataset, val_dataset, test_dataset = torch.utils.data.random_split(
+        full_dataset, [train_size, val_size, test_size]
+    )
+    
+    # Override transforms for test dataset
+    test_dataset.dataset.transform = test_transforms
+    
+    # Create data loaders
+    train_loader = DataLoader(
+        train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=4
+    )
+    
+    val_loader = DataLoader(
+        val_dataset, batch_size=args.batch_size, shuffle=False, num_workers=4
+    )
+    
+    test_loader = DataLoader(
+        test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=4
+    )
+    
+    # Initialize model
+    model = SteganographyCNN()
+    
+    # Loss function and optimizer
+    criterion = nn.CrossEntropyLoss()
+    optimizer = optim.Adam(
+        model.parameters(), lr=args.learning_rate, weight_decay=args.weight_decay
+    )
+    
+    # Learning rate scheduler
+    scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=7, gamma=0.1)
+    
+    # Train model
+    logger.info('Starting training...')
+    start_time = time.time()
+    
+    model, history = train_model(
+        model, train_loader, val_loader, criterion, optimizer, 
+        scheduler, args.num_epochs, device
+    )
+    
+    total_time = time.time() - start_time
+    logger.info(f'Training complete in {total_time / 60:.2f} minutes')
+    
+    # Save the trained model
+    model_path = os.path.join(args.output_dir, 'steg_model.pth')
+    torch.save(model.state_dict(), model_path)
+    logger.info(f'Model saved to {model_path}')
+    
+    # Evaluate model on test set
+    logger.info('Evaluating model on test set...')
+    metrics, predictions, true_labels = evaluate_model(model, test_loader, device)
+    
+    # Print metrics
+    logger.info(f"Test Accuracy: {metrics['accuracy']:.4f}")
+    logger.info(f"Test Precision: {metrics['precision']:.4f}")
+    logger.info(f"Test Recall: {metrics['recall']:.4f}")
+    logger.info(f"Test F1 Score: {metrics['f1']:.4f}")
+    
+    # Plot and save training history
+    history_path = os.path.join(args.output_dir, 'training_history.png')
+    plot_history(history, save_path=history_path)
+    
+    # Plot and save confusion matrix
+    cm_path = os.path.join(args.output_dir, 'confusion_matrix.png')
+    plot_confusion_matrix(
+        metrics['confusion_matrix'], 
+        classes=['Clean', 'LSB Steg', 'DCT Steg'],
+        save_path=cm_path
+    )
+    
+    logger.info('Evaluation complete!')
+
+if __name__ == '__main__':
+    main()
