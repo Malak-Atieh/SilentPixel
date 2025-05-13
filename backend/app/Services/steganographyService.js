@@ -108,6 +108,7 @@ class SteganographyService {
       throw new ValidationError('Image is required');
     }
 
+    const imageBuffer 
 
   }
 }
