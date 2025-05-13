@@ -1,24 +1,21 @@
-const { createCanvas, loadImage } = require('canvas');
+const Jimp = require('jimp');
 
 class ImageProcessor {
   static async loadImageToCanvas(imageBuffer) {
-    const image = await loadImage(imageBuffer);
-    const canvas = createCanvas(image.width, image.height);
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(image, 0, 0);
-    return { canvas, ctx };
+    const image = await Jimp.read(imageBuffer);
+    return { image };
   }
 
-  static getImageData(ctx, width, height) {
-    return ctx.getImageData(0, 0, width, height);
+  static getImageData(image) {
+    return {
+      data: image.bitmap.data,
+      width: image.bitmap.width,
+      height: image.bitmap.height
+    };
   }
 
-  static updateImageData(ctx, imageData) {
-    ctx.putImageData(imageData, 0, 0);
-  }
-
-  static canvasToBuffer(canvas, format = 'image/png') {
-    return canvas.toBuffer(format);
+  static async canvasToBuffer({ image }, mime = Jimp.MIME_PNG) {
+    return await image.getBufferAsync(mime);  
   }
 }
 

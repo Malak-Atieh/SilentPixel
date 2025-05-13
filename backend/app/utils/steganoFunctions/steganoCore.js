@@ -1,6 +1,6 @@
 const BinaryConverter = require('./binaryConverter');
 const PixelSelector = require('./pixelSelector');
-const EncryptionService = require('../../Services/encryptionService');
+const EncryptionService = require('../../Services/EncryptionService');
 const ImageProcessor = require('./imageProcessor');
 
 class SteganoCore {
