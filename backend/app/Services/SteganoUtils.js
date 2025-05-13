@@ -1,12 +1,14 @@
 const SteganoCore = require('../utils/steganoFunctions/steganoCore');
-const SteganoValidate = require('../Requests/SteganoValidate');
+const SteganoValidator = require('../Requests/SteganoValidator');
+const {AppError} = requie('../Traits/errors');
 
-class SteganoService {
-  static async embedMessage(imageBuffer, message, password, busyAreas = []) {
+class SteganoUtils {
+
+  static async embedMessage({ imageBuffer, message, password, busyAreas = [] }) {
     try {
       return await SteganoCore.embed(imageBuffer, message, password, busyAreas);
     } catch (error) {
-      throw new Error(`Encoding failed: ${error.message}`);
+      throw new AppError(`Embedding failed: ${error.message}`, 400);
     }
   }
 
@@ -20,9 +22,9 @@ class SteganoService {
 
   static async extractMessageWithQR(imageBuffer, password, qrData) {
     const message = await this.extractMessage(imageBuffer, password);
-    SteganoValidate.verifyMessageHash(message, password, qrData.messageHash);
+    SteganoValidator.verifyMessageHash(message, password, qrData.messageHash);
     return message;
   }
 }
 
-module.exports = SteganoService;
+module.exports = SteganoUtils;
