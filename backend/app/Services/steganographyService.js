@@ -80,6 +80,10 @@ class SteganographyService {
   static async handleDecoding(req) {
     const { password } = req.body;
 
+    if (!req.file)  {
+      
+    }
+
   }
 }
 
