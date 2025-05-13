@@ -59,6 +59,8 @@ class SteganographyService {
             watermarkType: addWatermark === 'true' ? 'invisible' : 'none',
             timestamp: new Date()
           },
+          qrCode: {
+
     } catch (error){
       throw new AppError(`Image analysis failed: ${error.message}`, 
         error.status || 500);
