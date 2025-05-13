@@ -111,7 +111,7 @@ class SteganographyService {
     const imageBuffer = req.file.buffer;
 
     try{
-
+      const analysis
     } catch (error){
       throw new AppError(`Image analysis failed: ${error.message}`, 
         error.status || 500);
