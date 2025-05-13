@@ -5,11 +5,13 @@ class SteganoController {
 
   static async encode(req, res) {
     try {
-      
+
       const processedImage = await SteganographyService.handleEncoding(req);
       
       res.set('Content-Type', req.file.mimetype);
+      
       return createResponse(res, 200, 'Image encoded successfully', processedImage);
+
     } catch (err) {
       return createResponse(res, err.status || 500, err.message);
     }
