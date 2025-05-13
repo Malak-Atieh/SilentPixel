@@ -63,7 +63,8 @@ class SteganographyService {
             hasQRCode: addQRCode === 'true'
           },
           processingDetails: {
-
+            processedAt: new Date(),
+          
     } catch (error){
       throw new AppError(`Image analysis failed: ${error.message}`, 
         error.status || 500);
