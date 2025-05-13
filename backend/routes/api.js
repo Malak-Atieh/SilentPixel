@@ -2,12 +2,11 @@ const express = require('express');
 const router = express.Router();
 const AuthController = require('../app/Controllers/AuthController');
 const SteganoController = require('../app/Controllers/SteganoController');
-const { validate } = require('../app/Middlewares/validate');
 const { auth } = require('../app/Middlewares/Auth');
 const {
   validateImageUpload,
   validateMessageInput
-} = require('../app/Middlewares/ValidateImageAndMessage');
+} = require('../app/Middlewares/Validation');
 const multer = require('multer');
 const upload = multer();
 
