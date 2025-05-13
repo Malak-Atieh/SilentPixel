@@ -1,6 +1,6 @@
 const SteganoCore = require('../utils/steganoFunctions/steganoCore');
 const SteganoValidator = require('../Requests/SteganoValidator');
-const {AppError} = requie('../Traits/errors');
+const {AppError} = require('../Traits/errors');
 
 class SteganoUtils {
 
