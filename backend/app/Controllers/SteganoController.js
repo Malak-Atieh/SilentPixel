@@ -4,6 +4,7 @@ const { createResponse } = require('../Traits/response');
 class SteganoController {
 
   static async encode(req, res) {
+
     try {
 
       const processedImage = await SteganographyService.handleEncoding(req);
@@ -15,13 +16,14 @@ class SteganoController {
     } catch (err) {
       return createResponse(res, err.status || 500, err.message);
     }
+    
   }
 
   static async decode(req, res) {
     try {
 
       const message = await SteganographyService.handleDecoding(req);
-      
+
       return createResponse(res, 200, 'Message decoded successfully', message);
 
     } catch (err) {
