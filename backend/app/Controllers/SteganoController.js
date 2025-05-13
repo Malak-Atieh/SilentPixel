@@ -36,12 +36,15 @@ class SteganoController {
   static async analyzeImage(req, res) {
 
     try {
+
       const analysis = await SteganographyService.handleAnalysis(req);
+      
       return createResponse(res, 200, 'Image analysis complete', analysis);
+    
     } catch (err) {
       return createResponse(res, err.status || 500, err.message);
     }
-    
+
   }
 
 }
