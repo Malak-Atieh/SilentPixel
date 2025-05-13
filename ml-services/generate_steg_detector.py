@@ -22,3 +22,16 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 logging.basicConfig(level=logging.INFO, 
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
+
+# ---- LSB Steganography Implementation ----
+
+def to_binary(data):
+    """Convert data to binary format as a string of bits"""
+    if isinstance(data, str):
+        return ''.join([format(ord(i), '08b') for i in data])
+    elif isinstance(data, bytes) or isinstance(data, bytearray):
+        return ''.join([format(i, '08b') for i in data])
+    elif isinstance(data, int) or isinstance(data, np.uint8):
+        return format(data, '08b')
+    else:
+        raise TypeError("Type not supported.")
