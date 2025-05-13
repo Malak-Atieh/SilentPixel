@@ -19,7 +19,16 @@ class SteganographyService {
     }
 
     const imageBuffer = req.file.buffer;
-    
+    let processedImage ;
+    try {
+      processedImage = await SteganoUtils.embedMessage({
+        imageBuffer,
+        message,
+        password,
+        busyAreas: JSON.parse(busyAreas || '[]'),
+      });
+    }
+
   }
 }
 
