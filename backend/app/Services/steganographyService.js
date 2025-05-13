@@ -3,3 +3,11 @@ const QRService = require('./qrService');
 const WatermarkService = require('./WatermarkService');
 const MLService = require('./MLService');
 const Image = require('../Models/Image');
+const { ValidationError, AppError } = require('../Traits/errors');
+
+class SteganographyService {
+
+  
+}
+
+module.exports = SteganographyService;
