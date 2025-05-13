@@ -112,6 +112,7 @@ class SteganographyService {
 
     try{
       const analysis = await MLService.detectSteganography(imageBuffer);
+      let watermarkData = null;
 
     } catch (error){
       throw new AppError(`Image analysis failed: ${error.message}`, 
