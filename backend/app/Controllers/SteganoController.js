@@ -9,7 +9,7 @@ class SteganoController {
       const processedImage = await SteganographyService.handleEncoding(req);
       
       res.set('Content-Type', req.file.mimetype);
-      
+
       return createResponse(res, 200, 'Image encoded successfully', processedImage);
 
     } catch (err) {
@@ -19,6 +19,7 @@ class SteganoController {
 
   static async decode(req, res) {
     try {
+      
       const message = await SteganographyService.handleDecoding(req);
       return createResponse(res, 200, 'Message decoded successfully', message);
     } catch (err) {
