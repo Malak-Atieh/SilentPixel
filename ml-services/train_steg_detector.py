@@ -17,3 +17,13 @@ import random
 from sklearn.metrics import precision_recall_fscore_support, confusion_matrix
 import matplotlib.pyplot as plt
 import seaborn as sns
+
+
+# Import model from app.py
+from app import SteganographyCNN
+
+# Configure logging
+logging.basicConfig(level=logging.INFO, 
+                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
+
