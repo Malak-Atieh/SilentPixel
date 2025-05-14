@@ -1,5 +1,5 @@
 """
-Training script for the steganography detection CNN model.
+Optimized training script for the steganography detection CNN model.
 """
 import os
 import time
@@ -11,16 +11,13 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import Dataset, DataLoader
-from torchvision import transforms
+from torchvision import transforms, models
 from PIL import Image
 import random
 from sklearn.metrics import precision_recall_fscore_support, confusion_matrix
 import matplotlib.pyplot as plt
 import seaborn as sns
-
-
-# Import model from app.py
-from app import SteganographyCNN
+from torch.cuda.amp import GradScaler, autocast  # For mixed precision training
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, 
@@ -78,119 +75,129 @@ class SteganographyDataset(Dataset):
         
         return image, class_label
 
-# Training function
-def train_model(model, train_loader, val_loader, criterion, optimizer, 
-                scheduler, num_epochs, device):
-    """
-    Train the steganography detection model.
+# Build pretrained model with improved architecture
+def build_pretrained_model(num_classes=3, freeze_layers=6):
+    model = models.resnet18(weights='IMAGENET1K_V1')  # Updated syntax
     
-    Args:
-        model: Model to train
-        train_loader: DataLoader for training data
-        val_loader: DataLoader for validation data
-        criterion: Loss function
-        optimizer: Optimizer
-        scheduler: Learning rate scheduler
-        num_epochs: Number of epochs to train
-        device: Device to train on
+    # Freeze only early layers for better transfer learning
+    if freeze_layers > 0:
+        ct = 0
+        for child in model.children():
+            ct += 1
+            if ct <= freeze_layers:
+                for param in child.parameters():
+                    param.requires_grad = False
     
-    Returns:
-        Trained model, training history
-    """
+    # Replace final fully connected layer with improved classifier
+    model.fc = nn.Sequential(
+        nn.Dropout(0.5),  # Add dropout for regularization
+        nn.Linear(model.fc.in_features, num_classes)
+    )
+    return model
+
+# Training function with mixed precision and early stopping
+def train_model(model, train_loader, val_loader, criterion, optimizer, scheduler, num_epochs, device, patience=7, use_amp=True):
     model = model.to(device)
-    
-    # For tracking best model
+    scaler = GradScaler() if use_amp else None  # Only use scaler when AMP is enabled
     best_val_acc = 0.0
     best_model_wts = model.state_dict()
-    
-    # History
-    history = {
-        'train_loss': [],
-        'train_acc': [],
-        'val_loss': [],
-        'val_acc': []
-    }
-    
+    history = {'train_loss': [], 'train_acc': [], 'val_loss': [], 'val_acc': []}
+    early_stop_counter = 0
+
     for epoch in range(num_epochs):
-        logger.info(f'Epoch {epoch+1}/{num_epochs}')
-        logger.info('-' * 10)
-        
+        logger.info(f'Epoch {epoch+1}/{num_epochs}\n----------')
+        start_epoch_time = time.time()
+
         for phase in ['train', 'val']:
             if phase == 'train':
                 model.train()
-                dataloader = train_loader
             else:
                 model.eval()
-                dataloader = val_loader
-            
+                
+            dataloader = train_loader if phase == 'train' else val_loader
             running_loss = 0.0
             running_corrects = 0
-            
-            # Batch loop
+            batch_count = 0
+
             for inputs, labels in dataloader:
-                inputs = inputs.to(device)
-                labels = labels.to(device)
+                batch_count += 1
+                inputs, labels = inputs.to(device), labels.to(device)
                 
                 # Zero the parameter gradients
-                optimizer.zero_grad()
-                
-                # Forward pass
-                with torch.set_grad_enabled(phase == 'train'):
-                    outputs = model(inputs)
-                    _, preds = torch.max(outputs, 1)
-                    loss = criterion(outputs, labels)
-                    
-                    # Backward + optimize only if in training phase
-                    if phase == 'train':
+                optimizer.zero_grad(set_to_none=True)  # More efficient than zero_grad()
+
+                if phase == 'train':
+                    if use_amp:
+                        # Forward pass with mixed precision
+                        with autocast():
+                            outputs = model(inputs)
+                            loss = criterion(outputs, labels)
+                        
+                        # Scale gradients and optimize
+                        scaler.scale(loss).backward()
+                        scaler.step(optimizer)
+                        scaler.update()
+                    else:
+                        # Standard forward and backward pass without AMP
+                        outputs = model(inputs)
+                        loss = criterion(outputs, labels)
                         loss.backward()
                         optimizer.step()
-                
+                else:
+                    with torch.no_grad():
+                        outputs = model(inputs)
+                        loss = criterion(outputs, labels)
+
                 # Statistics
+                _, preds = torch.max(outputs, 1)
                 running_loss += loss.item() * inputs.size(0)
-                running_corrects += torch.sum(preds == labels)
-            
-            if phase == 'train' and scheduler is not None:
-                scheduler.step()
-            
+                running_corrects += torch.sum(preds == labels.data)
+                
+                # Print progress every 20 batches
+                if batch_count % 20 == 0:
+                    logger.info(f'  {phase} batch {batch_count}/{len(dataloader)}, loss: {loss.item():.4f}')
+
             epoch_loss = running_loss / len(dataloader.dataset)
             epoch_acc = running_corrects.double() / len(dataloader.dataset)
+            history[f'{phase}_loss'].append(epoch_loss)
+            history[f'{phase}_acc'].append(epoch_acc.item())
             
-            # Record history
-            if phase == 'train':
-                history['train_loss'].append(epoch_loss)
-                history['train_acc'].append(epoch_acc.item())
-            else:
-                history['val_loss'].append(epoch_loss)
-                history['val_acc'].append(epoch_acc.item())
-            
-            logger.info(f'{phase.capitalize()} Loss: {epoch_loss:.4f} Acc: {epoch_acc:.4f}')
-            
-            # Save the best model
-            if phase == 'val' and epoch_acc > best_val_acc:
-                best_val_acc = epoch_acc
-                best_model_wts = model.state_dict()
+            epoch_time = time.time() - start_epoch_time
+            logger.info(f'{phase.capitalize()} Loss: {epoch_loss:.4f} Acc: {epoch_acc:.4f} Time: {epoch_time:.2f}s')
+
+            # Save best validation model
+            if phase == 'val':
+                if epoch_acc > best_val_acc:
+                    logger.info(f'Validation accuracy improved from {best_val_acc:.4f} to {epoch_acc:.4f}')
+                    best_val_acc = epoch_acc
+                    best_model_wts = model.state_dict()
+                    early_stop_counter = 0
+                else:
+                    early_stop_counter += 1
+                    logger.info(f'Validation accuracy did not improve. Counter: {early_stop_counter}/{patience}')
                 
-        logger.info('')
-    
+                # Update learning rate based on validation metrics
+                if isinstance(scheduler, optim.lr_scheduler.ReduceLROnPlateau):
+                    scheduler.step(epoch_acc)
+                    current_lr = optimizer.param_groups[0]['lr']
+                    logger.info(f'Current learning rate: {current_lr:.2e}')
+
+        # Check early stopping
+        if early_stop_counter >= patience:
+            logger.info(f'Early stopping triggered after {epoch+1} epochs')
+            break
+            
+        # Step scheduler if not ReduceLROnPlateau
+        if scheduler and not isinstance(scheduler, optim.lr_scheduler.ReduceLROnPlateau):
+            scheduler.step()
+            
     # Load best model weights
     model.load_state_dict(best_model_wts)
     return model, history
 
-# Evaluate the model
+# Evaluate the function
 def evaluate_model(model, test_loader, device):
-    """
-    Evaluate the model on test data.
-    
-    Args:
-        model: Trained model
-        test_loader: DataLoader for test data
-        device: Device to evaluate on
-    
-    Returns:
-        Metrics dictionary, predictions, true labels
-    """
-    model = model.to(device)
-    model.eval()
+    model.to(device).eval()
     
     all_preds = []
     all_labels = []
@@ -204,205 +211,218 @@ def evaluate_model(model, test_loader, device):
             all_preds.extend(preds.cpu().numpy())
             all_labels.extend(labels.numpy())
     
-    # Convert to numpy arrays
-    all_preds = np.array(all_preds)
-    all_labels = np.array(all_labels)
-    
-    # Calculate metrics
+    all_preds, all_labels = np.array(all_preds), np.array(all_labels)
     accuracy = np.mean(all_preds == all_labels)
     precision, recall, f1, _ = precision_recall_fscore_support(all_labels, all_preds, average='weighted')
-    
-    # Calculate confusion matrix
     cm = confusion_matrix(all_labels, all_preds)
-    
-    metrics = {
+
+    return {
         'accuracy': accuracy,
         'precision': precision,
         'recall': recall,
         'f1': f1,
         'confusion_matrix': cm
-    }
-    
-    return metrics, all_preds, all_labels
+    }, all_preds, all_labels
 
-
-# Plot training history
+# Plot functions
 def plot_history(history, save_path=None):
-    """Plot training and validation metrics."""
     plt.figure(figsize=(12, 5))
-    
-    # Plot accuracy
     plt.subplot(1, 2, 1)
     plt.plot(history['train_acc'], label='Train Accuracy')
     plt.plot(history['val_acc'], label='Validation Accuracy')
-    plt.xlabel('Epoch')
-    plt.ylabel('Accuracy')
-    plt.title('Training and Validation Accuracy')
-    plt.legend()
-    
-    # Plot loss
+    plt.xlabel('Epoch'); plt.ylabel('Accuracy'); plt.title('Accuracy'); plt.legend()
     plt.subplot(1, 2, 2)
     plt.plot(history['train_loss'], label='Train Loss')
     plt.plot(history['val_loss'], label='Validation Loss')
-    plt.xlabel('Epoch')
-    plt.ylabel('Loss')
-    plt.title('Training and Validation Loss')
-    plt.legend()
-    
+    plt.xlabel('Epoch'); plt.ylabel('Loss'); plt.title('Loss'); plt.legend()
     plt.tight_layout()
-    
     if save_path:
         plt.savefig(save_path)
-    
     plt.show()
 
 # Plot confusion matrix
 def plot_confusion_matrix(cm, classes, save_path=None):
-    """Plot confusion matrix."""
-    plt.figure(figsize=(10, 8))
-    
-    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues',
-                xticklabels=classes, yticklabels=classes)
-    
+    plt.figure(figsize=(8, 6))
+    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=classes, yticklabels=classes)
     plt.title('Confusion Matrix')
     plt.ylabel('True Label')
     plt.xlabel('Predicted Label')
-    
     if save_path:
         plt.savefig(save_path)
-    
     plt.show()
-
 
 # Main function
 def main():
-    parser = argparse.ArgumentParser(description='Train steganography detection model')
-    parser.add_argument('--data_dir', type=str, required=True,
-                        help='Path to data directory with clean, lsb, dct subdirectories')
-    parser.add_argument('--output_dir', type=str, default='./models',
-                        help='Directory to save model and results')
-    parser.add_argument('--batch_size', type=int, default=32,
-                        help='Batch size for training')
-    parser.add_argument('--num_epochs', type=int, default=20,
-                        help='Number of epochs to train')
-    parser.add_argument('--learning_rate', type=float, default=0.001,
-                        help='Initial learning rate')
-    parser.add_argument('--weight_decay', type=float, default=1e-4,
-                        help='Weight decay for regularization')
-    parser.add_argument('--train_val_test_split', type=float, nargs=3, default=[0.7, 0.15, 0.15],
-                        help='Proportions for train/val/test split')
-    parser.add_argument('--random_seed', type=int, default=42,
-                        help='Random seed for reproducibility')
-    parser.add_argument('--no_cuda', action='store_true',
-                        help='Disable CUDA even if available')
+    parser = argparse.ArgumentParser()
+    # Parse arguments
+    parser.add_argument('--data_dir', type=str, required=True)
+    parser.add_argument('--output_dir', type=str, default='./models')
+    parser.add_argument('--batch_size', type=int, default=32)
+    parser.add_argument('--num_epochs', type=int, default=20)
+    parser.add_argument('--learning_rate', type=float, default=1e-3)
+    parser.add_argument('--weight_decay', type=float, default=1e-4)
+    parser.add_argument('--train_val_test_split', type=float, nargs=3, default=[0.7, 0.15, 0.15])
+    parser.add_argument('--random_seed', type=int, default=42)
+    parser.add_argument('--no_cuda', action='store_true')
+    parser.add_argument('--img_size', type=int, default=224, help='Image size for training')
+    parser.add_argument('--num_workers', type=int, default=4, help='Number of data loading workers')
+    parser.add_argument('--freeze_layers', type=int, default=6, help='Number of initial layers to freeze')
+    parser.add_argument('--patience', type=int, default=7, help='Early stopping patience')
+    parser.add_argument('--quick_mode', action='store_true', help='Enable quick testing mode with smaller dataset')
     args = parser.parse_args()
-    
-    # Set random seed
+
     set_seed(args.random_seed)
-    
-    # Create output directory
     os.makedirs(args.output_dir, exist_ok=True)
     
-    # Set device
-    device = torch.device('cuda' if torch.cuda.is_available() and not args.no_cuda else 'cpu')
-    logger.info(f'Using device: {device}')
-    
-    # Data transforms
+    # Set device with error handling
+    if not args.no_cuda and torch.cuda.is_available():
+        device = torch.device('cuda')
+        logger.info(f'Using GPU: {torch.cuda.get_device_name(0)}')
+        use_amp = True  # Use Automatic Mixed Precision for CUDA
+    else:
+        device = torch.device('cpu')
+        logger.info('CUDA not available. Using CPU - disabling mixed precision')
+        use_amp = False  # Disable Automatic Mixed Precision for CPU
+
+    # Data transformations - smaller image size for faster training
     data_transforms = transforms.Compose([
-        transforms.Resize((256, 256)),
+        transforms.Resize((args.img_size, args.img_size)),
         transforms.RandomHorizontalFlip(),
         transforms.RandomRotation(10),
+        transforms.ColorJitter(brightness=0.1, contrast=0.1),  # Add color augmentation
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     ])
-    
+
     test_transforms = transforms.Compose([
-        transforms.Resize((256, 256)),
+        transforms.Resize((args.img_size, args.img_size)),
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     ])
-    
-    # Create dataset
+
+    # Load dataset
+    logger.info(f'Loading dataset from {args.data_dir}')
     full_dataset = SteganographyDataset(args.data_dir, transform=data_transforms)
-    
-    # Split dataset
     dataset_size = len(full_dataset)
+    
+    # Option for quick testing with smaller dataset
+    if args.quick_mode:
+        reduced_size = min(500, dataset_size)  # Limit to 500 samples for quick testing
+        logger.info(f'Quick mode enabled: using {reduced_size} samples instead of {dataset_size}')
+        indices = torch.randperm(dataset_size)[:reduced_size]
+        full_dataset = torch.utils.data.Subset(full_dataset, indices)
+        dataset_size = reduced_size
+    
     train_size = int(dataset_size * args.train_val_test_split[0])
     val_size = int(dataset_size * args.train_val_test_split[1])
     test_size = dataset_size - train_size - val_size
     
+    # Split dataset
     train_dataset, val_dataset, test_dataset = torch.utils.data.random_split(
         full_dataset, [train_size, val_size, test_size]
     )
     
-    # Override transforms for test dataset
+    # Apply different transforms to test dataset
     test_dataset.dataset.transform = test_transforms
+
+    # Create data loaders with appropriate settings for CPU/GPU
+    # Adjust num_workers to 0 for Windows if encountering issues
+    if os.name == 'nt' and args.num_workers > 0:  # Windows platform
+        logger.info(f'Windows detected, consider setting --num_workers=0 if you encounter issues')
     
-    # Create data loaders
     train_loader = DataLoader(
-        train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=0
+        train_dataset, 
+        batch_size=args.batch_size, 
+        shuffle=True, 
+        num_workers=args.num_workers,
+        pin_memory=device.type=='cuda'  # Only use pinned memory with CUDA
     )
-    
     val_loader = DataLoader(
-        val_dataset, batch_size=args.batch_size, shuffle=False, num_workers=0
+        val_dataset, 
+        batch_size=args.batch_size, 
+        num_workers=args.num_workers,
+        pin_memory=device.type=='cuda'
     )
-    
     test_loader = DataLoader(
-        test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=0
+        test_dataset, 
+        batch_size=args.batch_size, 
+        num_workers=args.num_workers,
+        pin_memory=device.type=='cuda'
     )
+
+    # Initialize model with selective layer freezing
+    logger.info(f'Initializing model with {args.freeze_layers} frozen layers')
+    model = build_pretrained_model(num_classes=3, freeze_layers=args.freeze_layers)
     
-    # Initialize model
-    model = SteganographyCNN()
-    
-    # Loss function and optimizer
+    # Loss function with class weights if needed
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(
-        model.parameters(), lr=args.learning_rate, weight_decay=args.weight_decay
+    
+    # Optimizer with parameter filtering
+    optimizer = optim.AdamW(
+        filter(lambda p: p.requires_grad, model.parameters()), 
+        lr=args.learning_rate, 
+        weight_decay=args.weight_decay
     )
     
-    # Learning rate scheduler
-    scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=7, gamma=0.1)
-    
-    # Train model
-    logger.info('Starting training...')
+    # Learning rate scheduler - ReduceLROnPlateau
+    scheduler = optim.lr_scheduler.ReduceLROnPlateau(
+        optimizer, 
+        mode='max',  # Use validation accuracy
+        factor=0.1,  # Reduce LR by factor of 10
+        patience=3,  # Wait 3 epochs before reducing LR
+        verbose=True
+    )
+
+    # Start training
+    logger.info('Starting training with optimized configuration...')
     start_time = time.time()
-    
     model, history = train_model(
-        model, train_loader, val_loader, criterion, optimizer, 
-        scheduler, args.num_epochs, device
+        model, 
+        train_loader, 
+        val_loader, 
+        criterion, 
+        optimizer, 
+        scheduler, 
+        args.num_epochs, 
+        device,
+        patience=args.patience,
+        use_amp=use_amp
     )
-    
-    total_time = time.time() - start_time
-    logger.info(f'Training complete in {total_time / 60:.2f} minutes')
-    
-    # Save the trained model
+    logger.info(f'Training complete in {(time.time() - start_time)/60:.2f} minutes')
+
+    # Save model
     model_path = os.path.join(args.output_dir, 'steg_model.pth')
-    torch.save(model.state_dict(), model_path)
+    torch.save({
+        'model_state_dict': model.state_dict(),
+        'optimizer_state_dict': optimizer.state_dict(),
+        'epoch': args.num_epochs,
+        'hyperparams': vars(args)
+    }, model_path)
     logger.info(f'Model saved to {model_path}')
-    
-    # Evaluate model on test set
+
+    # Evaluate model
     logger.info('Evaluating model on test set...')
     metrics, predictions, true_labels = evaluate_model(model, test_loader, device)
-    
-    # Print metrics
     logger.info(f"Test Accuracy: {metrics['accuracy']:.4f}")
     logger.info(f"Test Precision: {metrics['precision']:.4f}")
     logger.info(f"Test Recall: {metrics['recall']:.4f}")
     logger.info(f"Test F1 Score: {metrics['f1']:.4f}")
-    
-    # Plot and save training history
-    history_path = os.path.join(args.output_dir, 'training_history.png')
-    plot_history(history, save_path=history_path)
-    
-    # Plot and save confusion matrix
-    cm_path = os.path.join(args.output_dir, 'confusion_matrix.png')
+
+    # Save evaluation metrics
+    metrics_file = os.path.join(args.output_dir, 'metrics.txt')
+    with open(metrics_file, 'w') as f:
+        for k, v in metrics.items():
+            if k != 'confusion_matrix':
+                f.write(f"{k}: {v}\n")
+
+    # Plot and save results
+    plot_history(history, os.path.join(args.output_dir, 'training_history.png'))
     plot_confusion_matrix(
         metrics['confusion_matrix'], 
-        classes=['Clean', 'LSB Steg', 'DCT Steg'],
-        save_path=cm_path
+        classes=['Clean', 'LSB', 'DCT'], 
+        save_path=os.path.join(args.output_dir, 'confusion_matrix.png')
     )
-    
     logger.info('Evaluation complete!')
-
+    
 if __name__ == '__main__':
     main()
