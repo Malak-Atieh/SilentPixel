@@ -7,7 +7,7 @@ class MLService {
     this.defaultTimeout = 30000;
   }
 
-   async detectSteganography(imageBuffer) {
+   async detectSteganography(imageBuffer, authToken) {
     try {
       const formData = new FormData();
       formData.append('image', imageBuffer, { 
@@ -15,11 +15,16 @@ class MLService {
         contentType: 'image/png' 
       });
       
+      const headers = {
+      ...formData.getHeaders(),
+      'Authorization': authToken || process.env.ML_API_KEY 
+      };
+
       const response = await axios.post(
         `${this.apiUrl}/analyze`, 
         formData, 
         { 
-          headers: { ...formData.getHeaders() },
+          headers: headers,
           timeout: this.defaultTimeout
         }
       );
@@ -37,7 +42,7 @@ class MLService {
     }
   }
 
-    async detectBusyAreas(imageBuffer, sensitivity = 'medium') {
+    async detectBusyAreas(imageBuffer, authToken, sensitivity = 'medium') {
     try {
       const formData = new FormData();
       formData.append('image', imageBuffer, { 
@@ -46,11 +51,16 @@ class MLService {
       });
       formData.append('sensitivity', sensitivity);
       
+      const headers = {
+      ...formData.getHeaders(),
+      'Authorization': authToken || process.env.ML_API_KEY // Use passed token or fallback to API key
+      };
+
       const response = await axios.post(
         `${this.apiUrl}/detect-busy-areas`, 
         formData, 
         { 
-          headers: { ...formData.getHeaders() },
+          headers: headers,
           timeout: this.defaultTimeout
         }
       );

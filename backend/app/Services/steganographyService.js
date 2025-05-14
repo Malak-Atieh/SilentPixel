@@ -109,9 +109,10 @@ class SteganographyService {
     }
 
     const imageBuffer = req.file.buffer;
+    const authToken = req.header('Authorization');
 
     try{
-      const analysis = await MLService.detectSteganography(imageBuffer);
+      const analysis = await MLService.detectSteganography(imageBuffer, authToken);
       let watermarkData = null;
       try {
         watermarkData = await WatermarkService.extractWatermark(imageBuffer);
