@@ -4,3 +4,5 @@ steganography_dataset/
 *.pt
 *.h5
 *.pth
+*/models/
+*.onnx
