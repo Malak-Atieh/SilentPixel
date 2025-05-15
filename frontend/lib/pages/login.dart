@@ -1,10 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:frontend/pages/sign_up.dart';
+import 'package:frontend/pages/home.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class Login extends StatelessWidget {
+class Login extends StatefulWidget {
   const Login({super.key});
 
+  @override
+  State<Login> createState() => _LoginState();
+}
+class _LoginState extends State<Login>  {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  bool _rememberMe = false;
+  bool get _canLogin =>
+          _emailController.text.isNotEmpty &&
+          _passwordController.text.length >= 8;
+  @override
+  void initState() {
+    super.initState();
+    _loadRememberMe();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,59 +72,31 @@ class Login extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 40),
-
-                  // Email field
-                  TextField(
-                    style: const TextStyle(
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.w400,
-                      color: Color(0xFFB4B4B4),
-                    ),
-                    decoration: InputDecoration(
-                      hintText: 'JohnDoe@example.com',
-                      hintStyle: const TextStyle(
-                        color: Color(0xFFB4B4B4)
-                        ),
-                      labelText: 'Email',
-                      labelStyle: const TextStyle(
-                        color: Color(0xFFB4B4B4)
-                        ),
-                      filled: true,
-                      fillColor: Color(0xFFF4F4F4),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
+                  Text(
+                      'Email',
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontWeight: FontWeight.w400,
+                        color: Color(0xFFF4F4F4),
+                        fontSize: 18,
+                      )
                   ),
-
+                  SizedBox(height: 10),
+                  _buildTextField(_emailController, 'Email', hint: 'John@example.com'),
                   const SizedBox(height: 20),
-
-                  // Password field
-                  TextField(
-                    obscureText: true,
-                    style: const TextStyle(
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.w400,
-                      color:  Color(0xFFB4B4B4),
-                    ),
-                    decoration: InputDecoration(
-                      hintText: 'enter 8 digit password',
-                      hintStyle: const TextStyle(
-                        color: Color(0xFFB4B4B4)
-                        ),
-                      labelText: 'Password',
-                      labelStyle: const TextStyle(
-                        color: Color(0xFFB4B4B4)
-                        ),
-                      filled: true,
-                      fillColor: Color(0xFFF4F4F4),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
+                  Text(
+                      'Password',
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontWeight: FontWeight.w400,
+                        color: Color(0xFFF4F4F4),
+                        fontSize: 18,
+                      )
                   ),
-
-                  const SizedBox(height: 10),
+                  SizedBox(height: 10),
+                  _buildTextField(_passwordController, 'Password',
+                      hint: 'Enter 8 digit password', obscure: true),
+                  const SizedBox(height: 20),
 
                   // Remember and forgot password
                   Row(
@@ -113,7 +104,14 @@ class Login extends StatelessWidget {
                     children: [
                       Row(
                         children: [
-                          Switch(value: false, onChanged: (_) {}),
+                          Switch(
+                              value: _rememberMe,
+                              onChanged: (val) {
+                                setState(() {
+                                  _rememberMe = val;
+                                });
+                              }
+                          ),
                           const Text('Remember me', style: 
                             TextStyle(
                               color: Color(0xFFF4F4F4)
@@ -137,7 +135,7 @@ class Login extends StatelessWidget {
 
                   // Login button
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: _canLogin ? () {_submitLogin();} : null,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Color(0xFF0CCE6B),
                       minimumSize: const Size(double.infinity, 50),
@@ -249,6 +247,120 @@ class Login extends StatelessWidget {
         color: Color(0xFFF4F4F4), 
         size: 20
       ),
+    );
+  }
+
+  Future<void> _loadRememberMe() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _rememberMe = prefs.getBool('rememberMe') ?? false;
+      if (_rememberMe) {
+        _emailController.text = prefs.getString('savedEmail') ?? '';
+        _passwordController.text = prefs.getString('savedPassword') ?? '';
+      }
+    });
+  }
+
+  Future<void> _saveRememberMe() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (_rememberMe) {
+      await prefs.setString('savedEmail', _emailController.text);
+      await prefs.setString('savedPassword', _passwordController.text);
+    } else {
+      await prefs.remove('savedEmail');
+      await prefs.remove('savedPassword');
+    }
+    await prefs.setBool('rememberMe', _rememberMe);
+  }
+
+  Future<void> _submitLogin() async {
+    final url = Uri.parse('http://10.0.2.2:5000/api/login'); // Update to match your backend
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'email': _emailController.text,
+          'password': _passwordController.text,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final token = data['data']['token'];
+        final user = data['data']['user'];
+
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('token', token);
+        await prefs.setString('user', json.encode(user));
+
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Login successful!')),
+        );
+
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const Home())
+        );
+
+      } else {
+        final data = json.decode(response.body);
+        if (!mounted) return;
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Login Failed'),
+            content: Text(data['message'] ?? 'Unknown error'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Network Error'),
+          content: Text('Could not connect to server: $e'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
+  Widget _buildTextField(TextEditingController controller, String label,
+      {required String hint, bool obscure = false}) {
+    return TextField(
+
+      controller: controller,
+      obscureText: obscure,
+      style: TextStyle(
+        color: Color(0xFF09192C),
+        fontFamily: 'Inter',
+        fontWeight: FontWeight.w400,
+      ),
+      decoration: InputDecoration(
+        hintText: hint,
+        hintStyle: TextStyle(
+          color: Color(0xFFB4B4B4),
+        ),
+        filled: true,
+        fillColor: Color(0xFFF4F4F4),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(4)),
+      ),
+      onChanged: (_) => setState(() {}),
     );
   }
 }

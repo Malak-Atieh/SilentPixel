@@ -8,7 +8,7 @@ class SteganoController {
   static async encode(req, res) {
 
     try {
-const user = req.user;
+      const user = req.user;
       const processedImage = await SteganographyService.handleEncoding(req);
       const fileName = `${user.userId}_${Date.now()}.png`;
       const filePath = path.join(__dirname, '../../storage/uploads', fileName);
@@ -34,9 +34,9 @@ const user = req.user;
 
     try {
 
-      const message = await SteganographyService.handleDecoding(req);
+      const result = await SteganographyService.handleDecoding(req);
 
-      return createResponse(res, 200, 'Message decoded successfully', message);
+      return createResponse(res, 200, 'Message decoded successfully', result);
 
     } catch (err) {
 

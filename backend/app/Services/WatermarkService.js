@@ -1,5 +1,6 @@
 const {createResponse} = require('../Traits/response');
 const crypto = require('crypto');
+const { AppError } = require('../Traits/errors');
 const ImageProcessor = require('../utils/imageProcessor');
 const BinaryConverter = require('../utils/steganoFunctions/binaryConverter');
 class WatermarkService {
@@ -18,34 +19,74 @@ class WatermarkService {
             const binaryWatermark = BinaryConverter.textToBinary(watermarkString.substring(0, 128));
 
             //determine watermark position
-            const position = this._getWatermarkPosition(width, height, binaryWatermark.length);
+            const position = this._getWatermarkPositions(width, height, binaryWatermark.length);
+
+            // Track pixel coordinates used
+            let usedCoords = [];
 
             //embed watermark using phase coding technique 
             for (let i=0; i< binaryWatermark.length; i++){
                 const pos = position[i];
                 const pixelIndex = pos * 4;
 
+                const y = Math.floor(pos / width);
+                const x = pos % width;
+                usedCoords.push({ x, y });
+
                 //modifying red & grn channels in opp dir to keep overall color
                 const bit = parseInt(binaryWatermark[i]);
                 if(bit==1){
                     //increase red a bit, dec grn same
-                    pixels[pixelIndex]= Math.min(255, pixels[pixelIndex] + 1);    
-                    pixels[pixelIndex + 1] = Math.max(0, pixels[pixelIndex + 1] - 1);
+                    data[pixelIndex]= Math.min(255, data[pixelIndex] + 1);    
+                    data[pixelIndex + 1] = Math.max(0, data[pixelIndex + 1] - 1);
                 } else {
                     //dec red a bit, increase grn same
-                    pixels[pixelIndex] = Math.max(0, pixels[pixelIndex] - 1);
-                    pixels[pixelIndex + 1] = Math.min(255, pixels[pixelIndex + 1] + 1);
+                    data[pixelIndex] = Math.max(0, data[pixelIndex] - 1);
+                    data[pixelIndex + 1] = Math.min(255, data[pixelIndex + 1] + 1);
                 }
             }
+
+            const corners = [
+              { x: 0, y: 0 },
+              { x: width - 3, y: 0 },
+              { x: 0, y: height - 3 },
+              { x: width - 3, y: height - 3 }
+            ];
+            corners.forEach(corner => {
+              for (let dy = 0; dy < 3; dy++) {
+                for (let dx = 0; dx < 3; dx++) {
+                  usedCoords.push({ x: corner.x + dx, y: corner.y + dy });
+                }
+              }
+            });
+
+            // Compute bounding box of all used pixels
+            const xs = usedCoords.map(p => p.x);
+            const ys = usedCoords.map(p => p.y);
+            const minX = Math.max(0, Math.min(...xs));
+            const minY = Math.max(0, Math.min(...ys));
+            const maxX = Math.min(width, Math.max(...xs));
+            const maxY = Math.min(height, Math.max(...ys));
+
+            const wmRegion = {
+              x: minX,
+              y: minY,
+              width: maxX - minX + 1,
+              height: maxY - minY + 1
+            };
+
             //store the watermark hash in the alpha channel corners
             this._storeWatermarkHash(data, watermarkHash, width, height);
             
             const updatedImage = ImageProcessor.updateImage(imageData);
       
             const modifiedBuffer = await ImageProcessor.imageToBuffer({ image: updatedImage });
-            return createResponse(200, 'Watermark added successfully', modifiedBuffer);
+            return {
+                data: modifiedBuffer,
+                region: wmRegion
+              };
         } catch (error) {
-            createResponse(500, 'Error adding watermark', error);
+          throw new Error('Error adding watermark ' + error.message);
         }
     }
 
@@ -93,13 +134,13 @@ class WatermarkService {
 
         try {
         const watermarkData = JSON.parse(watermarkString);
-        return createResponse(200, 'Watermark extracted successfully', watermarkData);
+        return watermarkData;
         } catch (e) {
-        return createResponse(500, 'Error parsing watermark data', e);
+          throw new Error('Error parsing watermark data ' + e.message);
         }
 
     } catch (error) {
-        return createResponse(500, 'Error extracting watermark', error);
+      throw new Error('Error extracting watermark: ' + error.message);
     }
     }
   static _getWatermarkPositions(width, height, length) {

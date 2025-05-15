@@ -6,7 +6,7 @@ const ImageProcessor = require('../imageProcessor');
 class SteganoCore {
   static SIGNATURE = "11010010";
 
-  static async embed(imageBuffer, message, password, busyAreas = []) {
+  static async embed(imageBuffer, message, password, busyAreas = [], protectedZones = []) {
       if (!message || message.length === 0) {
         throw new Error('Message cannot be empty');
       }
@@ -14,7 +14,7 @@ class SteganoCore {
       if (password && typeof password !== 'string') {
         throw new Error('Password must be a string');
       }
-    const { image, metadata } = await ImageProcessor.loadImage(imageBuffer);
+    const { image } = await ImageProcessor.loadImage(imageBuffer);
       
     const imageData = await ImageProcessor.getImageData(image);
       
@@ -29,63 +29,72 @@ class SteganoCore {
     const pixelsNeeded = Math.ceil(dataToHide.length / 3);
     const totalPixels = imageData.width * imageData.height;
     
-    // Use sequential pixel embedding
     const pixelIndices = Array.from({length: Math.min(pixelsNeeded, totalPixels)}, (_, i) => i);
-      // Validate we have enough capacity
       if (pixelIndices.length < pixelsNeeded) {
         throw new Error(`Insufficient capacity: need ${dataToHide.length} pixels, but only ${pixelIndices.length} available.`);
       }
 
-    this._embedData(imageData.data, pixelIndices, dataToHide);
+    this._embedData(
+      imageData.data, 
+      pixelIndices, 
+      dataToHide,
+      imageData.width,
+      protectedZones
+    );
    
-          // Update the image with modified pixel data
       const updatedImage = ImageProcessor.updateImage(imageData);
       
     return await ImageProcessor.imageToBuffer({ image: updatedImage });
   }
 
   static async extract(imageBuffer, password) {
-       // Load the image using Sharp
+     
       const { image } = await ImageProcessor.loadImage(imageBuffer);
       
-      // Get raw pixel data
       const imageData = await ImageProcessor.getImageData(image);
       const signature = this._extractBitsAt(imageData.data, 0, 8);
 
          if (signature !== this.SIGNATURE) {
       throw new Error('Invalid signature. This image does not appear to contain hidden data.');
     }
-       // Extract message length (next 32 bits)
+    
     const binaryLength = this._extractBitsAt(imageData.data, 8, 32);
     const messageLength = parseInt(binaryLength, 2);
-    
+
     const maxPossibleLength = imageData.width * imageData.height * 3 - this.HEADER_SIZE;
     if (messageLength <= 0 || messageLength > maxPossibleLength) {
       throw new Error('Invalid message length detected.');
     }
-    // Extract is_encrypted flag (next 1 bit)
     const isEncrypted = this._extractBitsAt(imageData.data, 40, 1) === "1";
-    
-    // Extract the actual message bits (starting at bit 41)
+  
+
     const binaryMsg = this._extractBitsAt(imageData.data, 41, messageLength);
     const extractedText = BinaryConverter.binaryToText(binaryMsg);
     
-    // Decrypt if necessary
     if (isEncrypted) {
       if (!password) {
         throw new Error('This message is encrypted and requires a password.');
-      }
-      return EncryptionService.decrypt(extractedText, password);
+      }    
+
+        try {
+          return EncryptionService.decrypt(extractedText, password);
+        } catch (decryptError) {
+          throw new Error(`Decryption failed: ${decryptError.message}`);
+        }
     }
-    
-    return extractedText;
   }
 
-  static _embedData(pixels, pixelIndices, binaryData) {
+  static _embedData(pixels, pixelIndices, binaryData, width, protectedZones = []) {
     let bitIndex = 0;
     const channels = [0, 1, 2]; // R, G, B channels (fixed order)
     
     for (let i = 0; i < pixelIndices.length && bitIndex < binaryData.length; i++) {
+      const pixelNum = pixelIndices[i];
+      const x = pixelNum % width;
+      const y = Math.floor(pixelNum / width);
+      if (this._isInProtectedZone(x, y, protectedZones)) {
+        continue; // Skip pixels in protected zones
+      }
       const pixelPos = pixelIndices[i] * 4; // RGBA = 4 bytes per pixel
       
       // Embed up to 3 bits in each pixel (one per RGB channel)
@@ -98,6 +107,9 @@ class SteganoCore {
         bitIndex++;
       }
     }
+      if (bitIndex < binaryData.length) {
+        throw new Error('Not enough space to embed message outside protected zones.');
+      }
   }
 
   static _extractBitsAt(pixels, startBitIndex, numBits) {
@@ -124,6 +136,12 @@ class SteganoCore {
     
     return bits;
   }
+  static _isInProtectedZone(x, y, zones) {
+  return zones.some(zone => (
+    x >= zone.x && x < zone.x + zone.width &&
+    y >= zone.y && y < zone.y + zone.height
+  ));
+}
 }
 
 module.exports = SteganoCore;
