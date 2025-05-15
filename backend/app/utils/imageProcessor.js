@@ -20,6 +20,7 @@ class ImageProcessor {
         try {
             const { data, info } = await image
                 .raw()
+                .ensureAlpha()
                 .toBuffer({ resolveWithObject: true });
             
             return {

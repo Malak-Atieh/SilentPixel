@@ -6,7 +6,7 @@ const cors = require('cors');
 const morgan = require('morgan');
 const helmet = require('helmet');
 const errorHandler = require('./app/Middlewares/errorHandler');
-
+const routes = require('./routes/api');
 // Initialize app
 const app = express();
 
@@ -21,8 +21,10 @@ app.use(express.urlencoded({ extended: true }));
 connectDB();
 
 // Routes
-app.use('/api', require('./routes/api'));
+app.use('/api', routes);
 
+
+app.use('/', routes);
 // 404 handler
 app.use((req, res, next) => {
   const error = new Error('Route not found');

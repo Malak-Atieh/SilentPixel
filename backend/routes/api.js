@@ -37,6 +37,7 @@ router.post(
 router.post(
   '/decode', 
   auth, 
+  upload.single('image'),
   validateImageUpload,
   SteganoController.decode
 );

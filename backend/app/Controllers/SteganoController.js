@@ -1,3 +1,4 @@
+require('dotenv').config();
 const SteganographyService = require('../Services/steganographyService');
 const { createResponse } = require('../Traits/response');
 const fs = require('fs');
@@ -9,15 +10,17 @@ class SteganoController {
     try {
 const user = req.user;
       const processedImage = await SteganographyService.handleEncoding(req);
-      const base64Image = `data:${req.file.mimetype};base64,${processedImage.toString('base64')}`;
       const fileName = `${user.userId}_${Date.now()}.png`;
       const filePath = path.join(__dirname, '../../storage/uploads', fileName);
-      fs.writeFileSync(filePath, processedImage);
+      fs.writeFileSync(filePath, processedImage); 
+      const base64Image = `data:${req.file.mimetype};base64,${processedImage.toString('base64')}`;
 
       const downloadUrl = `${process.env.BASE_URL}/download/${fileName}`;
-      res.set('Content-Type', req.file.mimetype);
 
-      return res.status(200).send(processedImage);
+    return createResponse(res, 200, 'Image encoded successfully', {
+      base64: base64Image,
+      downloadUrl
+    });
 
     } catch (err) {
 

@@ -1,52 +1,69 @@
+const crypto = require('crypto');
 class PixelSelector {
 
-  static getIndices(width, height, busyAreas = [], dataLength) {
+  static getIndices(width, height, busyAreas = [], dataLength, password = null) {
+        if (dataLength <= 0) return [];
+    
     // If ML has identified busy areas, i prioritize them
     if (busyAreas?.length > 0) {
-      return this._getOptimizedIndices(width, height, busyAreas, dataLength);
+      const optimized = this._getOptimizedIndices(width, height, busyAreas, dataLength);
+      if (optimized.length >= dataLength) return optimized;    
     }
     
     // else basic pixel selection with some randomization
-    return this._getRandomizedIndices(width, height, dataLength);
+    return password 
+      ? this._getPasswordBasedIndices(width, height, dataLength, password)
+      : this._getRandomizedIndices(width, height, dataLength);
   }
 
   static _getOptimizedIndices(width, height, busyAreas, dataLength) {
     // Get pixels from busy areas and sort them by "busyness" score if available
     const busyPixels = [];
     
-    // Process each busy area, weighting by the area's busyness score
-    for (const area of busyAreas) {
-      const areaScore = area.score || 1.0; // Default score if not provided
+    busyAreas.forEach(area => {
+      const areaScore = area.score || 1.0;
+      const xEnd = Math.min(area.x + area.width, width);
+      const yEnd = Math.min(area.y + area.height, height);
       
-      for (let y = area.y; y < area.y + area.height; y++) {
-        for (let x = area.x; x < area.x + area.width; x++) {
-          if (x < width && y < height) {
-            busyPixels.push({
-              index: y * width + x,
-              score: areaScore
-            });
-          }
+      for (let y = Math.max(0, area.y); y < yEnd; y++) {
+        for (let x = Math.max(0, area.x); x < xEnd; x++) {
+          busyPixels.push({
+            index: y * width + x,
+            score: areaScore * (1 + Math.random() * 0.2) // Add slight randomness
+          });
         }
       }
+    });
+    
+    return busyPixels
+      .sort((a, b) => b.score - a.score)
+      .slice(0, dataLength)
+      .map(p => p.index);
+  }
+
+    static _getPasswordBasedIndices(width, height, dataLength, password) {
+    const totalPixels = width * height;
+    const indices = [];
+    const hash = crypto.createHash('sha256').update(password).digest();
+    
+    for (let i = 0; i < dataLength; i++) {
+      const hashPart = hash.readUInt32BE(i * 4 % hash.length);
+      const index = (hashPart + i) % totalPixels;
+      indices.push(index);
     }
     
-    // Sort by score (higher score = better hiding spot)
-    busyPixels.sort((a, b) => b.score - a.score);
-    
-    // Take the best spots first
-    const selectedIndices = busyPixels.slice(0, dataLength).map(pixel => pixel.index);
-    
-    // If we need more pixels than available in busy areas
-    if (selectedIndices.length < dataLength) {
-      this._fillRemainingIndices(selectedIndices, width, height, busyAreas, dataLength);
-    } 
-    return selectedIndices;
+    return indices;
   }
 
   static _getRandomizedIndices(width, height, dataLength) {
-    // Create array of all pixel indices and shuffle
-    const allIndices = Array.from({length: width * height}, (_, i) => i);
-    return this._shuffleArray(allIndices).slice(0, dataLength);
+    const indices = new Set();
+    const totalPixels = width * height;
+    
+    while (indices.size < Math.min(dataLength, totalPixels)) {
+      indices.add(Math.floor(Math.random() * totalPixels));
+    }
+    
+    return Array.from(indices);
   }
   
     static _fillRemainingIndices(selectedIndices, width, height, busyAreas, dataLength) {

@@ -76,8 +76,8 @@ class SteganographyDataset(Dataset):
         return image, class_label
 
 # Build pretrained model with improved architecture
-def build_pretrained_model(num_classes=3, freeze_layers=6):
-    model = models.resnet18(weights='IMAGENET1K_V1')  # Updated syntax
+def build_pretrained_model(num_classes=3, freeze_layers=7):
+    model = models.resnet18(weights='IMAGENET1K_V1') 
     
     # Freeze only early layers for better transfer learning
     if freeze_layers > 0:
@@ -90,8 +90,11 @@ def build_pretrained_model(num_classes=3, freeze_layers=6):
     
     # Replace final fully connected layer with improved classifier
     model.fc = nn.Sequential(
-        nn.Dropout(0.5),  # Add dropout for regularization
-        nn.Linear(model.fc.in_features, num_classes)
+        nn.Dropout(0.7),  # Increase dropout
+        nn.Linear(model.fc.in_features, 256),
+        nn.ReLU(),
+        nn.Dropout(0.5),
+        nn.Linear(256, num_classes)
     )
     return model
 
@@ -288,12 +291,15 @@ def main():
     # Data transformations - smaller image size for faster training
     data_transforms = transforms.Compose([
         transforms.Resize((args.img_size, args.img_size)),
-        transforms.RandomHorizontalFlip(),
-        transforms.RandomRotation(10),
-        transforms.ColorJitter(brightness=0.1, contrast=0.1),  # Add color augmentation
+        transforms.RandomHorizontalFlip(p=0.5),
+        transforms.RandomVerticalFlip(p=0.2),
+        transforms.RandomRotation(15),
+        transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.1, hue=0.1),
+        transforms.RandomAffine(degrees=0, translate=(0.1, 0.1)),
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     ])
+
 
     test_transforms = transforms.Compose([
         transforms.Resize((args.img_size, args.img_size)),
@@ -361,19 +367,18 @@ def main():
     # Optimizer with parameter filtering
     optimizer = optim.AdamW(
         filter(lambda p: p.requires_grad, model.parameters()), 
-        lr=args.learning_rate, 
-        weight_decay=args.weight_decay
+        lr=args.learning_rate * 0.1, 
+        weight_decay=2e-4
     )
     
-    # Learning rate scheduler - ReduceLROnPlateau
-    scheduler = optim.lr_scheduler.ReduceLROnPlateau(
-        optimizer, 
-        mode='max',  # Use validation accuracy
-        factor=0.1,  # Reduce LR by factor of 10
-        patience=3,  # Wait 3 epochs before reducing LR
-        verbose=True
+    # Learning rate scheduler 
+    scheduler = optim.lr_scheduler.OneCycleLR(
+        optimizer,
+        max_lr=args.learning_rate,
+        steps_per_epoch=len(train_loader),
+        epochs=args.num_epochs,
+        pct_start=0.2  # Warm up for first 20% of training
     )
-
     # Start training
     logger.info('Starting training with optimized configuration...')
     start_time = time.time()
