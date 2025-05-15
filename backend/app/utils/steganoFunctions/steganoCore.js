@@ -1,37 +1,55 @@
 const BinaryConverter = require('./binaryConverter');
 const PixelSelector = require('./pixelSelector');
 const EncryptionService = require('../../Services/EncryptionService');
-const Jimp = require('jimp');
+const ImageProcessor = require('../imageProcessor');
 
 class SteganoCore {
   static async embed(imageBuffer, message, password, busyAreas = []) {
-    const image = await Jimp.read(imageBuffer);
-    const { width, height, data } = image.bitmap;
-
-    const encryptedMsg = EncryptionService.encrypt(message, password);
+      // Load the image using Sharp
+    const { image, metadata } = await ImageProcessor.loadImage(imageBuffer);
+      
+      // Get raw pixel data
+    const imageData = await ImageProcessor.getImageData(image);
+      
+    const encryptedMsg = EncryptionService.encrypt(message, password  || '');
     const binaryMsg = BinaryConverter.textToBinary(encryptedMsg);
     const header = BinaryConverter.numberToBinary(binaryMsg.length, 32);
     const dataToHide = header + binaryMsg;
     
     const pixelIndices = PixelSelector.getIndices(
-      width, 
-      height, 
+      imageData.width,
+      imageData.height,
       busyAreas, 
       dataToHide.length
     );
     
+      // Validate we have enough capacity
+      if (pixelIndices.length < dataToHide.length) {
+        throw new Error(`Insufficient capacity: need ${dataToHide.length} pixels, but only ${pixelIndices.length} available.`);
+      }
+
     this._embedData(imageData.data, pixelIndices, dataToHide);
     
-    return await image.getBufferAsync(Jimp.MIME_PNG);
+          // Update the image with modified pixel data
+      const updatedImage = ImageProcessor.updateImage(imageData);
+      
+    return await ImageProcessor.imageToBuffer({ image: updatedImage });
   }
 
   static async extract(imageBuffer, password) {
-     const image = await Jimp.read(imageBuffer);
-    const { data } = image.bitmap;
-    
+       // Load the image using Sharp
+      const { image } = await ImageProcessor.loadImage(imageBuffer);
+      
+      // Get raw pixel data
+      const imageData = await ImageProcessor.getImageData(image);
+      
     const binaryHeader = this._extractBits(imageData.data, 0, 32);
     const messageLength = parseInt(binaryHeader, 2);
     
+          if (messageLength <= 0 || messageLength > imageData.width * imageData.height * 3) {
+        throw new Error('Invalid message length detected. This may not be a steganographic image.');
+      }
+      
     const binaryMsg = this._extractBits(imageData.data, 32, messageLength);
     const encryptedMsg = BinaryConverter.binaryToText(binaryMsg);
     

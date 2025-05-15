@@ -23,7 +23,10 @@ class SteganoUtils {
   static async extractMessageWithQR(imageBuffer, password, qrData) {
     const message = await this.extractMessage(imageBuffer, password);
     try {
-      SteganoValidator.verifyMessageHash(message, password, qrData.messageHash);
+      const calculatedHash = this.generateMessageHash(message, password);
+      if (calculatedHash !== qrData.messageHash) {
+        throw new Error('Message integrity verification failed');
+      }
       return message;
     } catch (error) {
       throw new AppError('Message integrity verification failed. The image may have been tampered with.', 400);

@@ -2,7 +2,7 @@ const SteganoUtils = require('./SteganoUtils');
 const QRService = require('./qrService');
 const WatermarkService = require('./WatermarkService');
 const MLService = require('./MLService');
-const Image = require('../Models/Image');
+const StegoImage = require('../Models/Image');
 const { ValidationError, AppError } = require('../Traits/errors');
 
 class SteganographyService {
@@ -42,8 +42,8 @@ class SteganographyService {
         });
       }
 
-      const imageDoc = new Image({
-          userId: user._id,
+      const imageDoc = new StegoImage({
+          userId: user.userId,
           originalImage: {
             filename: req.file.originalname,
             contentType: req.file.mimetype,

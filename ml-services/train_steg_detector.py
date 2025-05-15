@@ -17,7 +17,7 @@ import random
 from sklearn.metrics import precision_recall_fscore_support, confusion_matrix
 import matplotlib.pyplot as plt
 import seaborn as sns
-from torch.cuda.amp import GradScaler, autocast  # For mixed precision training
+from torch.amp import GradScaler, autocast  # For mixed precision training
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, 
@@ -98,7 +98,7 @@ def build_pretrained_model(num_classes=3, freeze_layers=6):
 # Training function with mixed precision and early stopping
 def train_model(model, train_loader, val_loader, criterion, optimizer, scheduler, num_epochs, device, patience=7, use_amp=True):
     model = model.to(device)
-    scaler = GradScaler() if use_amp else None  # Only use scaler when AMP is enabled
+    scaler = torch.amp.GradScaler('cuda') if use_amp else None  # Only use scaler when AMP is enabled
     best_val_acc = 0.0
     best_model_wts = model.state_dict()
     history = {'train_loss': [], 'train_acc': [], 'val_loss': [], 'val_acc': []}
@@ -129,7 +129,7 @@ def train_model(model, train_loader, val_loader, criterion, optimizer, scheduler
                 if phase == 'train':
                     if use_amp:
                         # Forward pass with mixed precision
-                        with autocast():
+                        with torch.amp.autocast('cuda'):
                             outputs = model(inputs)
                             loss = criterion(outputs, labels)
                         
@@ -190,6 +190,7 @@ def train_model(model, train_loader, val_loader, criterion, optimizer, scheduler
         # Step scheduler if not ReduceLROnPlateau
         if scheduler and not isinstance(scheduler, optim.lr_scheduler.ReduceLROnPlateau):
             scheduler.step()
+            
             
     # Load best model weights
     model.load_state_dict(best_model_wts)

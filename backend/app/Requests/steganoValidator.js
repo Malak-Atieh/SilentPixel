@@ -1,6 +1,6 @@
 const EncryptionService = require('../Services/EncryptionService');
 const { ValidationError } = require('../Traits/errors');
-const PixelSelector = require('../utils/steganoFunctions/PixelSelector');
+const PixelSelector = require('../utils/steganoFunctions/pixelSelector');
 
 class SteganoValidator {
 

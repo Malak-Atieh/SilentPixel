@@ -1,5 +1,5 @@
 const QRCode= require('qrcode');
-const Jimp = require('jimp');
+const ImageProcessor = require('../utils/ImageProcessor');
 const jsQR= require('jsqr');
 const {createResponse} = require('../Traits/response');
 class QRService {
@@ -7,10 +7,10 @@ class QRService {
     static async addQRCode(imageBuffer, data) {
 
         try {
-            const image = await Jimp.read(imageBuffer);
-    
+            const { image, metadata } = await ImageProcessor.loadImage(imageBuffer);
+      
             //generate the QR code
-            const qrSize = Math.min(image.width, image.height) *0.15; //15% of img lenght
+            const qrSize = Math.min(metadata.width, metadata.height) *0.15; //15% of img lenght
 
             //generate the QR code with the data
             const qrDataUrl = await QRCode.toDataURL(JSON.stringify(data), {
@@ -21,17 +21,24 @@ class QRService {
             });
 
             // Load QR code image into Jimp
-            const qrImage = await Jimp.read(Buffer.from(qrDataUrl.split(",")[1], 'base64'));
-
+            const qrImageBuffer = Buffer.from(qrDataUrl.split(',')[1], 'base64');
+            const { image: qrImage } = await ImageProcessor.loadImage(qrImageBuffer);
+      
             const padding = 10;
-            const x = image.bitmap.width - qrSize - padding;
-            const y = image.bitmap.height - qrSize - padding;
+            const x = metadata.bitmap.width - qrSize - padding;
+            const y = metadata.bitmap.height - qrSize - padding;
 
             // Composite QR onto the original image with alpha (transparency)
-            qrImage.opacity(0.8);
-            image.composite(qrImage, x, y);
+            const modifiedImage = image.composite([
+            { 
+            input: await qrImage.toBuffer(), 
+            gravity: 'southeast',
+            blend: 'over'
+            }
+            ]);
+      
 
-            const modifiedBuffer = await image.getBufferAsync(Jimp.MIME_PNG);
+            const modifiedBuffer = await ImageProcessor.imageToBuffer({ image: modifiedImage });
             return createResponse(200, 'QR code added successfully', modifiedBuffer);
         } catch (error) {
             return createResponse(500, 'Error adding QR code', error);
@@ -40,16 +47,24 @@ class QRService {
 
     static async extractQRCode(imageBuffer) {
         try {
-      const image = await Jimp.read(imageBuffer);
-      const { data, width, height } = image.bitmap;
-
-            //scan the image for QR code
-            const code = jsQR(data, width, height);
-            let qrData = null;
-            if(code){
-                //parse the QR code data
-                 qrData = JSON.parse(code.data);
+            // Load the image using Sharp
+            const { image } = await ImageProcessor.loadImage(imageBuffer);
+            
+            // Get raw image data
+            const imageData = await ImageProcessor.getImageData(image);
+            
+            // Scan for QR code
+            const code = jsQR(
+                imageData.data, 
+                imageData.width, 
+                imageData.height, 
+                { inversionAttempts: "dontInvert" }
+            );
+            
+            if (!code) {
+                return null;
             }
+            qrData= JSON.parse(code.data);
             return createResponse(200, 'QR code extracted successfully', qrData);
 
         } catch (error) {
