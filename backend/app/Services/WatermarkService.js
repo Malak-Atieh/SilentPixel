@@ -1,9 +1,10 @@
-const {createResponse} = require('../Traits/response');
 const crypto = require('crypto');
 const { AppError } = require('../Traits/errors');
 const ImageProcessor = require('../utils/imageProcessor');
 const BinaryConverter = require('../utils/steganoFunctions/binaryConverter');
+
 class WatermarkService {
+  
     static async addWatermark(imageBuffer, watermarkData) {
         try {
             const { image } = await ImageProcessor.loadImage(imageBuffer);
@@ -15,11 +16,15 @@ class WatermarkService {
             const watermarkString = JSON.stringify(watermarkData);
             const watermarkHash = crypto.createHash('sha256').update(watermarkString).digest('hex'); 
             
-            //convert watermark data to binary(using 128 of hash)
-            const binaryWatermark = BinaryConverter.textToBinary(watermarkString.substring(0, 128));
+            const qrSafeZone = {
+                x: Math.floor(width * 0.75),
+                y: Math.floor(height * 0.75),
+                width: Math.floor(width * 0.25),
+                height: Math.floor(height * 0.25)
+            };
 
             //determine watermark position
-            const position = this._getWatermarkPositions(width, height, binaryWatermark.length);
+            const position = this._getWatermarkPositions(width, height, binaryWatermark.length,qrSafeZone);
 
             // Track pixel coordinates used
             let usedCoords = [];
@@ -86,7 +91,7 @@ class WatermarkService {
                 region: wmRegion
               };
         } catch (error) {
-          throw new Error('Error adding watermark ' + error.message);
+          throw new AppError('Error adding watermark ' + error.message);
         }
     }
 
@@ -102,8 +107,15 @@ class WatermarkService {
             throw new AppError('No watermark found', 400);
         }
 
-        const maxLength = 128 * 8; 
-      const positions = this._getWatermarkPositions(width, height, maxLength);
+      const maxLength = 128 * 8; 
+      const qrSafeZone = {
+          x: Math.floor(width * 0.75),
+          y: Math.floor(height * 0.75),
+          width: Math.floor(width * 0.25),
+          height: Math.floor(height * 0.25)
+        };
+      
+      const positions = this._getWatermarkPositions(width, height, maxLength,qrSafeZone);
       
       // Extract binary watermark
       let binaryWatermark = '';
@@ -143,26 +155,44 @@ class WatermarkService {
       throw new Error('Error extracting watermark: ' + error.message);
     }
     }
-  static _getWatermarkPositions(width, height, length) {
+  static _getWatermarkPositions(width, height, length, qrSafeZone) {
     const totalPixels = width * height;
     const positions = [];
     
     // Use prime numbers for position calculation
     const primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53];
-    
-    for (let i = 0; i < length; i++) {
-      // Calculate position using a formula with primes
-      const prime1 = primes[i % primes.length];
-      const prime2 = primes[(i + 7) % primes.length];
-      
-      // Generate a position that depends on current index and primes
-      const position = (prime1 * i + prime2) % totalPixels;
-      
-      positions.push(position);
+        let i = 0;
+        let count = 0;
+        
+        while (count < length) {
+            // Calculate position using a formula with primes
+            const prime1 = primes[i % primes.length];
+            const prime2 = primes[(i + 7) % primes.length];
+            
+            // Generate a position that depends on current index and primes
+            const position = (prime1 * i + prime2) % totalPixels;
+            
+            // Convert position to x,y coordinates
+            const y = Math.floor(position / width);
+            const x = position % width;
+            
+            // Skip if this position is in the QR safe zone
+            if (qrSafeZone && 
+                x >= qrSafeZone.x && 
+                x < qrSafeZone.x + qrSafeZone.width && 
+                y >= qrSafeZone.y && 
+                y < qrSafeZone.y + qrSafeZone.height) {
+                i++;
+                continue;
+            }
+            
+            positions.push(position);
+            count++;
+            i++;
+        }
+        
+        return positions;
     }
-    
-    return positions;
-  }
 
 
   static _storeWatermarkHash(data, hash, width, height) {

@@ -19,15 +19,12 @@ const validateImageUpload = (req, res, next) => {
 }
 
 const validateMessageInput = (req, res, next) => {
-  const { message } = req.body;
+  const { message, messages } = req.body;
   
-  if (!message) {
+  if (!message && !messages) {
     throw new ValidationError('Message is required');
   }
-  
-  if (message.length > 10000) { // for now limit
-    throw new ValidationError('Message is too long (max 10000 characters)');
-  }
+
   
   next();
 };

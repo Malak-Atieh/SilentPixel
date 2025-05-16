@@ -7,32 +7,32 @@ const morgan = require('morgan');
 const helmet = require('helmet');
 const errorHandler = require('./app/Middlewares/errorHandler');
 const routes = require('./routes/api');
-// Initialize app
+
+
 const app = express();
 
-// Middleware
+
 app.use(cors());
 app.use(express.json());
 app.use(helmet());
 app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: true }));
 
-// Database
+
 connectDB();
 
-// Routes
 app.use('/api', routes);
 
 
 app.use('/', routes);
-// 404 handler
+
 app.use((req, res, next) => {
   const error = new Error('Route not found');
   error.status = 404;
   next(error);
 });
 
-// Global error handler 
+
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;

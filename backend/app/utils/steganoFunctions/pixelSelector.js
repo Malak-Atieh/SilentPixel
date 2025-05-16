@@ -4,20 +4,20 @@ class PixelSelector {
   static getIndices(width, height, busyAreas = [], dataLength, password = null) {
         if (dataLength <= 0) return [];
     
-    // If ML has identified busy areas, i prioritize them
-    if (busyAreas?.length > 0) {
+
+        if (busyAreas?.length > 0) {
       const optimized = this._getOptimizedIndices(width, height, busyAreas, dataLength);
       if (optimized.length >= dataLength) return optimized;    
     }
     
-    // else basic pixel selection with some randomization
+
     return password 
       ? this._getPasswordBasedIndices(width, height, dataLength, password)
       : this._getRandomizedIndices(width, height, dataLength);
   }
 
   static _getOptimizedIndices(width, height, busyAreas, dataLength) {
-    // Get pixels from busy areas and sort them by "busyness" score if available
+
     const busyPixels = [];
     
     busyAreas.forEach(area => {
@@ -29,7 +29,7 @@ class PixelSelector {
         for (let x = Math.max(0, area.x); x < xEnd; x++) {
           busyPixels.push({
             index: y * width + x,
-            score: areaScore * (1 + Math.random() * 0.2) // Add slight randomness
+            score: areaScore * (1 + Math.random() * 0.2) 
           });
         }
       }
@@ -67,10 +67,8 @@ class PixelSelector {
   }
   
     static _fillRemainingIndices(selectedIndices, width, height, busyAreas, dataLength) {
-    // Create set of already selected indices for quick lookup
     const selectedSet = new Set(selectedIndices);
     
-    // Generate array of remaining indices not in busy areas
     const remainingIndices = [];
     for (let i = 0; i < width * height; i++) {
       if (!selectedSet.has(i) && !this._isInBusyAreas(i, width, busyAreas)) {
@@ -78,10 +76,8 @@ class PixelSelector {
       }
     }
     
-    // Shuffle remaining indices for randomness
     const shuffled = this._shuffleArray(remainingIndices);
     
-    // Add remaining indices until we reach required data length
     for (let i = 0; i < shuffled.length && selectedIndices.length < dataLength; i++) {
       selectedIndices.push(shuffled[i]);
     }

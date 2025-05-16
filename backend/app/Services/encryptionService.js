@@ -8,10 +8,6 @@ class EncryptionService {
   static SCRYPT_PARAMS = { N: 16384, r: 8, p: 1 };
 
   static encrypt(message, password) {
-    if (!message || !password) {
-      throw new AppError('Message and password are required', 400);
-    }
-
     try{
       const salt = crypto.randomBytes(this.SALT_LENGTH);
       const iv = crypto.randomBytes(this.IV_LENGTH);

@@ -8,15 +8,12 @@ const { ValidationError, AppError } = require('../Traits/errors');
 class SteganographyService {
 
   static async handleEncoding(req) {
-    const { message, password, addWatermark, addQRCode, busyAreas } = req.body;
+    const { message , password, addWatermark, addQRCode, busyAreas } = req.body;
     const user = req.user;
 
     if (!req.file){
       throw new ValidationError('Image file is required');
     } 
-    if (!message){
-      throw new ValidationError('Message is required');
-    }
 
     const imageBuffer = req.file.buffer;
     let processedImage = imageBuffer ;
@@ -24,7 +21,7 @@ class SteganographyService {
     try {
       
       if (addWatermark === 'true') {
-        wmResult  = await WatermarkService.addWatermark(processedImage, {
+        const wmResult  = await WatermarkService.addWatermark(processedImage, {
           email: user.email,
           timestamp: new Date().toISOString(),
         });
@@ -40,15 +37,44 @@ class SteganographyService {
         processedImage = qrResult.data;
         if (qrResult.region) protectedZones.push(qrResult.region);
       }
+    const options = {
+      ttl: req.body.ttl ? parseInt(req.body.ttl) : null,
+    };
 
+    if (req.body.messages) {
+      try{
+        const messages = JSON.parse(req.body.messages);
+        const passwords = req.body.passwords ? JSON.parse(req.body.passwords) : null;
+
+        if (!Array.isArray(messages)) {
+          throw new ValidationError('Messages must be an array');
+        }
+            
+        if (passwords && passwords.length !== messages.length) {
+          throw new ValidationError('Number of passwords must match number of messages');
+        }
+
+        processedImage = await SteganoUtils.embedMultipleMessages({
+          imageBuffer: processedImage, 
+          messages,
+          passwords,
+          busyAreas: JSON.parse(busyAreas || '[]'),
+          protectedZones,
+          options
+        });        
+      } catch (parseError) {
+          throw new ValidationError(`Error parsing messages or passwords: ${parseError.message}`);
+      }
+    } else {
       processedImage = await SteganoUtils.embedMessage({
         imageBuffer: processedImage, 
         message,
         password,
         busyAreas: JSON.parse(busyAreas || '[]'),
-        protectedZones
+        protectedZones,
+        options
       });
-
+    }
 
       const imageDoc = new StegoImage({
           userId: user.userId,
@@ -59,8 +85,8 @@ class SteganographyService {
           },
           stegoDetails: {
             hasHiddenContent: true,
-            messageLength: message.length,
-            isPasswordProtected: !!password
+            messageLength: message ? message.length : (req.body.messages ? JSON.parse(req.body.messages).reduce((sum, m) => sum + m.length, 0) : 0),
+            isPasswordProtected: !!password || (req.body.passwords && JSON.parse(req.body.passwords).some(p => !!p))
           },
           watermark: {
             hasWatermark: addWatermark === 'true',
@@ -93,30 +119,61 @@ class SteganographyService {
     }
 
     const buffer = req.file.buffer;
+
     const result = {
       message: null,
+      messages: null,
       watermark: null,
       qrData: null
     };
+    
     try {
+      
+      //try qr extracting if it exits in image
       try{
-        const qrData = await QRService.extractQRData(buffer);
+        const qrData = await QRService.extractQRCode(buffer);
         if (qrData) {
           result.qrData = qrData;
-          result.message = await StegoUtils.extractMessageWithQR(buffer, password, qrData);
+          result.message = await SteganoUtils.extractMessageWithQR(buffer, password, qrData);
         }
       } catch (qrError) {
-        // QR extraction failed, falling back to standard extraction
+        console.log("QR extraction failed:", qrError.message);
       }
-      if (!result.message) {
-        result.message = await StegoUtils.extractMessage(buffer, password);
-      }
+
+      //try watermark extracting if it exits in image
       try{
          result.watermark = await WatermarkService.extractWatermark(buffer);
-      }catch(watermarkError){
+      } catch (watermarkError){
         console.log("Watermark extraction failed:", watermarkError.message);
       }
-    return result;
+
+      //try extracting multiple messages if it applies
+      try {
+        const messages = await SteganoUtils.extractMultipleMessages(buffer, password);
+        if (messages && messages.length > 0 && messages.some(msg => msg !== null)) {
+          result.messages = messages;
+          // If we have only one message, put it in the message field too for backwards compatibility
+          if (messages.length === 1) {
+            result.message = messages[0];
+          }
+          return result;
+        }
+      } catch (multipleError) {
+        console.log("Multiple message extraction failed:", multipleError.message);
+      }
+
+            try {
+        const message = await SteganoUtils.extractMessage(buffer, password);
+        if (message) {
+          result.message = message;
+        }
+      } catch (singleError) {
+        console.log("Single message extraction failed:", singleError.message);
+        throw new AppError("Failed to extract any messages from the image. " + 
+                           (password ? "Please check your password." : "The image may not contain hidden data."), 400);
+      }
+
+      return result;
     } catch(error){
       throw new AppError(`Decoding failed: ${error.message}`, 
       error.status || 400);
@@ -137,18 +194,18 @@ class SteganographyService {
       let watermarkData = null;
       let qrData = null;
       
-      // Try to extract watermark
+
       try {
         watermarkData = await WatermarkService.extractWatermark(imageBuffer);
       } catch (watermarkError) {
-        // Continue without watermark data
+        console.log("no watermark included:", watermarkError);
       }
       
-      // Try to extract QR code
+
       try {
         qrData = await QRService.extractQRCode(imageBuffer);
       } catch (qrError) {
-        // Continue without QR data
+        console.log("no qr included:", qrError);
       }
 
       return {

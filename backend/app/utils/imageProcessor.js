@@ -1,5 +1,5 @@
 const sharp = require('sharp');
-
+sharp.cache(false);
 class ImageProcessor {
 
     static async loadImage(imageBuffer, options = { ensureAlpha: true }) {

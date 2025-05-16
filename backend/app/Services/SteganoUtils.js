@@ -5,22 +5,63 @@ const crypto = require('crypto');
 
 class SteganoUtils {
 
-  static async embedMessage({ imageBuffer, message, password, busyAreas = [], protectedZones=[] }) {
+  static async embedMessage({ imageBuffer, message, password, busyAreas = [], protectedZones=[], options = {} }) {
+    try {
+      if (!imageBuffer || !Buffer.isBuffer(imageBuffer)) {
+        throw new Error('Valid image buffer is required');
+      }
+      if (!message || message.length === 0) {
+        throw new Error('Message cannot be empty');
+      }
+
+      return await SteganoCore.embed(imageBuffer, message, password, busyAreas, protectedZones, options);
+    } catch (error) {
+      throw new AppError(`Embedding failed: ${error.message}`, 400);
+    }
+  }
+  static async embedMultipleMessages({ imageBuffer, messages, passwords, busyAreas = [], protectedZones = [], options = {} }) {
     try {
       if (!imageBuffer || !Buffer.isBuffer(imageBuffer)) {
         throw new Error('Valid image buffer is required');
       }
       
-      if (!message || typeof message !== 'string' || message.trim().length === 0) {
-        throw new Error('Valid message string is required');
+      if (!messages || !Array.isArray(messages) || messages.length === 0) {
+        throw new Error('Valid messages array is required');
       }
       
-      return await SteganoCore.embed(imageBuffer, message, password, busyAreas, protectedZones);
+      const validatedPasswords = passwords && Array.isArray(passwords) ? 
+        passwords : 
+        Array(messages.length).fill(null);
+        
+      if (validatedPasswords.length !== messages.length) {
+        throw new Error('Number of passwords must match number of messages');
+      }
+
+      return await SteganoCore.embedMultiple(
+        imageBuffer, 
+        messages, 
+        passwords, 
+        validatedPasswords, 
+        busyAreas, 
+        protectedZones,
+        options
+      );
     } catch (error) {
       throw new AppError(`Embedding failed: ${error.message}`, 400);
     }
   }
 
+  static async extractMultipleMessages(imageBuffer, password) {
+    try {
+      if (!imageBuffer || !Buffer.isBuffer(imageBuffer)) {
+        throw new Error('Valid image buffer is required');
+      }
+      
+      return await SteganoCore.extractMultiple(imageBuffer, password);
+    } catch (error) {
+      throw new AppError(`Extraction failed: ${error.message}`, 400);
+    }
+  }
   static async extractMessage(imageBuffer, password) {
     try {
       if (!imageBuffer || !Buffer.isBuffer(imageBuffer)) {

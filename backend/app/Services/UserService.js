@@ -21,11 +21,9 @@ class UserService {
         throw new ValidationError('User with this email or username already exists');
       }
       
-      // Hash password and create user
       data.password = await hashPassword(data.password);
       const user = await User.create(data);
       
-      // Return user without password
       const userObject = user.toObject();
       delete userObject.password;
       
@@ -74,7 +72,6 @@ class UserService {
         throw new ValidationError('User not found');
       }
       
-      // Return user without password
       const userObject = user.toObject();
       delete userObject.password;
       
