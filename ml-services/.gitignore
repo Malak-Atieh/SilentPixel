@@ -6,3 +6,10 @@ steganography_dataset/
 *.pth
 */models/
 *.onnx
+*/venv/
+*/steganography_dataset/
+*/venv/
+*/steg_env/
+*/fast_models/
+*fast_models_v2/
+*/_pycache_/
