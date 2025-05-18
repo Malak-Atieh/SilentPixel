@@ -55,7 +55,7 @@ class SteganographyService {
     if (req.body.messages) {
       try{
         const messages = JSON.parse(req.body.messages);
-        const passwords = req.body.passwords ? JSON.parse(req.body.passwords) : null;
+        const passwords = req.body.passwords ? JSON.parse(req.body.passwords) :  [];
 
         if (!Array.isArray(messages)) {
           throw new ValidationError('Messages must be an array');
@@ -130,6 +130,7 @@ class SteganographyService {
     }
 
     const buffer = req.file.buffer;
+    req.file.buffer = null;
 
     const result = {
       message: null,
@@ -163,7 +164,6 @@ class SteganographyService {
         const messages = await SteganoUtils.extractMultipleMessages(buffer, password);
         if (messages && messages.length > 0 && messages.some(msg => msg !== null)) {
           result.messages = messages;
-          // If we have only one message, put it in the message field too for backwards compatibility
           if (messages.length === 1) {
             result.message = messages[0];
           }
@@ -173,7 +173,7 @@ class SteganographyService {
         console.log("Multiple message extraction failed:", multipleError.message);
       }
 
-            try {
+      try {
         const message = await SteganoUtils.extractMessage(buffer, password);
         if (message) {
           result.message = message;

@@ -1,14 +1,4 @@
-import 'dart:convert';
-import 'dart:typed_data';
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:http/http.dart' as http;
-import 'package:http_parser/http_parser.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 class DecodeResultScreen extends StatelessWidget {
   final String message;

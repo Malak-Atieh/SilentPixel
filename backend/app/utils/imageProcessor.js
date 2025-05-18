@@ -4,7 +4,7 @@ class ImageProcessor {
 
     static async loadImage(imageBuffer, options = { ensureAlpha: true }) {
         try {
-            let image = sharp(imageBuffer);
+            let image = sharp(imageBuffer, { sequentialRead: true });
             if (options.ensureAlpha) {
                 image = image.ensureAlpha();
             }

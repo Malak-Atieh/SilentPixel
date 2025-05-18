@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js",
+    "start": "node --max-old-space-size=8192 server.js",
     "dev": "nodemon server.js"
   },
   "keywords": [],
@@ -13,6 +13,7 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@ronomon/reed-solomon": "^6.0.0",
     "argon2": "^0.43.0",
     "axios": "^1.9.0",
     "bcrypt": "^5.1.1",
@@ -38,6 +39,7 @@
     "multer": "^1.4.5-lts.2",
     "piexifjs": "^1.0.6",
     "qrcode": "^1.5.4",
+    "reedsolomon": "^1.0.0",
     "sharp": "^0.34.1",
     "uuid": "^9.0.0",
     "winston": "^3.10.0"

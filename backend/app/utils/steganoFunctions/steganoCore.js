@@ -54,11 +54,11 @@ static TTL_HEADER_SIZE = 32;
     return await ImageProcessor.imageToBuffer({ image: updatedImage });
   }
 
-  static async embedMultiple(imageBuffer, messages, passwords, busyAreas = [], protectedZones = []) {
-    if (!messages || messages.length === 0) {
+  static async embedMultiple(imageBuffer, messages, passwords = [], busyAreas = [], protectedZones = [], options = {}) {
+    if (!messages || !Array.isArray(messages) || messages.length === 0) {
       throw new Error('At least one message is required');
     }
-    
+
     if (passwords && passwords.length > 0 && passwords.length !== messages.length) {
       throw new Error('Number of passwords must match number of messages');
     }
@@ -94,7 +94,7 @@ static TTL_HEADER_SIZE = 32;
     
     const dataToHide = header + compositeBinary;
     
-     const pixelsNeeded = Math.ceil(dataToHide.length / 3);
+    const pixelsNeeded = Math.ceil(dataToHide.length / 3);
     const totalPixels = imageData.width * imageData.height;
     
     const pixelIndices = Array.from({length: totalPixels}, (_, i) => i);
@@ -166,7 +166,8 @@ static TTL_HEADER_SIZE = 32;
   static async extractMultiple(imageBuffer, password) {
     const { image } = await ImageProcessor.loadImage(imageBuffer);
     const imageData = await ImageProcessor.getImageData(image);
-    
+    imageBuffer = null;
+
     const signature = this._extractBitsAt(imageData.data, 0, 8);
     if (signature !== this.SIGNATURE) {
       throw new Error('Invalid signature');
@@ -175,7 +176,7 @@ static TTL_HEADER_SIZE = 32;
     const messageCount = parseInt(this._extractBitsAt(imageData.data, 8, 8), 2);
     
     let bitPosition = 16;
-    const messages = [];
+    const messageInfos = [];
     
     for (let i = 0; i < messageCount; i++) {
       const length = parseInt(this._extractBitsAt(imageData.data, bitPosition, 32), 2);
@@ -184,7 +185,7 @@ static TTL_HEADER_SIZE = 32;
       const isEncrypted = this._extractBitsAt(imageData.data, bitPosition, 1) === "1";
       bitPosition += 1;
       
-      messages.push({
+      messageInfos.push({
         length,
         isEncrypted,
         startBit: bitPosition
@@ -195,12 +196,12 @@ static TTL_HEADER_SIZE = 32;
     
     const results = [];
     
-    for (const msg of messages) {
+    for (const info of messageInfos) {
       try {
-        const binaryMsg = this._extractBitsAt(imageData.data, msg.startBit, msg.length);
+        const binaryMsg = this._extractBitsAt(imageData.data, info.startBit, info.length);
         const encryptedMsg = BinaryConverter.binaryToText(binaryMsg);
         
-        if (msg.isEncrypted) {
+        if (info.isEncrypted) {
           if (!password) {
             results.push(null);
             continue;
@@ -210,16 +211,18 @@ static TTL_HEADER_SIZE = 32;
             const decrypted = EncryptionService.decrypt(encryptedMsg, password);
             results.push(decrypted);
           } catch (e) {
+            console.log("Failed to decrypt a message:", e.message);
             results.push(null);
           }
         } else {
           results.push(encryptedMsg);
         }
       } catch (e) {
+        console.log("Failed to extract a message:", e.message);
         results.push(null);
       }
     }
-    
+    image.options = null;
     return results;
   }
 

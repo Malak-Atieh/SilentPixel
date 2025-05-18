@@ -4,37 +4,31 @@ const ImageProcessor = require('../utils/imageProcessor');
 const BinaryConverter = require('../utils/steganoFunctions/binaryConverter');
 
 class WatermarkService {
-    // Configuration for watermark placement
     static watermarkConfig = {
-        regionSize: 64, // Size of the square region to use for watermark (in pixels)
-        edgePadding: 10, // Padding from image edges
-        channel: 'rg' // Use both red and green channels for more capacity
+        regionSize: 32,  // Reduced from 64 to minimize space usage
+        edgePadding: 5,
+        channel: 'g',   // Use only green channel (less noticeable to human eye)
+        hashBits: 8     // Store only first 8 chars of hash (compromise between space and security)
     };
 
     static async addWatermark(imageBuffer, watermarkData) {
         try {
-            const { image } = await ImageProcessor.loadImage(imageBuffer);
+            const { image, metadata } = await ImageProcessor.loadImage(imageBuffer);
             const imageData = await ImageProcessor.getImageData(image);
             const { data, width, height } = imageData;
 
-            // Prepare watermark data
-            const watermarkString = JSON.stringify(watermarkData);
-            const watermarkHash = crypto.createHash('sha256').update(watermarkString).digest('hex');
+            // Compact watermark format
+            const watermarkString = this._createCompactWatermark(watermarkData);
             const binaryWatermark = BinaryConverter.textToBinary(watermarkString);
-
-            // Calculate watermark region (bottom-right corner by default)
+            
+            // Calculate dynamic region size based on image dimensions
             const region = this._calculateWatermarkRegion(width, height);
             
-            // Store watermark in the designated region
-            const usedPixels = this._embedWatermarkInRegion(
-                data, 
-                width, 
-                binaryWatermark, 
-                region
-            );
+            // Embed watermark in LSB of green channel only
+            this._embedWatermark(data, width, binaryWatermark, region);
 
-            // Store hash in corners for verification
-            this._storeWatermarkHash(data, watermarkHash, width, height);
+            // Store minimal verification hash in corners
+            this._storeVerificationHash(data, width, height, watermarkString);
 
             const updatedImage = ImageProcessor.updateImage(imageData);
             const modifiedBuffer = await ImageProcessor.imageToBuffer({ image: updatedImage });
@@ -54,140 +48,104 @@ class WatermarkService {
     }
 
     static async extractWatermark(imageBuffer) {
-      try {
-          console.log('Starting watermark extraction...');
-          const { image } = await ImageProcessor.loadImage(imageBuffer);
-          const imageData = await ImageProcessor.getImageData(image);
-          const { data, width, height } = imageData;
-          console.log(`Image dimensions: ${width}x${height}`);
+        try {
+            const { image } = await ImageProcessor.loadImage(imageBuffer);
+            const imageData = await ImageProcessor.getImageData(image);
+            const { data, width, height } = imageData;
 
-          // First verify the hash from the corners
-          const storedHash = this._retrieveWatermarkHash(data, width, height);
-          console.log('Stored hash (partial):', storedHash?.substring(0, 16));
-          if (!storedHash) {
-              throw new AppError('No watermark hash found in image corners', 400);
-          }
+            // Retrieve verification hash first
+            const storedHash = this._retrieveVerificationHash(data, width, height);
+            if (!storedHash) {
+                throw new AppError('No watermark found', 400);
+            }
 
-          // Calculate where the watermark should be
-          const region = this._calculateWatermarkRegion(width, height);
-          console.log('Watermark region:', region);
+            const region = this._calculateWatermarkRegion(width, height);
+            const binaryWatermark = this._extractWatermark(data, width, region);
+            const watermarkString = BinaryConverter.binaryToText(binaryWatermark);
 
-          // Extract binary watermark from the region
-          const binaryWatermark = this._extractWatermarkFromRegion(
-              data, 
-              width, 
-              region
-          );
-          console.log(`Extracted ${binaryWatermark.length} bits`);
+            // Verify with partial hash match
+            const extractedHash = crypto.createHash('sha256')
+                .update(watermarkString)
+                .digest('hex')
+                .substring(0, this.watermarkConfig.hashBits);
 
-          // Convert to text
-          const watermarkString = BinaryConverter.binaryToText(binaryWatermark);
-          console.log('Watermark string:', watermarkString.substring(0, 50) + '...');
-          
-          // Verify hash
-          const extractedHash = crypto
-              .createHash('sha256')
-              .update(watermarkString)
-              .digest('hex');
-          console.log('Extracted hash (partial):', extractedHash.substring(0, 16));
+            if (extractedHash !== storedHash) {
+                throw new AppError('Watermark verification failed', 400);
+            }
 
-          if (extractedHash.substring(0, 16) !== storedHash.substring(0, 16)) {
-              throw new AppError('Watermark hash mismatch', 400);
-          }
+            return this._parseCompactWatermark(watermarkString);
+        } catch (error) {
+            throw new AppError('Watermark extraction failed: ' + error.message, 400);
+        }
+    }
 
-          return JSON.parse(watermarkString);
-      } catch (error) {
-          console.error('Watermark extraction error:', error.message);
-          if (error instanceof AppError) {
-              throw error;
-          }
-          throw new AppError('Watermark extraction failed: ' + error.message, 400);
-      }
-  }
+    // --- Helper Methods ---
+
+    static _createCompactWatermark(data) {
+        // Example compact format: "email|timestamp"
+        return `${data.email}|${data.timestamp}`;
+    }
+
+    static _parseCompactWatermark(str) {
+        const [email, timestamp] = str.split('|');
+        return { email, timestamp };
+    }
+
     static _calculateWatermarkRegion(width, height) {
         const { regionSize, edgePadding } = this.watermarkConfig;
+        const safeSize = Math.min(
+            regionSize,
+            width - edgePadding * 2,
+            height - edgePadding * 2
+        );
         
         return {
-            startX: width - regionSize - edgePadding,
-            startY: height - regionSize - edgePadding,
-            size: regionSize
+            startX: width - safeSize - edgePadding,
+            startY: height - safeSize - edgePadding,
+            size: safeSize
         };
     }
 
-    static _embedWatermarkInRegion(data, width, binaryWatermark, region) {
+    static _embedWatermark(data, width, binaryWatermark, region) {
         const { startX, startY, size } = region;
-        const usedPixels = [];
         let bitIndex = 0;
 
         for (let y = startY; y < startY + size && bitIndex < binaryWatermark.length; y++) {
             for (let x = startX; x < startX + size && bitIndex < binaryWatermark.length; x++) {
                 const pixelIndex = (y * width + x) * 4;
                 const bit = parseInt(binaryWatermark[bitIndex]);
-
-                // Alternate between red and green channels
-                const channel = bitIndex % 2 === 0 ? 0 : 1; // 0: red, 1: green
-                
-                // Store bit in LSB of the selected channel
-                data[pixelIndex + channel] = (data[pixelIndex + channel] & 0xFE) | bit;
-                
-                usedPixels.push({ x, y });
+                // Only modify green channel (index 1)
+                data[pixelIndex + 1] = (data[pixelIndex + 1] & 0xFE) | bit;
                 bitIndex++;
             }
         }
-
-        return usedPixels;
     }
 
-    static _extractWatermarkFromRegion(data, width, region) {
+    static _extractWatermark(data, width, region) {
         const { startX, startY, size } = region;
-        const maxBits = size * size * 2; // 2 bits per pixel (red and green)
         let binaryWatermark = '';
-        let bitCount = 0;
 
-        for (let y = startY; y < startY + size && bitCount < maxBits; y++) {
-            for (let x = startX; x < startX + size && bitCount < maxBits; x++) {
+        for (let y = startY; y < startY + size; y++) {
+            for (let x = startX; x < startX + size; x++) {
                 const pixelIndex = (y * width + x) * 4;
-                
-                // Extract from both red and green channels
-                const redBit = data[pixelIndex] & 1;
-                const greenBit = data[pixelIndex + 1] & 1;
-                
-                binaryWatermark += redBit.toString();
-                binaryWatermark += greenBit.toString();
-                bitCount += 2;
+                // Only read from green channel (index 1)
+                binaryWatermark += (data[pixelIndex + 1] & 1).toString();
             }
         }
 
         return binaryWatermark;
     }
 
-    static _storeWatermarkHash(data, hash, width, height) {
-        // Store only first 16 chars of hash (128 bits) in alpha channels of corners
-        const hashPart = hash.substring(0, 16);
-        const binaryHash = BinaryConverter.textToBinary(hashPart);
+    static _storeVerificationHash(data, width, height, watermarkString) {
+        const hash = crypto.createHash('sha256')
+            .update(watermarkString)
+            .digest('hex')
+            .substring(0, this.watermarkConfig.hashBits);
 
-        const corners = [
-            { x: 0, y: 0 },               // Top-left
-            { x: width - 1, y: 0 },        // Top-right
-            { x: 0, y: height - 1 },       // Bottom-left
-            { x: width - 1, y: height - 1 } // Bottom-right
-        ];
-
+        const binaryHash = BinaryConverter.textToBinary(hash);
         let bitIndex = 0;
-        for (const corner of corners) {
-            if (bitIndex >= binaryHash.length) break;
-            
-            const pixelIndex = (corner.y * width + corner.x) * 4;
-            // Store 4 bits in each corner's alpha channel
-            for (let i = 0; i < 4 && bitIndex < binaryHash.length; i++) {
-                const bit = parseInt(binaryHash[bitIndex]);
-                data[pixelIndex + 3] = (data[pixelIndex + 3] & ~(1 << i)) | (bit << i);
-                bitIndex++;
-            }
-        }
-    }
 
-    static _retrieveWatermarkHash(data, width, height) {
+        // Store in 4 corner pixels (3 channels each = 12 bits per corner)
         const corners = [
             { x: 0, y: 0 },
             { x: width - 1, y: 0 },
@@ -195,19 +153,37 @@ class WatermarkService {
             { x: width - 1, y: height - 1 }
         ];
 
+        for (const corner of corners) {
+            if (bitIndex >= binaryHash.length) break;
+            
+            const pixelIndex = (corner.y * width + corner.x) * 4;
+            for (let c = 0; c < 3 && bitIndex < binaryHash.length; c++) {
+                const bit = parseInt(binaryHash[bitIndex]);
+                data[pixelIndex + c] = (data[pixelIndex + c] & 0xFE) | bit;
+                bitIndex++;
+            }
+        }
+    }
+
+    static _retrieveVerificationHash(data, width, height) {
         let binaryHash = '';
-        
+        const corners = [
+            { x: 0, y: 0 },
+            { x: width - 1, y: 0 },
+            { x: 0, y: height - 1 },
+            { x: width - 1, y: height - 1 }
+        ];
+
         for (const corner of corners) {
             const pixelIndex = (corner.y * width + corner.x) * 4;
-            // Extract 4 bits from each corner's alpha channel
-            for (let i = 0; i < 4; i++) {
-                binaryHash += ((data[pixelIndex + 3] >> i) & 1).toString();
+            for (let c = 0; c < 3; c++) {
+                binaryHash += (data[pixelIndex + c] & 1).toString();
             }
         }
 
         try {
             return BinaryConverter.binaryToText(binaryHash);
-        } catch (e) {
+        } catch {
             return null;
         }
     }

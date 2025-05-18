@@ -1,5 +1,4 @@
 const SteganoCore = require('../utils/steganoFunctions/steganoCore');
-const SteganoValidator = require('../Requests/SteganoValidator');
 const {AppError} = require('../Traits/errors');
 const crypto = require('crypto');
 
@@ -30,8 +29,7 @@ class SteganoUtils {
       }
       
       const validatedPasswords = passwords && Array.isArray(passwords) ? 
-        passwords : 
-        Array(messages.length).fill(null);
+            passwords : [] 
         
       if (validatedPasswords.length !== messages.length) {
         throw new Error('Number of passwords must match number of messages');
@@ -51,15 +49,20 @@ class SteganoUtils {
     }
   }
 
-  static async extractMultipleMessages(imageBuffer, password) {
+  static async extractMultipleMessages(imageBuffer, password, ) {
     try {
       if (!imageBuffer || !Buffer.isBuffer(imageBuffer)) {
         throw new Error('Valid image buffer is required');
       }
-      
-      return await SteganoCore.extractMultiple(imageBuffer, password);
+            
+      console.log(`[SteganoUtils] Extracting multiple messages from image buffer of size: ${imageBuffer.length} bytes`);
+      const result = await SteganoCore.extractMultiple(imageBuffer, password);
+      console.log(`[SteganoUtils] Extracted ${result ? result.length : 0} messages`);
+      return result;
     } catch (error) {
       throw new AppError(`Extraction failed: ${error.message}`, 400);
+    }finally {
+      imageBuffer = null;
     }
   }
   static async extractMessage(imageBuffer, password) {
@@ -70,6 +73,8 @@ class SteganoUtils {
       return await SteganoCore.extract(imageBuffer, password);
     } catch (error) {
       throw new AppError(`Extraction failed: ${error.message}`, 400);
+    }finally {
+      imageBuffer = null;
     }
   }
 
@@ -101,3 +106,4 @@ class SteganoUtils {
 }
 
 module.exports = SteganoUtils;
+//["password12345", "here2stay"]
