@@ -8,7 +8,9 @@ class SteganoCore {
 static TTL_HEADER_SIZE = 32;
 
   static async embed(imageBuffer, message, password, busyAreas = [], protectedZones = [],options = {}) {
-      if (!message || message.length === 0) {
+    console.log("[ENCODE] Message:", message);
+    console.log("[ENCODE] Password:", password || "none");
+    if (!message || message.length === 0) {
         throw new Error('Message cannot be empty');
       }
         
@@ -233,7 +235,7 @@ static TTL_HEADER_SIZE = 32;
       if (this._isInProtectedZone(x, y, protectedZones)) {
         continue;
       }
-      const pixelPos = pixelIndices[i] * 4; // RGBA = 4 bytes per pixel
+      const pixelPos = pixelIndices[i] * 4; 
       
       for (let c = 0; c < 3 && bitIndex < binaryData.length; c++) {
         const bit = parseInt(binaryData[bitIndex]);
@@ -241,6 +243,29 @@ static TTL_HEADER_SIZE = 32;
         pixels[pixelPos + channels[c]] = (pixels[pixelPos + channels[c]] & 0xFE) | bit;
         
         bitIndex++;
+      }
+    }
+    if (bitIndex < binaryData.length) {
+
+      const lowPriorityZones = protectedZones.filter(zone => zone.priority !== 'high');
+      const highPriorityZones = protectedZones.filter(zone => zone.priority === 'high');
+      
+      for (let i = 0; i < pixelIndices.length && bitIndex < binaryData.length; i++) {
+        const pixelNum = pixelIndices[i];
+        const x = pixelNum % width;
+        const y = Math.floor(pixelNum / width);
+        
+        if (this._isInSpecificProtectedZones(x, y, highPriorityZones)) {
+          continue;
+        }
+        
+        const pixelPos = pixelIndices[i] * 4;
+        
+        for (let c = 0; c < 3 && bitIndex < binaryData.length; c++) {
+          const bit = parseInt(binaryData[bitIndex]);
+          pixels[pixelPos + channels[c]] = (pixels[pixelPos + channels[c]] & 0xFE) | bit;
+          bitIndex++;
+        }
       }
     }
       if (bitIndex < binaryData.length) {
@@ -275,6 +300,14 @@ static TTL_HEADER_SIZE = 32;
     y >= zone.y && y < zone.y + zone.height
   ));
 }
+
+static _isInSpecificProtectedZones(x, y, zones) {
+  return zones.some(zone => (
+    x >= zone.x && x < zone.x + zone.width &&
+    y >= zone.y && y < zone.y + zone.height
+  ));
 }
+}
+
 
 module.exports = SteganoCore;

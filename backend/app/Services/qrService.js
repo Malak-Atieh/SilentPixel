@@ -10,7 +10,7 @@ class QRService {
         try {
             const { metadata } = await ImageProcessor.loadImage(imageBuffer);
 
-            const qrSize = Math.min(metadata.width, metadata.height) *0.15; //15% of img lenght
+            const qrSize = Math.min(metadata.width, metadata.height) *0.05; //15% of img lenght
 
             const qrDataUrl = await QRCode.toDataURL(JSON.stringify(data), {
                 errorCorrectionLevel: 'H',

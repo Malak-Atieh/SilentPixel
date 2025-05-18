@@ -36,16 +36,12 @@ class EncryptionService {
       const ciphertext = encryptedMsg.substring(64);
 
       const key = crypto.scryptSync(password, salt, this.KEY_LENGTH, this.SCRYPT_PARAMS);
-    console.log('here4.3');
 
       const decipher = crypto.createDecipheriv(this.ALGORITHM, key, iv);
-          console.log('here4.4');
 
       let decrypted = decipher.update(ciphertext, 'hex', 'utf8');
-    console.log('here4.5');
 
       decrypted += decipher.final('utf8');
-          console.log('here5');
 
       return decrypted;
     } catch (error) {

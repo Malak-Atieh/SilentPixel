@@ -5,7 +5,7 @@ const connectDB = require('./database/connection');
 const cors = require('cors');
 const morgan = require('morgan');
 const helmet = require('helmet');
-const errorHandler = require('./app/Middlewares/errorHandler');
+const errorHandler = require('./app/Middleware/errorHandler');
 const routes = require('./routes/api');
 
 
@@ -23,8 +23,7 @@ connectDB();
 
 app.use('/api', routes);
 
-
-app.use('/', routes);
+app.use('/', require('./routes/api'));
 
 app.use((req, res, next) => {
   const error = new Error('Route not found');

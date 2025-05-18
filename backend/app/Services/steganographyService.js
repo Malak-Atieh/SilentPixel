@@ -26,8 +26,14 @@ class SteganographyService {
           timestamp: new Date().toISOString(),
         });
         processedImage = wmResult.data;
-        if (wmResult.region) protectedZones.push(wmResult.region);
-      }
+        console.log('Watermark added to region:', wmResult.region);
+      if (wmResult.region) {
+        protectedZones.push({
+          ...wmResult.region,
+          priority: 'high'
+        });
+      }      
+    }
 
       if (addQRCode === 'true') {
         const qrResult  = await QRService.addQRCode(processedImage, {
@@ -35,7 +41,12 @@ class SteganographyService {
           timestamp: new Date().toISOString(),
         });
         processedImage = qrResult.data;
-        if (qrResult.region) protectedZones.push(qrResult.region);
+        if (qrResult.region) {
+          protectedZones.push({
+            ...qrResult.region,
+            priority: 'medium'
+          });
+        }
       }
     const options = {
       ttl: req.body.ttl ? parseInt(req.body.ttl) : null,

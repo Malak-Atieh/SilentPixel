@@ -4,13 +4,17 @@ const path = require('path');
 const fs = require('fs');
 const AuthController = require('../app/Controllers/AuthController');
 const SteganoController = require('../app/Controllers/SteganoController');
-const { auth } = require('../app/Middlewares/Auth');
+const { auth } = require('../app/Middleware/Auth');
 const {
   validateImageUpload,
   validateMessageInput
-} = require('../app/Middlewares/Validation');
+} = require('../app/Middleware/Validation');
 const multer = require('multer');
-const upload = multer();
+const upload = multer({
+  limits: {
+    fileSize: 10 * 1024 * 1024 // 10MB limit
+  }
+});
 
 // Auth Routes
 router.post('/register', AuthController.register);
@@ -54,4 +58,5 @@ router.get('/download/:filename', (req, res) => {
     }
   });
 });
+
 module.exports = router;

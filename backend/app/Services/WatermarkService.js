@@ -4,262 +4,213 @@ const ImageProcessor = require('../utils/imageProcessor');
 const BinaryConverter = require('../utils/steganoFunctions/binaryConverter');
 
 class WatermarkService {
-  
+    // Configuration for watermark placement
+    static watermarkConfig = {
+        regionSize: 64, // Size of the square region to use for watermark (in pixels)
+        edgePadding: 10, // Padding from image edges
+        channel: 'rg' // Use both red and green channels for more capacity
+    };
+
     static async addWatermark(imageBuffer, watermarkData) {
         try {
             const { image } = await ImageProcessor.loadImage(imageBuffer);
-            
             const imageData = await ImageProcessor.getImageData(image);
             const { data, width, height } = imageData;
-        
-            //create a digest of the image data
+
+            // Prepare watermark data
             const watermarkString = JSON.stringify(watermarkData);
-            const watermarkHash = crypto.createHash('sha256').update(watermarkString).digest('hex'); 
+            const watermarkHash = crypto.createHash('sha256').update(watermarkString).digest('hex');
+            const binaryWatermark = BinaryConverter.textToBinary(watermarkString);
+
+            // Calculate watermark region (bottom-right corner by default)
+            const region = this._calculateWatermarkRegion(width, height);
             
-            const qrSafeZone = {
-                x: Math.floor(width * 0.75),
-                y: Math.floor(height * 0.75),
-                width: Math.floor(width * 0.25),
-                height: Math.floor(height * 0.25)
-            };
+            // Store watermark in the designated region
+            const usedPixels = this._embedWatermarkInRegion(
+                data, 
+                width, 
+                binaryWatermark, 
+                region
+            );
 
-            //determine watermark position
-            const position = this._getWatermarkPositions(width, height, binaryWatermark.length,qrSafeZone);
-
-            // Track pixel coordinates used
-            let usedCoords = [];
-
-            //embed watermark using phase coding technique 
-            for (let i=0; i< binaryWatermark.length; i++){
-                const pos = position[i];
-                const pixelIndex = pos * 4;
-
-                const y = Math.floor(pos / width);
-                const x = pos % width;
-                usedCoords.push({ x, y });
-
-                //modifying red & grn channels in opp dir to keep overall color
-                const bit = parseInt(binaryWatermark[i]);
-                if(bit==1){
-                    //increase red a bit, dec grn same
-                    data[pixelIndex]= Math.min(255, data[pixelIndex] + 1);    
-                    data[pixelIndex + 1] = Math.max(0, data[pixelIndex + 1] - 1);
-                } else {
-                    //dec red a bit, increase grn same
-                    data[pixelIndex] = Math.max(0, data[pixelIndex] - 1);
-                    data[pixelIndex + 1] = Math.min(255, data[pixelIndex + 1] + 1);
-                }
-            }
-
-            const corners = [
-              { x: 0, y: 0 },
-              { x: width - 3, y: 0 },
-              { x: 0, y: height - 3 },
-              { x: width - 3, y: height - 3 }
-            ];
-            corners.forEach(corner => {
-              for (let dy = 0; dy < 3; dy++) {
-                for (let dx = 0; dx < 3; dx++) {
-                  usedCoords.push({ x: corner.x + dx, y: corner.y + dy });
-                }
-              }
-            });
-
-            // Compute bounding box of all used pixels
-            const xs = usedCoords.map(p => p.x);
-            const ys = usedCoords.map(p => p.y);
-            const minX = Math.max(0, Math.min(...xs));
-            const minY = Math.max(0, Math.min(...ys));
-            const maxX = Math.min(width, Math.max(...xs));
-            const maxY = Math.min(height, Math.max(...ys));
-
-            const wmRegion = {
-              x: minX,
-              y: minY,
-              width: maxX - minX + 1,
-              height: maxY - minY + 1
-            };
-
-            //store the watermark hash in the alpha channel corners
+            // Store hash in corners for verification
             this._storeWatermarkHash(data, watermarkHash, width, height);
-            
+
             const updatedImage = ImageProcessor.updateImage(imageData);
-      
             const modifiedBuffer = await ImageProcessor.imageToBuffer({ image: updatedImage });
+
             return {
                 data: modifiedBuffer,
-                region: wmRegion
-              };
+                region: {
+                    x: region.startX,
+                    y: region.startY,
+                    width: region.size,
+                    height: region.size
+                }
+            };
         } catch (error) {
-          throw new AppError('Error adding watermark ' + error.message);
+            throw new AppError('Error adding watermark: ' + error.message);
         }
     }
 
     static async extractWatermark(imageBuffer) {
-    try {
-      const { image } = await ImageProcessor.loadImage(imageBuffer);
-      
-      const imageData = await ImageProcessor.getImageData(image);
-      const { data, width, height } = imageData;
+      try {
+          console.log('Starting watermark extraction...');
+          const { image } = await ImageProcessor.loadImage(imageBuffer);
+          const imageData = await ImageProcessor.getImageData(image);
+          const { data, width, height } = imageData;
+          console.log(`Image dimensions: ${width}x${height}`);
 
-       const storedHash = this._retrieveWatermarkHash(data, width, height);
-        if (!storedHash) {
-            throw new AppError('No watermark found', 400);
+          // First verify the hash from the corners
+          const storedHash = this._retrieveWatermarkHash(data, width, height);
+          console.log('Stored hash (partial):', storedHash?.substring(0, 16));
+          if (!storedHash) {
+              throw new AppError('No watermark hash found in image corners', 400);
+          }
+
+          // Calculate where the watermark should be
+          const region = this._calculateWatermarkRegion(width, height);
+          console.log('Watermark region:', region);
+
+          // Extract binary watermark from the region
+          const binaryWatermark = this._extractWatermarkFromRegion(
+              data, 
+              width, 
+              region
+          );
+          console.log(`Extracted ${binaryWatermark.length} bits`);
+
+          // Convert to text
+          const watermarkString = BinaryConverter.binaryToText(binaryWatermark);
+          console.log('Watermark string:', watermarkString.substring(0, 50) + '...');
+          
+          // Verify hash
+          const extractedHash = crypto
+              .createHash('sha256')
+              .update(watermarkString)
+              .digest('hex');
+          console.log('Extracted hash (partial):', extractedHash.substring(0, 16));
+
+          if (extractedHash.substring(0, 16) !== storedHash.substring(0, 16)) {
+              throw new AppError('Watermark hash mismatch', 400);
+          }
+
+          return JSON.parse(watermarkString);
+      } catch (error) {
+          console.error('Watermark extraction error:', error.message);
+          if (error instanceof AppError) {
+              throw error;
+          }
+          throw new AppError('Watermark extraction failed: ' + error.message, 400);
+      }
+  }
+    static _calculateWatermarkRegion(width, height) {
+        const { regionSize, edgePadding } = this.watermarkConfig;
+        
+        return {
+            startX: width - regionSize - edgePadding,
+            startY: height - regionSize - edgePadding,
+            size: regionSize
+        };
+    }
+
+    static _embedWatermarkInRegion(data, width, binaryWatermark, region) {
+        const { startX, startY, size } = region;
+        const usedPixels = [];
+        let bitIndex = 0;
+
+        for (let y = startY; y < startY + size && bitIndex < binaryWatermark.length; y++) {
+            for (let x = startX; x < startX + size && bitIndex < binaryWatermark.length; x++) {
+                const pixelIndex = (y * width + x) * 4;
+                const bit = parseInt(binaryWatermark[bitIndex]);
+
+                // Alternate between red and green channels
+                const channel = bitIndex % 2 === 0 ? 0 : 1; // 0: red, 1: green
+                
+                // Store bit in LSB of the selected channel
+                data[pixelIndex + channel] = (data[pixelIndex + channel] & 0xFE) | bit;
+                
+                usedPixels.push({ x, y });
+                bitIndex++;
+            }
         }
 
-      const maxLength = 128 * 8; 
-      const qrSafeZone = {
-          x: Math.floor(width * 0.75),
-          y: Math.floor(height * 0.75),
-          width: Math.floor(width * 0.25),
-          height: Math.floor(height * 0.25)
-        };
-      
-      const positions = this._getWatermarkPositions(width, height, maxLength,qrSafeZone);
-      
-      // Extract binary watermark
-      let binaryWatermark = '';
-      for (let i = 0; i < maxLength; i++) {
-        const pos = positions[i];
-        const pixelIndex = pos * 4;
+        return usedPixels;
+    }
+
+    static _extractWatermarkFromRegion(data, width, region) {
+        const { startX, startY, size } = region;
+        const maxBits = size * size * 2; // 2 bits per pixel (red and green)
+        let binaryWatermark = '';
+        let bitCount = 0;
+
+        for (let y = startY; y < startY + size && bitCount < maxBits; y++) {
+            for (let x = startX; x < startX + size && bitCount < maxBits; x++) {
+                const pixelIndex = (y * width + x) * 4;
+                
+                // Extract from both red and green channels
+                const redBit = data[pixelIndex] & 1;
+                const greenBit = data[pixelIndex + 1] & 1;
+                
+                binaryWatermark += redBit.toString();
+                binaryWatermark += greenBit.toString();
+                bitCount += 2;
+            }
+        }
+
+        return binaryWatermark;
+    }
+
+    static _storeWatermarkHash(data, hash, width, height) {
+        // Store only first 16 chars of hash (128 bits) in alpha channels of corners
+        const hashPart = hash.substring(0, 16);
+        const binaryHash = BinaryConverter.textToBinary(hashPart);
+
+        const corners = [
+            { x: 0, y: 0 },               // Top-left
+            { x: width - 1, y: 0 },        // Top-right
+            { x: 0, y: height - 1 },       // Bottom-left
+            { x: width - 1, y: height - 1 } // Bottom-right
+        ];
+
+        let bitIndex = 0;
+        for (const corner of corners) {
+            if (bitIndex >= binaryHash.length) break;
+            
+            const pixelIndex = (corner.y * width + corner.x) * 4;
+            // Store 4 bits in each corner's alpha channel
+            for (let i = 0; i < 4 && bitIndex < binaryHash.length; i++) {
+                const bit = parseInt(binaryHash[bitIndex]);
+                data[pixelIndex + 3] = (data[pixelIndex + 3] & ~(1 << i)) | (bit << i);
+                bitIndex++;
+            }
+        }
+    }
+
+    static _retrieveWatermarkHash(data, width, height) {
+        const corners = [
+            { x: 0, y: 0 },
+            { x: width - 1, y: 0 },
+            { x: 0, y: height - 1 },
+            { x: width - 1, y: height - 1 }
+        ];
+
+        let binaryHash = '';
         
-        // Compare red and green channels to determine bit value
-        const red = data[pixelIndex];
-        const green = data[pixelIndex + 1];
-        
-        binaryWatermark += (red > green) ? '1' : '0';
-      }
-      
-      // Convert binary to text
-      const watermarkString = BinaryConverter.binaryToText(binaryWatermark);
-      
-      // Verify hash
-      const extractedHash = crypto
-        .createHash('sha256')
-        .update(watermarkString)
-        .digest('hex');
-      
-      if (extractedHash.substring(0, 16) !== storedHash.substring(0, 16)) {
-        throw new AppError('Watermark hash mismatch', 400);
-      }
-      
+        for (const corner of corners) {
+            const pixelIndex = (corner.y * width + corner.x) * 4;
+            // Extract 4 bits from each corner's alpha channel
+            for (let i = 0; i < 4; i++) {
+                binaryHash += ((data[pixelIndex + 3] >> i) & 1).toString();
+            }
+        }
 
         try {
-        const watermarkData = JSON.parse(watermarkString);
-        return watermarkData;
+            return BinaryConverter.binaryToText(binaryHash);
         } catch (e) {
-          throw new Error('Error parsing watermark data ' + e.message);
+            return null;
         }
-
-    } catch (error) {
-      throw new Error('Error extracting watermark: ' + error.message);
     }
-    }
-  static _getWatermarkPositions(width, height, length, qrSafeZone) {
-    const totalPixels = width * height;
-    const positions = [];
-    
-    // Use prime numbers for position calculation
-    const primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53];
-        let i = 0;
-        let count = 0;
-        
-        while (count < length) {
-            // Calculate position using a formula with primes
-            const prime1 = primes[i % primes.length];
-            const prime2 = primes[(i + 7) % primes.length];
-            
-            // Generate a position that depends on current index and primes
-            const position = (prime1 * i + prime2) % totalPixels;
-            
-            // Convert position to x,y coordinates
-            const y = Math.floor(position / width);
-            const x = position % width;
-            
-            // Skip if this position is in the QR safe zone
-            if (qrSafeZone && 
-                x >= qrSafeZone.x && 
-                x < qrSafeZone.x + qrSafeZone.width && 
-                y >= qrSafeZone.y && 
-                y < qrSafeZone.y + qrSafeZone.height) {
-                i++;
-                continue;
-            }
-            
-            positions.push(position);
-            count++;
-            i++;
-        }
-        
-        return positions;
-    }
-
-
-  static _storeWatermarkHash(data, hash, width, height) {
-    const hashChunks = [
-      hash.substring(0, 4),
-      hash.substring(4, 8),
-      hash.substring(8, 12),
-      hash.substring(12, 16)
-    ];
-    
-    const corners = [
-      { x: 0, y: 0 },
-      { x: width - 3, y: 0 },
-      { x: 0, y: height - 3 },
-      { x: width - 3, y: height - 3 }
-    ];
-    
-    for (let i = 0; i < 4; i++) {
-      const hashBinary = BinaryConverter.textToBinary(hashChunks[i]);
-      
-      let bitIndex = 0;
-      for (let dy = 0; dy < 3; dy++) {
-        for (let dx = 0; dx < 3; dx++) {
-          if (bitIndex >= hashBinary.length) break;
-          
-          const x = corners[i].x + dx;
-          const y = corners[i].y + dy;
-          const pixelIndex = (y * width + x) * 4;
-          
-          const bit = parseInt(hashBinary[bitIndex]);
-          data[pixelIndex + 3] = (data[pixelIndex + 3] & 0xFE) | bit; // Modify alpha channel LSB
-          
-          bitIndex++;
-        }
-      }
-    }
-  }
-
-
-  static _retrieveWatermarkHash(data, width, height) {
-    const corners = [
-      { x: 0, y: 0 },
-      { x: width - 3, y: 0 },
-      { x: 0, y: height - 3 },
-      { x: width - 3, y: height - 3 }
-    ];
-    
-    let hashBinary = '';
-    
-    for (let i = 0; i < 4; i++) {
-      for (let dy = 0; dy < 3; dy++) {
-        for (let dx = 0; dx < 3; dx++) {
-          const x = corners[i].x + dx;
-          const y = corners[i].y + dy;
-          const pixelIndex = (y * width + x) * 4;
-          
-          hashBinary += (data[pixelIndex + 3] & 1).toString(); // Read alpha channel LSB
-        }
-      }
-    }
-    
-    try {
-      return BinaryConverter.binaryToText(hashBinary);
-    } catch (e) {
-      return null;
-    }
-  }
 }
 
 module.exports = WatermarkService;

@@ -1,6 +1,11 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:http_parser/http_parser.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:frontend/pages/encode_result.dart';
 
 class HideMessageScreen extends StatefulWidget {
   @override
@@ -182,7 +187,7 @@ class _HideMessageScreenState extends State<HideMessageScreen> {
             ),
             SizedBox(height: 10),
             ElevatedButton(
-              onPressed: _canEncode ? () {} : null,
+              onPressed: _canEncode ? _sendEncodeRequest : null,
               style: ElevatedButton.styleFrom(
                 backgroundColor:
                 _canEncode ? Color(0xFF0CCE6B) : Color(0xFFB4B4B4),
@@ -206,6 +211,74 @@ class _HideMessageScreenState extends State<HideMessageScreen> {
         )
       )
     );
+  }
+  Future<void> _sendEncodeRequest() async {
+    if (_selectedImage == null) return;
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+
+    if (token == null) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Authentication token not found. Please log in again.'),
+      ));
+      return;
+    }
+
+    final url = Uri.parse('http://10.0.2.2:5000/api/encode');
+
+    final request = http.MultipartRequest("POST", url)
+      ..headers['Authorization'] = 'Bearer $token'
+      ..fields['message'] = _messageController.text
+      ..fields['password'] = _passwordController.text
+      ..fields['addQRCode'] = _generateQR.toString()
+      ..fields['addWatermark'] = _addWatermarks.toString()
+      ..files.add(await http.MultipartFile.fromPath(
+        'image',
+        _selectedImage!.path,
+        contentType: MediaType('image', 'png'),
+      ));
+
+    try {
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+
+        final String dataUrl = responseData['data']['base64'];
+        final String base64Str = dataUrl.split(',')[1];
+        final String downloadUrl = responseData['data']['downloadUrl'];
+
+        if (!mounted) return;
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => EncodeResultScreen(
+              originalImage: _selectedImage!,
+              base64EncodedImage: base64Str,
+              downloadUrl: downloadUrl,
+            ),
+          ),
+        );
+      } else {
+        throw Exception("Failed to encode message");
+      }
+    } catch (e) {
+      print("Encoding error: $e");
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: Text("Error"),
+          content: Text("An error occurred while encoding the message."),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text("OK"),
+            )
+          ],
+        ),
+      );
+    }
   }
   Widget _buildTextField(TextEditingController controller, String hint,
       {bool obscure = false}) {
