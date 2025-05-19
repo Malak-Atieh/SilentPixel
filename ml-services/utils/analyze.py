@@ -1,4 +1,3 @@
-# utils/analyze.py
 import torch
 import torchvision.transforms as transforms
 from PIL import Image
@@ -15,7 +14,7 @@ def predict_image(model, image_bytes):
         transforms.Resize((224, 224)),
         transforms.ToTensor(),
     ])
-    tensor = transform(image).unsqueeze(0)  # Add batch dim
+    tensor = transform(image).unsqueeze(0)  
     with torch.no_grad():
         output = model(tensor)
         prob = torch.softmax(output, dim=1).squeeze()

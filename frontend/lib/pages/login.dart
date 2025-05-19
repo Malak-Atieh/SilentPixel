@@ -57,23 +57,27 @@ class _LoginState extends State<Login>  {
             // Login form
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Spacer(),
                   
                   const SizedBox(height: 40),
-                  const Text(
-                    'Login',
-                    style: TextStyle(
-                      fontSize: 36,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFFF4F4F4),
-                      fontFamily: 'Orbitron',
+                  const Center(
+                    child: Text(
+                      'Login',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 36,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFFF4F4F4),
+                        fontFamily: 'Orbitron',
+                      ),
                     ),
                   ),
                   const SizedBox(height: 40),
                   Text(
                       'Email',
+                      textAlign: TextAlign.left,
                       style: TextStyle(
                         fontFamily: 'Inter',
                         fontWeight: FontWeight.w400,
@@ -81,11 +85,12 @@ class _LoginState extends State<Login>  {
                         fontSize: 18,
                       )
                   ),
-                  SizedBox(height: 10),
+                  SizedBox(height: 7),
                   _buildTextField(_emailController, 'Email', hint: 'John@example.com'),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 10),
                   Text(
                       'Password',
+                      textAlign: TextAlign.left,
                       style: TextStyle(
                         fontFamily: 'Inter',
                         fontWeight: FontWeight.w400,
@@ -93,10 +98,10 @@ class _LoginState extends State<Login>  {
                         fontSize: 18,
                       )
                   ),
-                  SizedBox(height: 10),
+                  SizedBox(height: 7),
                   _buildTextField(_passwordController, 'Password',
                       hint: 'Enter 8 digit password', obscure: true),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 10),
 
                   // Remember and forgot password
                   Row(
@@ -104,17 +109,25 @@ class _LoginState extends State<Login>  {
                     children: [
                       Row(
                         children: [
-                          Switch(
+                          Transform.scale(
+                            scale: 0.8,
+                            child: Switch(
                               value: _rememberMe,
                               onChanged: (val) {
                                 setState(() {
                                   _rememberMe = val;
                                 });
-                              }
+                              },
+                              activeColor: Colors.grey[400],
+                              activeTrackColor: Color(0xFF23488A),
+                            ),
                           ),
                           const Text('Remember me', style: 
                             TextStyle(
-                              color: Color(0xFFF4F4F4)
+                              fontFamily: 'Inter',
+                              fontWeight: FontWeight.w400,
+                              color: Color(0xFFF4F4F4),
+                              fontSize: 14,
                             )
                           ),
                         ],
@@ -124,7 +137,10 @@ class _LoginState extends State<Login>  {
                         child: const Text(
                           'Forget password?',
                           style: TextStyle(
-                            color: Color(0xFFF4F4F4)
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w400,
+                            color: Color(0xFFF4F4F4),
+                            fontSize: 14,
                           ),
                         ),
                       ),
@@ -135,9 +151,20 @@ class _LoginState extends State<Login>  {
 
                   // Login button
                   ElevatedButton(
-                    onPressed: _canLogin ? () {_submitLogin();} : null,
+                    onPressed: () {
+                      if (_canLogin) {
+                        _submitLogin();
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text("Please fill all fields correctly!"),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                    },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF0CCE6B),
+                      backgroundColor: _canLogin ? Color(0xFF0CCE6B) : Color(0xFF8C8C8C),
                       minimumSize: const Size(double.infinity, 50),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     ),
@@ -274,7 +301,7 @@ class _LoginState extends State<Login>  {
   }
 
   Future<void> _submitLogin() async {
-    final url = Uri.parse('http://10.0.2.2:5000/api/login'); // Update to match your backend
+    final url = Uri.parse('http://10.0.2.2:5000/api/login');
 
     try {
       final response = await http.post(

@@ -61,33 +61,35 @@ class _SignUpState extends State<SignUp>  {
             SafeArea(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24),
-
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Spacer(),
                       const SizedBox(height: 40),
-                      const Text(
-                        'Sign Up',
-                        style: TextStyle(
-                          fontSize: 36,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFFF4F4F4),
-                          fontFamily: 'Orbitron',
+                      const Center(
+                        child: Text(
+                          'Sign Up',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 36,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFFF4F4F4),
+                            fontFamily: 'Orbitron',
+                          ),
                         ),
                       ),
                       const SizedBox(height: 40),
                       _buildLabel('Username'),
-                      SizedBox(height: 10),
+                      SizedBox(height: 7),
                       _buildTextField(_usernameController, 'Username', hint: 'JohnDoe'),
 
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 10),
                       _buildLabel('Email'),
-                      SizedBox(height: 10),
+                      SizedBox(height: 7),
                       _buildTextField(_emailController, 'Email', hint: 'John@example.com'),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 10),
                       _buildLabel('Password'),
-                      SizedBox(height: 10),
+                      SizedBox(height: 7),
                       _buildTextField(_passwordController, 'Password',
                           hint: 'Enter 8 digit password',
                           obscure: _obscurePassword,
@@ -98,14 +100,23 @@ class _SignUpState extends State<SignUp>  {
                             ),
                             onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
                           )),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 30),
 
                       ElevatedButton(
-                        onPressed: _canSignUp ? () {
-                          _submitSignup();
-                        } : null,
+                        onPressed: () {
+                          if (_canSignUp) {
+                            _submitSignup();
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text("Please fill all fields correctly!"),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
+                        },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: _canSignUp ? Color(0xFF0CCE6B) : Color(0xFFC8C8C8),
+                          backgroundColor: _canSignUp ? Color(0xFF0CCE6B) : Color(0xFF8C8C8C),
                           minimumSize: const Size(double.infinity, 50),
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10)
@@ -291,6 +302,7 @@ class _SignUpState extends State<SignUp>  {
     return TextField(
       controller: controller,
       obscureText: obscure,
+      textAlign: TextAlign.left,
       style: TextStyle(
         color: Color(0xFF09192C),
         fontFamily: 'Inter',

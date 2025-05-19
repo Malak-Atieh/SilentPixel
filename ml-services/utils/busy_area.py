@@ -1,4 +1,3 @@
-# utils/busy_area.py
 import cv2
 import numpy as np
 import io
@@ -13,11 +12,10 @@ def detect_busy_areas(image_bytes, sensitivity='medium'):
     thresh_val = thresholds.get(sensitivity, 25)
     mask = np.uint8(np.abs(laplacian) > thresh_val)
 
-    # Find contours of busy areas
     contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     areas = []
     for cnt in contours:
         x, y, w, h = cv2.boundingRect(cnt)
-        if w * h > 100:  # filter tiny patches
+        if w * h > 100: 
             areas.append({'x': int(x), 'y': int(y), 'width': int(w), 'height': int(h)})
     return areas
