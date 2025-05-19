@@ -36,3 +36,5 @@ models/
 
 # Jupyter/IPython checkpoints
 .ipynb_checkpoints/
+
+utils/
