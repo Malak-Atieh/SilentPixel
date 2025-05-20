@@ -141,4 +141,5 @@ def process_image(args):
         
         secret_data = generate_random_text(200, 800)
         lsb_img = encode_lsb(img_array, secret_data, delimiter)
-       
+        lsb_output = os.path.join(output_dir, 'lsb', f"{basename}_lsb.png")
+      
