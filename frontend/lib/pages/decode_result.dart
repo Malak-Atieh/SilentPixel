@@ -11,7 +11,7 @@ class DecodeResultScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String displayWatermark = (watermark == null || watermark.trim().isEmpty)
+    final String displayWatermark = (watermark.trim().isEmpty)
         ? "No watermark detected"
         : watermark;
     return Scaffold(
