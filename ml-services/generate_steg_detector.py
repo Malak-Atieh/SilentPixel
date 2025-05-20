@@ -182,3 +182,8 @@ def generate_dataset(input_dir, output_dir, num_workers=4, delimiter='#####'):
     successful = 0
     failed = 0
     
+    with ProcessPoolExecutor(max_workers=num_workers) as executor:
+        futures = [executor.submit(process_image, args) for args in args_list]
+        
+
+    generate_dataset(args.input, args.output, args.workers, args.delimiter)
