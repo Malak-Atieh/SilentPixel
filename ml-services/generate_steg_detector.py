@@ -186,4 +186,5 @@ def generate_dataset(input_dir, output_dir, num_workers=4, delimiter='#####'):
         futures = [executor.submit(process_image, args) for args in args_list]
         
         for future in tqdm(as_completed(futures), total=len(futures), desc="Generating dataset"):
-        
+            img_path, success = future.result()
+     
