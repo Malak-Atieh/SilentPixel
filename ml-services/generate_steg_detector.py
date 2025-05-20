@@ -27,3 +27,5 @@ def to_binary(data):
     else:
         raise TypeError("Type not supported.")
 
+
+def encode_lsb(image, secret_data, delimiter='#####'):
