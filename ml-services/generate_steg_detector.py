@@ -179,3 +179,6 @@ def generate_dataset(input_dir, output_dir, num_workers=4, delimiter='#####'):
         
     args_list = [(str(img_path), output_dir, delimiter) for img_path in image_files]
     
+    successful = 0
+    failed = 0
+    
