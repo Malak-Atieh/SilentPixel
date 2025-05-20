@@ -51,9 +51,9 @@
 
 ### Screens Gifs
 
-| Hide Message                            |  screen                        |  screen                           |
+| Hide Message                            | Reveal Message                        |  screen                           |
 | --------------------------------------- | ------------------------------------- | ------------------------------------- |
-| ![Landing](./readme/hideMessage.gif)   | ![fsdaf](./readme/demo/1440x1024.png) | ![fsdaf](./readme/demo/1440x1024.png) |
+| ![Landing](./readme/hideMessage.gif)    | ![fsdaf](./readme/revealMessage.gif)  | ![fsdaf](./readme/demo/1440x1024.png) |
 
 <br><br>
 
