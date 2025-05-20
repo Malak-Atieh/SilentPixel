@@ -119,4 +119,7 @@ def dct_encode(image, secret_data, alpha=0.1):
                         dct_block[2, 1] += alpha
                 
                 modified_block = cv2.idct(dct_block)
-       
+                
+                modified_image[i:i+8, j:j+8] = modified_block
+                
+        
