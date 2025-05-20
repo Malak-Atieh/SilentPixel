@@ -88,4 +88,5 @@ def dct_encode(image, secret_data, alpha=0.1):
         gray = image.copy()
     
     h, w = gray.shape
+    h = h - (h % 8)
    
