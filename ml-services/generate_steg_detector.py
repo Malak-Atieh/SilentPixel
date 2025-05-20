@@ -51,4 +51,5 @@ def encode_lsb(image, secret_data, delimiter='#####'):
                 if data_index < data_len:
                     pixel = encoded_image[row, col, channel]
                     
-    
+                    binary_pixel = to_binary(pixel)
+                    
