@@ -1,3 +1,44 @@
+# Virtual environments
+env/
+steg_env/
+venv/
+*/env/
+*/steg_env/
+*/venv/
+
+# Python cache
+__pycache__/
+*/__pycache__/
+
+# Dataset and model artifacts
+steganography_dataset/
+*/steganography_dataset/
+fast_models/
+fast_models_v2/
+*/fast_models/
+*/fast_models_v2/
+
+# Checkpoints and logs
+checkpoints/
+logs/
+*/checkpoints/
+*/logs/
+
+# Model weights
+*.pt
+*.h5
+*.pth
+*.onnx
+
+# Trained models in subfolders
+models/
+*/models/
+
+# Jupyter/IPython checkpoints
+.ipynb_checkpoints/
+
+utils/
+=======
 # Python & Virtual Environments
 **/steg_env/
 **/venv/
