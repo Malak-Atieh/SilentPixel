@@ -144,3 +144,5 @@ def process_image(args):
         lsb_output = os.path.join(output_dir, 'lsb', f"{basename}_lsb.png")
         Image.fromarray(lsb_img).save(lsb_output)
         
+        gray_img = cv2.cvtColor(img_array, cv2.COLOR_RGB2GRAY)
+     
