@@ -138,3 +138,6 @@ def process_image(args):
         img_array = np.array(img)
         
         basename = os.path.splitext(os.path.basename(image_path))[0]
+        
+        secret_data = generate_random_text(200, 800)
+     
