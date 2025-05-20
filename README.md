@@ -47,7 +47,13 @@
 
 | Reveal Result screen                    | Anaylze screen                        | Home screen                           |
 | --------------------------------------- | ------------------------------------- | ------------------------------------- |
-| ![Landing](./readme/decodeResult.png)   | ![fsdaf](./readme/demo/1440x1024.png) | ![fsdaf](./readme/demo/1440x1024.png)           |
+| ![Landing](./readme/decodeResult.png)   | ![fsdaf](./readme/demo/1440x1024.png) | ![fsdaf](./readme/demo/1440x1024.png) |
+
+### Screens Gifs
+
+| Hide Message                            |  screen                        |  screen                           |
+| --------------------------------------- | ------------------------------------- | ------------------------------------- |
+| ![Landing](./readme/hideMessage.gif)   | ![fsdaf](./readme/demo/1440x1024.png) | ![fsdaf](./readme/demo/1440x1024.png) |
 
 <br><br>
 
