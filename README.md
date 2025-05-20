@@ -14,7 +14,7 @@
 
 ### Database Schema
 
-<img src="./readme/diagram.svg"/>
+<img src="./readme/databaseDiagram.png"/>
 
 ### Component Diagram
 
@@ -66,9 +66,10 @@
 <!-- Deployment -->
 <img src="./readme/title7.svg"/>
 
-### Add Title Here
+### Deployment to AWS EC2
 
-- Description here.
+- Staging IP: 15.236.41.118
+- Production IP: 13.38.82.220
 
 
 | Postman API 1                           | Postman API 2                         | Postman API 3                        |
