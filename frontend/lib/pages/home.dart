@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/pages/encode.dart';
 import 'package:frontend/pages/decode.dart';
+import 'package:frontend/pages/analyze.dart';
 
 class Home extends StatelessWidget {
   const Home({super.key});
@@ -67,6 +68,28 @@ class Home extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 40),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => AnalyzeScreen()),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFF0CCE6B),
+                  minimumSize: const Size(double.infinity, 50),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                ),
+                child: const Text(
+                    'Analyze Image',
+                    style: TextStyle(
+                        fontFamily: 'Orbitron',
+                        color: Color(0xFFF4F4F4),
+                        fontSize: 18
+                    )
+                ),
+              ),
+              const SizedBox(height: 25),
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
@@ -114,7 +137,7 @@ class Home extends StatelessWidget {
             TextButton(
               onPressed: () {},
               child: const Text(
-                'Link to Demo video or Github documentation for reference',
+                'For more Info click for Github documentation for reference',
                  style: TextStyle(
                      fontFamily: 'Orbitron',
                      color: Color(0xFFF4F4F4),
