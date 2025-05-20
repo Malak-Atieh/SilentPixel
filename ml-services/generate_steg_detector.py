@@ -140,4 +140,5 @@ def process_image(args):
         basename = os.path.splitext(os.path.basename(image_path))[0]
         
         secret_data = generate_random_text(200, 800)
-     
+        lsb_img = encode_lsb(img_array, secret_data, delimiter)
+       
