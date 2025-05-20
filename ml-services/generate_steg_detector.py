@@ -35,3 +35,6 @@ def encode_lsb(image, secret_data, delimiter='#####'):
     binary_secret_data = to_binary(secret_data)
     
     data_len = len(binary_secret_data)
+    
+    height, width, channels = image.shape
+ 
