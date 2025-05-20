@@ -49,4 +49,6 @@ def encode_lsb(image, secret_data, delimiter='#####'):
         for col in range(width):
             for channel in range(channels):
                 if data_index < data_len:
+                    pixel = encoded_image[row, col, channel]
+                    
     
