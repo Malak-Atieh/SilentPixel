@@ -1,0 +1,36 @@
+1. User
+    a- Feature Tests (API):
+
+        Can register
+
+        Can login
+
+        can't register with existing email
+
+        can't login with invalid password
+
+    b- Unit Tests (Logic):
+
+        Password hashing 
+
+        Profile picture logic      
+
+2. StegoImage
+    a- Feature Tests:
+
+        Can encode an image with a watermark/message
+
+        Can decode a watermark/message
+
+        Fails on invalid image or missing fields
+
+        Requires authentication
+
+    b- Unit Tests (Logic):
+
+        Encoding returns expected data
+
+        Decoding returns original message
+
+        Validate image URL transformations
+
