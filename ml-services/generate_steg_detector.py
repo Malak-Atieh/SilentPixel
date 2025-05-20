@@ -112,4 +112,5 @@ def dct_encode(image, secret_data, alpha=0.1):
                 bit = int(binary_data[data_index])
                 
                 if bit == 0:
+                    if int(dct_block[2, 1]) % 2 == 1:
     
