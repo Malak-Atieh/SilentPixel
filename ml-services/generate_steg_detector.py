@@ -130,4 +130,9 @@ def dct_encode(image, secret_data, alpha=0.1):
 
 
 def process_image(args):
-  
+    image_path, output_dir, delimiter = args
+    
+    try:
+        # Load image
+        img = Image.open(image_path).convert('RGB')
+       
