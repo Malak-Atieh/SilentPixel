@@ -124,4 +124,7 @@ def dct_encode(image, secret_data, alpha=0.1):
                 
                 data_index += 1
     
+    modified_image = np.clip(modified_image, 0, 255).astype(np.uint8)
     
+    return modified_image
+
