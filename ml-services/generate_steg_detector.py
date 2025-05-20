@@ -105,3 +105,5 @@ def dct_encode(image, secret_data, alpha=0.1):
     for i in range(0, h, 8):
         for j in range(0, w, 8):
             if data_index < data_len:
+                block = modified_image[i:i+8, j:j+8]
+    
