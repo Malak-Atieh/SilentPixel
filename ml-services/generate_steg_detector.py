@@ -41,3 +41,6 @@ def encode_lsb(image, secret_data, delimiter='#####'):
     if height * width * channels < data_len:
         raise ValueError("Image too small to hold this data")
     
+    encoded_image = np.copy(image)
+    
+    
