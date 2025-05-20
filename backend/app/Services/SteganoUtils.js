@@ -18,7 +18,21 @@ class SteganoUtils {
       throw new AppError(`Embedding failed: ${error.message}`, 400);
     }
   }
-  static async embedMultipleMessages({ imageBuffer, messages, passwords, busyAreas = [], protectedZones = [], options = {} }) {
+
+  static async extractMessage(imageBuffer, password) {
+    try {
+      if (!imageBuffer || !Buffer.isBuffer(imageBuffer)) {
+        throw new Error('Valid image buffer is required');
+      }
+      return await SteganoCore.extract(imageBuffer, password);
+    } catch (error) {
+      throw new AppError(`Extraction failed: ${error.message}`, 400);
+    }finally {
+      imageBuffer = null;
+    }
+  }
+
+    static async embedMultipleMessages({ imageBuffer, messages, passwords, busyAreas = [], protectedZones = [], options = {} }) {
     try {
       if (!imageBuffer || !Buffer.isBuffer(imageBuffer)) {
         throw new Error('Valid image buffer is required');
@@ -65,19 +79,6 @@ class SteganoUtils {
       imageBuffer = null;
     }
   }
-  static async extractMessage(imageBuffer, password) {
-    try {
-      if (!imageBuffer || !Buffer.isBuffer(imageBuffer)) {
-        throw new Error('Valid image buffer is required');
-      }
-      return await SteganoCore.extract(imageBuffer, password);
-    } catch (error) {
-      throw new AppError(`Extraction failed: ${error.message}`, 400);
-    }finally {
-      imageBuffer = null;
-    }
-  }
-
   static async extractMessageWithQR(imageBuffer, password, qrData) {
     if (!qrData || !qrData.messageHash) {
       throw new Error('QR data must contain a messageHash for verification');

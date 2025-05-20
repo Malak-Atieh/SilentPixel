@@ -1,19 +1,14 @@
+require('dotenv').config();
 const BinaryConverter = require('./binaryConverter');
 const PixelSelector = require('./pixelSelector');
 const EncryptionService = require('../../Services/EncryptionService');
 const ImageProcessor = require('../imageProcessor');
 
 class SteganoCore {
-  static SIGNATURE = "11010010";
-static TTL_HEADER_SIZE = 32;
+
 
   static async embed(imageBuffer, message, password, busyAreas = [], protectedZones = [],options = {}) {
-    console.log("[ENCODE] Message:", message);
-    console.log("[ENCODE] Password:", password || "none");
-    if (!message || message.length === 0) {
-        throw new Error('Message cannot be empty');
-      }
-        
+
     const { ttl } = options;
     const timestamp = Math.floor(Date.now() / 1000);
     const expiryTime = ttl ? timestamp + ttl : 0;
@@ -25,7 +20,7 @@ static TTL_HEADER_SIZE = 32;
     const binaryMsg = BinaryConverter.textToBinary(encryptedMsg);
 
     // Create header: signature(8) + length(32) + is_encrypted(1) + has_ttl(1) + ttl(32)
-    const header = this.SIGNATURE + 
+    const header = process.env.SIGNATURE + 
                   BinaryConverter.numberToBinary(binaryMsg.length, 32) + 
                   (password ? "1" : "0") +
                  (ttl ? "1" : "0") +
@@ -88,7 +83,7 @@ static TTL_HEADER_SIZE = 32;
       compositeBinary += binaryMsg;
     });
 
-    const header = this.SIGNATURE + 
+    const header = process.env.SIGNATURE + 
                   BinaryConverter.numberToBinary(messages.length, 8) +
                   headers;
     
@@ -122,7 +117,7 @@ static TTL_HEADER_SIZE = 32;
     const imageData = await ImageProcessor.getImageData(image);
     const signature = this._extractBitsAt(imageData.data, 0, 8);
 
-    if (signature !== this.SIGNATURE) {
+    if (signature !== process.env.SIGNATURE) {
       throw new Error('Invalid signature. This image does not appear to contain hidden data.');
     }
     
@@ -169,7 +164,7 @@ static TTL_HEADER_SIZE = 32;
     imageBuffer = null;
 
     const signature = this._extractBitsAt(imageData.data, 0, 8);
-    if (signature !== this.SIGNATURE) {
+    if (signature !== process.env.SIGNATURE) {
       throw new Error('Invalid signature');
     }
     

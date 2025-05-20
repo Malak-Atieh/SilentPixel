@@ -1,18 +1,14 @@
+require('dotenv').config();
 const crypto = require('crypto');
 const { AppError } = require('../Traits/errors');
 class EncryptionService {
-  static ALGORITHM = 'aes-256-cbc';
-  static SALT_LENGTH = 16;
-  static IV_LENGTH = 16;
-  static KEY_LENGTH = 32;
-  static SCRYPT_PARAMS = { N: 16384, r: 8, p: 1 };
 
   static encrypt(message, password) {
     try{
-      const salt = crypto.randomBytes(this.SALT_LENGTH);
-      const iv = crypto.randomBytes(this.IV_LENGTH);
-      const key = crypto.scryptSync(password, salt, this.KEY_LENGTH, this.SCRYPT_PARAMS);
-      const cipher = crypto.createCipheriv(this.ALGORITHM, key, iv);
+      const salt = crypto.randomBytes(process.env.SALT_LENGTH);
+      const iv = crypto.randomBytes(process.env.IV_LENGTH);
+      const key = crypto.scryptSync(password, salt, process.env.KEY_LENGTH, process.env.SCRYPT_PARAMS);
+      const cipher = crypto.createCipheriv(process.env.ALGORITHM, key, iv);
       
       let encrypted = cipher.update(message, 'utf8', 'hex');
       encrypted += cipher.final('hex');
@@ -35,9 +31,9 @@ class EncryptionService {
       const iv = Buffer.from(encryptedMsg.substring(32, 64), 'hex');
       const ciphertext = encryptedMsg.substring(64);
 
-      const key = crypto.scryptSync(password, salt, this.KEY_LENGTH, this.SCRYPT_PARAMS);
+      const key = crypto.scryptSync(password, salt, process.env.KEY_LENGTH, process.env.SCRYPT_PARAMS);
 
-      const decipher = crypto.createDecipheriv(this.ALGORITHM, key, iv);
+      const decipher = crypto.createDecipheriv(process.env.ALGORITHM, key, iv);
 
       let decrypted = decipher.update(ciphertext, 'hex', 'utf8');
 

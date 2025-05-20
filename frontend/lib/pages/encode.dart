@@ -165,17 +165,7 @@ class _HideMessageScreenState extends State<HideMessageScreen> {
             _buildAnalysisDetails(_imageAnalysisResult!),
 
             ],
-            SizedBox(height: 10),
-            CheckboxListTile(
-              value: _generateQR,
-              onChanged: (val) => setState(() => _generateQR = val ?? false),
-              title: Text(
-                  'Generate Qrcode',
-                  style: TextStyle(
-                      color: Color(0xFFF4F4F4),
-                  )
-              ),
-            ),
+
             CheckboxListTile(
               value: _addWatermarks,
               onChanged: (val) => setState(() => _addWatermarks = val ?? false),

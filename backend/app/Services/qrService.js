@@ -35,7 +35,7 @@ class QRService {
             .toBuffer();
       
             return {
-                data: await modifiedImage,
+                data: modifiedImage,
                 region: { x, y, width: qrSize, height: qrSize }
             };
         } catch (error) {

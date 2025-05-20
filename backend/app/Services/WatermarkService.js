@@ -79,10 +79,7 @@ class WatermarkService {
         }
     }
 
-    // --- Helper Methods ---
-
     static _createCompactWatermark(data) {
-        // Example compact format: "email|timestamp"
         return `${data.email}|${data.timestamp}`;
     }
 
@@ -114,7 +111,6 @@ class WatermarkService {
             for (let x = startX; x < startX + size && bitIndex < binaryWatermark.length; x++) {
                 const pixelIndex = (y * width + x) * 4;
                 const bit = parseInt(binaryWatermark[bitIndex]);
-                // Only modify green channel (index 1)
                 data[pixelIndex + 1] = (data[pixelIndex + 1] & 0xFE) | bit;
                 bitIndex++;
             }
@@ -128,7 +124,6 @@ class WatermarkService {
         for (let y = startY; y < startY + size; y++) {
             for (let x = startX; x < startX + size; x++) {
                 const pixelIndex = (y * width + x) * 4;
-                // Only read from green channel (index 1)
                 binaryWatermark += (data[pixelIndex + 1] & 1).toString();
             }
         }
@@ -145,7 +140,6 @@ class WatermarkService {
         const binaryHash = BinaryConverter.textToBinary(hash);
         let bitIndex = 0;
 
-        // Store in 4 corner pixels (3 channels each = 12 bits per corner)
         const corners = [
             { x: 0, y: 0 },
             { x: width - 1, y: 0 },

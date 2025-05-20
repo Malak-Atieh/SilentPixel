@@ -1,4 +1,4 @@
-const User = require('../Models/User');
+const User = require('../models/User');
 const { hashPassword, comparePassword } = require('../utils/hash');
 const { ValidationError, AuthError } = require('../Traits/errors');
 
@@ -6,28 +6,45 @@ class UserService {
 
   static async  registerUser(data) {
     try {
-      if (!data.email || !data.username || !data.password) {
+      if (!data || typeof data !== 'object') {
+        throw new ValidationError('Invalid user data format');
+      }
+      const { email, username, password } = data;
+
+      if (!email?.trim() || !username?.trim() || !password?.trim()) {
         throw new ValidationError('Email, username and password are required');
       }
-      
       const existingUser = await User.findOne({ 
         $or: [
-          { email: data.email },
-          { username: data.username }
+          { email: email },
+          { username: username }
         ]
       });
+
       
       if (existingUser) {
         throw new ValidationError('User with this email or username already exists');
       }
       
-      data.password = await hashPassword(data.password);
-      const user = await User.create(data);
-      
-      const userObject = user.toObject();
-      delete userObject.password;
-      
-      return userObject;
+      let hashedPassword;
+      try {
+          hashedPassword = await hashPassword(password);
+      } catch (hashError) {
+          throw new Error('Password hashing failed');
+      }
+
+      const user = await User.create({
+          email: email.trim(),
+          username: username.trim(),
+          password: hashedPassword
+      });
+
+      return {
+          _id: user._id,
+          email: user.email,
+          username: user.username,
+          createdAt: user.createdAt
+      };
     } catch (error) {
       if (error instanceof ValidationError) {
         throw error;

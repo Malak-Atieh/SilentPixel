@@ -49,7 +49,7 @@ describe('StegoImage Feature Tests', () => {
   //fail test on missing image to hide in
   it('Fails on missing image', async () => {
     const res = await request(app)
-      .post('/api/stegano/encode')
+      .post('/api/encode')
       .set('Authorization', `Bearer ${token}`)
       .field('message', 'secret');
 
@@ -60,7 +60,7 @@ describe('StegoImage Feature Tests', () => {
   //test of authorization
   it('Requires authentication', async () => {
     const res = await request(app)
-      .post('/api/stegano/encode')
+      .post('/api/encode')
       .attach('image', testImageBuffer)
       .field('message', 'secret');
     expect(res.statusCode).toBe(401);
@@ -69,14 +69,14 @@ describe('StegoImage Feature Tests', () => {
   //test on QR code extraction 
   it('Extracts hidden QR code from encoded image', async () => {
     const encodeRes = await request(app)
-      .post('/api/stegano/encode')
+      .post('/api/encode')
       .set('Authorization', `Bearer ${token}`)
       .field('message', 'secret')
       .field('qrCode', 'true') // Enable QR
       .attach('image', testImageBuffer);
 
     const decodeRes = await request(app)
-      .post('/api/stegano/decode')
+      .post('/api/decode')
       .set('Authorization', `Bearer ${token}`)
       .attach('image', encodeRes.body.data.encoded_url);
 
@@ -91,7 +91,7 @@ describe('StegoImage Feature Tests', () => {
   // test on Watermark validation
   it('Preserves watermark metadata', async () => {
     const encodeRes = await request(app)
-      .post('/api/stegano/encode')
+      .post('/api/encode')
       .set('Authorization', `Bearer ${token}`)
       .field('message', 'secret')
       .field('watermark', 'user@email.com')

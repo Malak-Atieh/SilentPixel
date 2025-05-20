@@ -137,7 +137,7 @@ class Home extends StatelessWidget {
             TextButton(
               onPressed: () {},
               child: const Text(
-                'Link to Demo video or Github documentation for reference',
+                'For more Info click for Github documentation for reference',
                  style: TextStyle(
                      fontFamily: 'Orbitron',
                      color: Color(0xFFF4F4F4),

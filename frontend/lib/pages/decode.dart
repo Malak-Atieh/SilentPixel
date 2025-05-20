@@ -41,13 +41,12 @@ class _RevealMessageScreenState extends State<RevealMessageScreen> {
       setState(() {
         _isAnalyzing = false;
         _hasResult = true;
-        _extractedMessage = 'Hello, this is your hidden message!'; // mock response
+        _extractedMessage = ''; // mock response
       });
     }
   }
   bool get _canDecode =>
-      _selectedImage != null &&
-          _passwordController.text.length >= 8;
+      _selectedImage != null;
 
 
   @override
@@ -146,7 +145,7 @@ class _RevealMessageScreenState extends State<RevealMessageScreen> {
                   if (_isAnalyzing)
                     const Center(child: CircularProgressIndicator())
                   else if (_hasResult && _extractedMessage != null)
-                    Text('Extracted Message: $_extractedMessage', style: const TextStyle(color: Colors.white))
+                    Text(' $_extractedMessage', style: const TextStyle(color: Colors.white))
                   else if (_errorMessage != null)
                       Text(_errorMessage!, style: const TextStyle(color: Colors.red)),
                 ],
