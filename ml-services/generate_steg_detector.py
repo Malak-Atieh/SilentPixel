@@ -95,3 +95,5 @@ def dct_encode(image, secret_data, alpha=0.1):
     binary_data = to_binary(secret_data)
     data_len = len(binary_data)
     
+    max_capacity = (h // 8) * (w // 8)
+   
