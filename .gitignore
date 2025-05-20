@@ -5,7 +5,6 @@ Thumbs.db
 Desktop.ini
 *.swp
 *.swo
-
 .env
 .env.*
 .env.local
