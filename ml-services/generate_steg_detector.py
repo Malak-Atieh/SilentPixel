@@ -62,3 +62,5 @@ def encode_lsb(image, secret_data, delimiter='#####'):
                     break
     
     return encoded_image
+
+def generate_random_text(min_length=100, max_length=500):
