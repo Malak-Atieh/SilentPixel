@@ -37,4 +37,5 @@ def encode_lsb(image, secret_data, delimiter='#####'):
     data_len = len(binary_secret_data)
     
     height, width, channels = image.shape
- 
+    
+    if height * width * channels < data_len:
