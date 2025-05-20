@@ -137,4 +137,4 @@ def process_image(args):
         img = Image.open(image_path).convert('RGB')
         img_array = np.array(img)
         
-       
+        basename = os.path.splitext(os.path.basename(image_path))[0]
