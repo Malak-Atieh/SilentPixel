@@ -56,4 +56,6 @@ def encode_lsb(image, secret_data, delimiter='#####'):
                     new_binary = binary_pixel[:-1] + binary_secret_data[data_index]
                     
                     encoded_image[row, col, channel] = int(new_binary, 2)
-   
+                    
+                    data_index += 1
+  
