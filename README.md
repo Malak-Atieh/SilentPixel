@@ -14,20 +14,8 @@
 
 ### Database Schema
 
-The database is structured around core collections:
+<img src="./readme/database.png"/>
 
-- User: Manages authentication, profiles, and platform access with unique identifiers, credentials, and profile customization.
-StegoImage: Serves as the central collection storing all steganographically processed images with comprehensive metadata including:
-
-- Original image properties (filename, dimensions, format)
-Steganography details (hidden content indicators, encryption status, modified regions)
-Marking systems (watermarks, QR codes, positioning)
-Processing information (methods, ML usage, processing times)
-Lifecycle controls (public/private status, self-destruct mechanisms)
-
-
-
-The schema implements relationship tracking between users and their created images, strategic indexing for performance optimization, and embedded documents for efficient retrieval of related data. This structure supports the platform's core functionality of secure message hiding, image processing, and content management while maintaining clear ownership and access controls.
 
 <br><br>
 
