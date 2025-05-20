@@ -110,4 +110,6 @@ def dct_encode(image, secret_data, alpha=0.1):
                 dct_block = cv2.dct(block)
  
                 bit = int(binary_data[data_index])
-          
+                
+                if bit == 0:
+    
