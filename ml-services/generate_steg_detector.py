@@ -192,3 +192,6 @@ def generate_dataset(input_dir, output_dir, num_workers=4, delimiter='#####'):
             else:
                 failed += 1
     
+    logger.info(f"Processing complete: {successful} successful, {failed} failed")
+    logger.info(f"Dataset generated at {output_dir}")
+
