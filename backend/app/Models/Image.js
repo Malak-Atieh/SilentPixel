@@ -1,47 +1,122 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
+const stegoImageSchema = new mongoose.Schema({
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+    index: true
+  },
 
-const Image= new mongoose.Schema({
-  userId: { 
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: "User", 
-    required: true 
+  originalImage: {
+    filename: String,
+    contentType: String,
+    size: Number,
+    width: Number,
+    height: Number,
+    hash: String 
   },
-  originalImagePath: { 
-    type: String, 
-    required: true 
+
+  stegoDetails: {
+    hasHiddenContent: {
+      type: Boolean,
+      default: false
+    },
+    
+    messageLength: {
+      type: Number,
+      default: 0
+    },
+    
+    isPasswordProtected: {
+      type: Boolean,
+      default: true
+    },
+    
+    entropyScore: Number,
+    
+    usedAreas: [{
+      x: Number,
+      y: Number,
+      width: Number,
+      height: Number
+    }]
   },
-  encodedImagePath: { 
-    type: String, 
-    required: false 
+
+  watermark: {
+    hasWatermark: {
+      type: Boolean,
+      default: false
+    },
+    
+    watermarkType: {
+      type: String,
+      enum: ['visible', 'invisible', 'none'],
+      default: 'none'
+    },
+    
+    timestamp: Date
   },
-  hasWatermark: { 
+
+  qrCode: {
+    hasQRCode: {
+      type: Boolean,
+      default: false
+    },
+    
+    position: {
+      x: Number,
+      y: Number
+    }
+  },
+
+  processingDetails: {
+    processedAt: {
+      type: Date,
+      default: Date.now
+    },
+    
+    processingTime: Number,
+    
+    stegoMethod: {
+      type: String,
+      enum: ['lsb', 'dct', 'dwt', 'other'],
+      default: 'lsb'
+    },
+    
+    usedML: {
+      type: Boolean,
+      default: false
+    }
+  },
+
+  label: String,
+  
+  tags: [String],
+  
+  isPublic: {
     type: Boolean,
-    default: false 
+    default: false
   },
-  hasQrCode: { 
-    type: Boolean, 
-    default: false 
-  },
-  busyAreasMap: {
-    type: Object,
-    default: null
-  },
-  type: { 
-    type: String, 
-    enum: ['encode', 'decode'], 
-    required: true 
-  },
-  metaData: {
-    encodingMethod: String,
-    messageLength: Number,
-    watermarkInfo: String,
-    qrCodeData: String
-  },
-  createdAt: { 
-    type: Date, 
-    default: Date.now 
+    selfDestruct: {
+    type: {
+      mode: {
+        type: String,
+        enum: ['none', 'time', 'views'],
+        default: 'none'
+      },
+      ttl: Number,
+      expiry: Date,
+    },
+    default: { mode: 'none' }
   }
-});
+}, { timestamps: true });
 
-module.exports = mongoose.model("Image", Image);
+stegoImageSchema.index({ createdAt: -1 });
+stegoImageSchema.index({ 'stegoDetails.hasHiddenContent': 1 });
+stegoImageSchema.index({ 'watermark.hasWatermark': 1 });
+stegoImageSchema.index({ isPublic: 1 });
+
+
+const StegoImage = mongoose.model('StegoImage', stegoImageSchema);
+module.exports = StegoImage;                

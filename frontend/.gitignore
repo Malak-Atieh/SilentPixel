@@ -32,7 +32,8 @@ migrate_working_dir/
 .pub-cache/
 .pub/
 /build/
-
+/frontend/assets/*
+!/frontend/assets/bg.png
 # Symbolication related
 app.*.symbols
 
