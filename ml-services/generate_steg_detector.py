@@ -47,4 +47,4 @@ def encode_lsb(image, secret_data, delimiter='#####'):
     
     for row in range(height):
         for col in range(width):
-      
+            for channel in range(channels):
