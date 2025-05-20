@@ -147,4 +147,8 @@ def process_image(args):
         gray_img = cv2.cvtColor(img_array, cv2.COLOR_RGB2GRAY)
         secret_data = generate_random_text(50, 200) 
         dct_img = dct_encode(gray_img, secret_data)
-     
+        
+        dct_rgb = cv2.cvtColor(dct_img, cv2.COLOR_GRAY2RGB)
+        dct_output = os.path.join(output_dir, 'dct', f"{basename}_dct.png")
+        Image.fromarray(dct_rgb).save(dct_output)
+        
