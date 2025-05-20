@@ -61,3 +61,4 @@ def encode_lsb(image, secret_data, delimiter='#####'):
                 else:
                     break
     
+    return encoded_image
