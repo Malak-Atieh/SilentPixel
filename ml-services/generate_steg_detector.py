@@ -32,3 +32,5 @@ def encode_lsb(image, secret_data, delimiter='#####'):
 
     secret_data += delimiter
     
+    binary_secret_data = to_binary(secret_data)
+  
