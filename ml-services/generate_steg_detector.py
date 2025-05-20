@@ -93,4 +93,5 @@ def dct_encode(image, secret_data, alpha=0.1):
     gray = gray[:h, :w]
     
     binary_data = to_binary(secret_data)
-   
+    data_len = len(binary_data)
+    
