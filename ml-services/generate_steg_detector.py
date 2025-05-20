@@ -135,4 +135,6 @@ def process_image(args):
     try:
         # Load image
         img = Image.open(image_path).convert('RGB')
+        img_array = np.array(img)
+        
        
