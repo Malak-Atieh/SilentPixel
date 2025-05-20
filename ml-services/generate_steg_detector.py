@@ -166,4 +166,6 @@ def generate_dataset(input_dir, output_dir, num_workers=4, delimiter='#####'):
  
     for subdir in ['clean', 'lsb', 'dct']:
         os.makedirs(os.path.join(output_dir, subdir), exist_ok=True)
-   
+    
+    image_files = []
+  
