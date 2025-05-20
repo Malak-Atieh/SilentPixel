@@ -14,6 +14,7 @@
 
 ### Database Schema
 
+
 <img src="./readme/databaseDiagram.png"/>
 
 ### Component Diagram
