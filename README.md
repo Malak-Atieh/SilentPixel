@@ -14,7 +14,7 @@
 
 ### Database Schema
 
-<img src="./readme/database.png"/>
+<img src="./readme/diagram."/>
 
 ### Component Diagram
 
@@ -26,10 +26,6 @@
 <img src="./readme/title4.svg"/>
 
 ### Make Pixel Talk
-
-- Real-Time anaylsis to identify setganography presence
-- Encrypt and decrypt messages in provided images
-- Dynamic Watermarking with Hidden Messages
 
 <img src="./readme/Group 51.png"/>
 
@@ -48,9 +44,9 @@
 | --------------------------------------- | ------------------------------------- | ------------------------------------- |
 | ![Landing](./readme/hideMessage.png)    | ![fsdaf](./readme/EncodeResult.png)  | ![fsdaf](./readme/decode.png)         |
 
-| Reveal Result screen                    | Anaylze screen                        | Home screen                           |
+| Reveal Result screen                    |                      |         |
 | --------------------------------------- | ------------------------------------- | ------------------------------------- |
-| ![Landing](./readme/decodeResult.png)   | ![fsdaf](./readme/demo/1440x1024.png)         | ![fsdaf](./readme/demo/1440x1024.png)           |
+| ![Landing](./readme/decodeResult.png)   |  |  |
 
 <br><br>
 
