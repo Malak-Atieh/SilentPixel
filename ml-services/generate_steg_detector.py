@@ -177,3 +177,5 @@ def generate_dataset(input_dir, output_dir, num_workers=4, delimiter='#####'):
     
     logger.info(f"Found {len(image_files)} images in {input_dir}")
         
+    args_list = [(str(img_path), output_dir, delimiter) for img_path in image_files]
+    
