@@ -152,3 +152,8 @@ def process_image(args):
         dct_output = os.path.join(output_dir, 'dct', f"{basename}_dct.png")
         Image.fromarray(dct_rgb).save(dct_output)
         
+        clean_output = os.path.join(output_dir, 'clean', f"{basename}_clean.png")
+        img.save(clean_output)
+        
+        return image_path, True
+    
