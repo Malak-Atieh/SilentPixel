@@ -22,13 +22,13 @@
 <!-- Project Highlights -->
 <img src="./readme/title4.svg"/>
 
-
-<img src="./readme/Group 51.png"/>
 ### Make Pixel Talk
 
 - Real-Time anaylsis to identify setganography presence
 - Encrypt and decrypt messages in provided images
 - Dynamic Watermarking with Hidden Messages
+
+<img src="./readme/Group 51.png"/>
 
 <br><br>
 
