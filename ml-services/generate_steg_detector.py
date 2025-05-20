@@ -83,4 +83,4 @@ def generate_random_text(min_length=100, max_length=500):
 def dct_encode(image, secret_data, alpha=0.1):
 
     if len(image.shape) == 3:
-    
+        gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
