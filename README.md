@@ -14,7 +14,7 @@
 
 ### Database Schema
 
-<img src="./readme/diagram."/>
+<img src="./readme/diagram.svg"/>
 
 ### Component Diagram
 
@@ -44,9 +44,9 @@
 | --------------------------------------- | ------------------------------------- | ------------------------------------- |
 | ![Landing](./readme/hideMessage.png)    | ![fsdaf](./readme/EncodeResult.png)  | ![fsdaf](./readme/decode.png)         |
 
-| Reveal Result screen                    |                      |         |
+| Reveal Result screen                    | Anaylze screen                        | Home screen                           |
 | --------------------------------------- | ------------------------------------- | ------------------------------------- |
-| ![Landing](./readme/decodeResult.png)   |  |  |
+| ![Landing](./readme/decodeResult.png)   | ![fsdaf](./readme/demo/1440x1024.png) | ![fsdaf](./readme/demo/1440x1024.png)           |
 
 <br><br>
 
