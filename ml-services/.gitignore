@@ -1,0 +1,33 @@
+# Python & Virtual Environments
+**/steg_env/
+**/venv/
+**/.venv/
+**/env/
+**/ENV/
+**/env.bak/
+**/venv.bak/
+**/pyvenv.cfg
+**/pip-selfcheck.json
+**/__pycache__/
+**/*.py[cod]
+**/*.so
+**/*.egg-info/
+**/.mypy_cache/
+**/.pytest_cache/
+
+# Dataset & Model Folders
+**/steganography_dataset/
+**/models/
+**/*.h5
+**/*.pth
+**/*.pt
+**/*.joblib
+**/*.pkl
+
+# IDE & OS Files
+**/.idea/
+**/.vscode/
+**/*.iml
+**/.DS_Store
+**/Thumbs.db
+**/Desktop.ini
