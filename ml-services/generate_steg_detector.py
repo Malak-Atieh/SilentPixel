@@ -195,3 +195,13 @@ def generate_dataset(input_dir, output_dir, num_workers=4, delimiter='#####'):
     logger.info(f"Processing complete: {successful} successful, {failed} failed")
     logger.info(f"Dataset generated at {output_dir}")
 
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Generate steganography dataset")
+    parser.add_argument("--input", required=True, help="Directory with input images")
+    parser.add_argument("--output", required=True, help="Directory to save generated dataset")
+    parser.add_argument("--workers", type=int, default=4, help="Number of parallel workers")
+    parser.add_argument("--delimiter", default="#####", help="Delimiter for LSB steganography")
+    
+    args = parser.parse_args()
+    
+    generate_dataset(args.input, args.output, args.workers, args.delimiter)
