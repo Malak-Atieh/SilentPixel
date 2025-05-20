@@ -76,4 +76,5 @@ def generate_random_text(min_length=100, max_length=500):
              "even", "new", "want", "because", "any", "these", "give", "day", "most", "us"]
     
     length = random.randint(min_length, max_length)
-   
+    text = " ".join(random.choice(words) for _ in range(length))
+    
