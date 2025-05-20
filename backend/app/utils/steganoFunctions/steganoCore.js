@@ -5,7 +5,7 @@ const EncryptionService = require('../../Services/EncryptionService');
 const ImageProcessor = require('../imageProcessor');
 
 class SteganoCore {
-
+static SIGNATURE = "11010010";
 
   static async embed(imageBuffer, message, password, busyAreas = [], protectedZones = [],options = {}) {
 
@@ -20,7 +20,7 @@ class SteganoCore {
     const binaryMsg = BinaryConverter.textToBinary(encryptedMsg);
 
     // Create header: signature(8) + length(32) + is_encrypted(1) + has_ttl(1) + ttl(32)
-    const header = process.env.SIGNATURE + 
+    const header = this.SIGNATURE + 
                   BinaryConverter.numberToBinary(binaryMsg.length, 32) + 
                   (password ? "1" : "0") +
                  (ttl ? "1" : "0") +
@@ -83,7 +83,7 @@ class SteganoCore {
       compositeBinary += binaryMsg;
     });
 
-    const header = process.env.SIGNATURE + 
+    const header = this.SIGNATURE + 
                   BinaryConverter.numberToBinary(messages.length, 8) +
                   headers;
     
@@ -117,7 +117,7 @@ class SteganoCore {
     const imageData = await ImageProcessor.getImageData(image);
     const signature = this._extractBitsAt(imageData.data, 0, 8);
 
-    if (signature !== process.env.SIGNATURE) {
+    if (signature !== this.SIGNATURE) {
       throw new Error('Invalid signature. This image does not appear to contain hidden data.');
     }
     
@@ -164,7 +164,7 @@ class SteganoCore {
     imageBuffer = null;
 
     const signature = this._extractBitsAt(imageData.data, 0, 8);
-    if (signature !== process.env.SIGNATURE) {
+    if (signature !== this.SIGNATURE) {
       throw new Error('Invalid signature');
     }
     

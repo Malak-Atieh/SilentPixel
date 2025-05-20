@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/pages/encode.dart';
 import 'package:frontend/pages/decode.dart';
-import 'package:frontend/pages/analyze.dart';
 
 class Home extends StatelessWidget {
   const Home({super.key});
@@ -70,10 +69,6 @@ class Home extends StatelessWidget {
             const SizedBox(height: 40),
               ElevatedButton(
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => AnalyzeScreen()),
-                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color(0xFF0CCE6B),
