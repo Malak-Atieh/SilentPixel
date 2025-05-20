@@ -86,4 +86,6 @@ def dct_encode(image, secret_data, alpha=0.1):
         gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
     else:
         gray = image.copy()
+    
+    h, w = gray.shape
    
