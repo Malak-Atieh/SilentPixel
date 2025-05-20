@@ -175,3 +175,5 @@ def generate_dataset(input_dir, output_dir, num_workers=4, delimiter='#####'):
         logger.error(f"No images found in {input_dir}")
         return
     
+    logger.info(f"Found {len(image_files)} images in {input_dir}")
+        
