@@ -170,3 +170,8 @@ def generate_dataset(input_dir, output_dir, num_workers=4, delimiter='#####'):
     image_files = []
     for ext in ['*.jpg', '*.jpeg', '*.png']:
         image_files.extend(list(Path(input_dir).glob(ext)))
+
+    if not image_files:
+        logger.error(f"No images found in {input_dir}")
+        return
+    
