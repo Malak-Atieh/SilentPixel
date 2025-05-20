@@ -70,4 +70,4 @@ def generate_random_text(min_length=100, max_length=500):
              "from", "they", "we", "say", "her", "she", "or", "an", "will", "my", "one", "all", 
              "would", "there", "their", "what", "so", "up", "out", "if", "about", "who", "get", 
              "which", "go", "me", "when", "make", "can", "like", "time", "no", "just", "him", 
-             "know", 
+             "know", "take", 
