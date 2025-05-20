@@ -16,6 +16,9 @@
 
 <img src="./readme/database.png"/>
 
+### Component Diagram
+
+<img src="./readme/componentDiagram.svg"/>
 
 <br><br>
 
