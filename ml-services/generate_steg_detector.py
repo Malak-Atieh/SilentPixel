@@ -160,3 +160,7 @@ def process_image(args):
     except Exception as e:
         logger.error(f"Error processing {image_path}: {str(e)}")
         return image_path, False
+
+
+def generate_dataset(input_dir, output_dir, num_workers=4, delimiter='#####'):
+ 
