@@ -24,3 +24,6 @@ def to_binary(data):
         return ''.join([format(i, '08b') for i in data])
     elif isinstance(data, int) or isinstance(data, np.uint8):
         return format(data, '08b')
+    else:
+        raise TypeError("Type not supported.")
+
