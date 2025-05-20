@@ -66,4 +66,4 @@ def encode_lsb(image, secret_data, delimiter='#####'):
 def generate_random_text(min_length=100, max_length=500):
     """Generate random text for hiding in images"""
     words = ["the", "be", "to", "of", "and", "a", "in", "that", "have", "I", "it", "for", 
-             "not",
+             "not", "on", 
