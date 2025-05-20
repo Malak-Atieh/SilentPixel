@@ -168,4 +168,5 @@ def generate_dataset(input_dir, output_dir, num_workers=4, delimiter='#####'):
         os.makedirs(os.path.join(output_dir, subdir), exist_ok=True)
     
     image_files = []
-  
+    for ext in ['*.jpg', '*.jpeg', '*.png']:
+        image_files.extend(list(Path(input_dir).glob(ext)))
