@@ -157,3 +157,6 @@ def process_image(args):
         
         return image_path, True
     
+    except Exception as e:
+        logger.error(f"Error processing {image_path}: {str(e)}")
+        return image_path, False
