@@ -15,3 +15,9 @@ logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
+
+def to_binary(data):
+    """Convert data to binary format as a string of bits"""
+    if isinstance(data, str):
+        return ''.join([format(ord(i), '08b') for i in data])
+ 
