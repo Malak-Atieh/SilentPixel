@@ -102,3 +102,5 @@ def dct_encode(image, secret_data, alpha=0.1):
     data_index = 0
     modified_image = gray.copy().astype(np.float32)
     
+    for i in range(0, h, 8):
+  
