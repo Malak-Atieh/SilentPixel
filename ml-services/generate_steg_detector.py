@@ -39,3 +39,5 @@ def encode_lsb(image, secret_data, delimiter='#####'):
     height, width, channels = image.shape
     
     if height * width * channels < data_len:
+        raise ValueError("Image too small to hold this data")
+    
