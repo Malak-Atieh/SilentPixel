@@ -8,3 +8,4 @@ import cv2
 import textwrap
 import logging
 from tqdm import tqdm
+from concurrent.futures import ProcessPoolExecutor, as_completed
