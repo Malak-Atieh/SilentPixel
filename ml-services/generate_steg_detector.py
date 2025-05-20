@@ -20,4 +20,5 @@ def to_binary(data):
     """Convert data to binary format as a string of bits"""
     if isinstance(data, str):
         return ''.join([format(ord(i), '08b') for i in data])
- 
+    elif isinstance(data, bytes) or isinstance(data, bytearray):
+        return ''.join([format(i, '08b') for i in data])
