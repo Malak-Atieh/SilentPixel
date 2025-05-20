@@ -145,4 +145,6 @@ def process_image(args):
         Image.fromarray(lsb_img).save(lsb_output)
         
         gray_img = cv2.cvtColor(img_array, cv2.COLOR_RGB2GRAY)
+        secret_data = generate_random_text(50, 200) 
+        dct_img = dct_encode(gray_img, secret_data)
      
