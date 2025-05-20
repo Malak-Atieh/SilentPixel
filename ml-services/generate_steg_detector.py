@@ -79,3 +79,7 @@ def generate_random_text(min_length=100, max_length=500):
     text = " ".join(random.choice(words) for _ in range(length))
     return text
 
+
+def dct_encode(image, secret_data, alpha=0.1):
+
+ 
