@@ -26,7 +26,7 @@
 <!-- Project Highlights -->
 <img src="./readme/title4.svg"/>
 
-### Make Pixel Talk
+### Make Pixels Talk
 
 <img src="./readme/Group 51.png"/>
 
@@ -45,22 +45,26 @@
 | --------------------------------------- | ------------------------------------- | ------------------------------------- |
 | ![Landing](./readme/hideMessage.png)    | ![fsdaf](./readme/EncodeResult.png)  | ![fsdaf](./readme/decode.png)         |
 
-| Reveal Result screen                    | Anaylze screen                        | Home screen                           |
+| Reveal Result screen                    |  screen                               |  screen                           |
 | --------------------------------------- | ------------------------------------- | ------------------------------------- |
 | ![Landing](./readme/decodeResult.png)   | ![fsdaf](./readme/demo/1440x1024.png) | ![fsdaf](./readme/demo/1440x1024.png) |
 
 ### Screens Gifs
 
-|  Auth Home                                |  Hide Message                         |  Reveal Message                     |
+|  Onboarding                             |  Auth Home                            |  Hide Message                         |
 | --------------------------------------- | ------------------------------------- | ------------------------------------- |
-|  ![fsdaf](./readme/homeScreen.gif)      | ![Landing](./readme/hideMessage.gif)  | ![fsdaf](./readme/revealMessage.gif)  |
+|  ![fsdaf](./readme/onboarding.gif)      | ![Landing](./readme/homeScreen.gif)   | ![fsdaf](./readme/hideMessage.gif)    |
+
+| Reveal Message                         |  Screen                               |
+| -------------------------------------  | ------------------------------------- |
+| ![fsdaf](./readme/revealMessage.gif)   | ![fsdaf](./readme/demo/1440x1024.png) |
 
 <br><br>
 
 <!-- Development & Testing -->
 <img src="./readme/title6.svg"/>
 
-### Add Title Here
+### Silent Workflow
 
 
 | Services                                | Validation                            | Testing                               |
