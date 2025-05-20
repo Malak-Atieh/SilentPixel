@@ -122,4 +122,6 @@ def dct_encode(image, secret_data, alpha=0.1):
                 
                 modified_image[i:i+8, j:j+8] = modified_block
                 
-        
+                data_index += 1
+    
+    
