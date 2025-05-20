@@ -43,4 +43,5 @@ def encode_lsb(image, secret_data, delimiter='#####'):
     
     encoded_image = np.copy(image)
     
+    data_index = 0
     
