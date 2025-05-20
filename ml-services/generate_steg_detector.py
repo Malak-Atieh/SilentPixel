@@ -96,4 +96,6 @@ def dct_encode(image, secret_data, alpha=0.1):
     data_len = len(binary_data)
     
     max_capacity = (h // 8) * (w // 8)
-   
+    if data_len > max_capacity:
+        raise ValueError(f"Data too large for this image. Max capacity: {max_capacity} bits")
+  
