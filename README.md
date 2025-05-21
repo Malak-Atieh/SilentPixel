@@ -49,9 +49,9 @@
 | --------------------------------------- | ------------------------------------- | ------------------------------------- |
 | ![Landing](./readme/hideMessage.png)    | ![fsdaf](./readme/EncodeResult.png)   | ![fsdaf](./readme/decode.png)          |
 
-| Reveal Result screen                    | |
-| --------------------------------------- | |
-| ![Landing](./readme/decodeResult.png)   | |  
+| Reveal Result screen                    |
+| --------------------------------------- | 
+| <img src="./readme/decodeResult.png" width="400"/>   |   
 
 ### Screens Gifs
 
