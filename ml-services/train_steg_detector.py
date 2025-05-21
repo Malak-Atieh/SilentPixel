@@ -125,7 +125,9 @@ def validate(model, loader, criterion, device):
     total_loss, correct = 0, 0
     all_preds = []
     all_labels = []
- 
+    
+    with torch.no_grad():
+
 
 def plot_confusion_matrix(y_true, y_pred, class_names, output_dir):
     """Plot and save confusion matrix"""
