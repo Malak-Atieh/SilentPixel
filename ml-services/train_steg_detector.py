@@ -116,7 +116,8 @@ def train_epoch(model, loader, criterion, optimizer, device):
         
         total_loss += loss.item() * inputs.size(0)
         _, preds = torch.max(outputs, 1)
-  
+        correct += torch.sum(preds == labels.data)
+
 
 def validate(model, loader, criterion, device):
     model.eval()
