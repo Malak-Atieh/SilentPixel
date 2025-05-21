@@ -110,7 +110,7 @@ def train_epoch(model, loader, criterion, optimizer, device):
         
         optimizer.zero_grad()
         outputs = model(inputs)
-
+        loss = criterion(outputs, labels)
 
 def validate(model, loader, criterion, device):
     model.eval()
