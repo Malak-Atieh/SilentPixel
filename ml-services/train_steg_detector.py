@@ -127,6 +127,7 @@ def validate(model, loader, criterion, device):
     all_labels = []
     
     with torch.no_grad():
+        for inputs, labels in loader:
 
 
 def plot_confusion_matrix(y_true, y_pred, class_names, output_dir):
