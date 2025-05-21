@@ -86,6 +86,7 @@ def build_model(num_classes=3, model_name="mobilenet_v3", freeze_features=True):
     elif model_name == "resnet18":
         model = models.resnet18(weights='IMAGENET1K_V1')
         in_features = model.fc.in_features
+        if freeze_features:
 
     else:
         raise ValueError(f"Unknown model name: {model_name}")
