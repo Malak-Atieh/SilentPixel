@@ -26,7 +26,7 @@ def set_seed(seed=42):
     np.random.seed(seed)
     torch.manual_seed(seed)
     if torch.cuda.is_available():
-
+        torch.cuda.manual_seed_all(seed)
 
 class SteganographyDataset(Dataset):
     def __init__(self, data_dir, transform=None):
