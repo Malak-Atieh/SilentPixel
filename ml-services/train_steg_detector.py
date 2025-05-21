@@ -22,6 +22,8 @@ logging.basicConfig(level=logging.INFO,
 logger = logging.getLogger(__name__)
 
 def set_seed(seed=42):
+    random.seed(seed)
+
 
 class SteganographyDataset(Dataset):
     def __init__(self, data_dir, transform=None):
