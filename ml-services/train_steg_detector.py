@@ -70,6 +70,7 @@ def build_model(num_classes=3, model_name="mobilenet_v3", freeze_features=True):
         model = models.mobilenet_v3_small(weights='IMAGENET1K_V1')
         in_features = 576
         if freeze_features:
+            for param in model.features.parameters():
 
     elif model_name == "efficientnet_b0":
         model = models.efficientnet_b0(weights='IMAGENET1K_V1')
