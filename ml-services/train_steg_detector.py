@@ -121,25 +121,7 @@ def train_epoch(model, loader, criterion, optimizer, device):
     return total_loss / len(loader.dataset), correct.double() / len(loader.dataset)
 
 def validate(model, loader, criterion, device):
-    model.eval()
-    total_loss, correct = 0, 0
-    all_preds = []
-    all_labels = []
-    
-    with torch.no_grad():
-        for inputs, labels in loader:
-            inputs, labels = inputs.to(device), labels.to(device)
-            outputs = model(inputs)
-            loss = criterion(outputs, labels)
-            
-            total_loss += loss.item() * inputs.size(0)
-            _, preds = torch.max(outputs, 1)
-            correct += torch.sum(preds == labels.data)
-            
-            all_preds.extend(preds.cpu().numpy())
-            all_labels.extend(labels.cpu().numpy())
-            
-    return total_loss / len(loader.dataset), correct.double() / len(loader.dataset), all_preds, all_labels
+
 
 def plot_confusion_matrix(y_true, y_pred, class_names, output_dir):
     """Plot and save confusion matrix"""
