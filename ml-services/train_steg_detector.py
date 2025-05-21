@@ -67,6 +67,8 @@ class SteganographyDataset(Dataset):
 
 def build_model(num_classes=3, model_name="mobilenet_v3", freeze_features=True):
     if model_name == "mobilenet_v3":
+        model = models.mobilenet_v3_small(weights='IMAGENET1K_V1')
+        in_features = 576
 
     elif model_name == "efficientnet_b0":
         model = models.efficientnet_b0(weights='IMAGENET1K_V1')
