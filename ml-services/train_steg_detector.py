@@ -40,6 +40,10 @@ class SteganographyDataset(Dataset):
         self.lsb_files = list((self.data_dir / 'lsb').glob('*.[pj][np]g'))
         self.dct_files = list((self.data_dir / 'dct').glob('*.[pj][np]g'))
         
+        self.files = ([(f, 0) for f in self.clean_files] +
+                     [(f, 1) for f in self.lsb_files] +
+                     [(f, 2) for f in self.dct_files])
+        
 
 
     def __len__(self):
