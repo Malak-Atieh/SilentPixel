@@ -36,6 +36,7 @@
 <img src="./readme/title5.svg"/>
 
 ### User Screens (Mobile)
+Where you turn steath mode on
 
 | Welcoming Onboarding screen             | Seconf onboarding screen              | 3rd onboarding screen                 |
 | --------------------------------------- | ------------------------------------- | ------------------------------------- |
@@ -51,7 +52,7 @@
 
 | Reveal Result screen                    |
 | --------------------------------------- | 
-| <img src="./readme/decodeResult.png" width="400"/>   |   
+| <img src="./readme/decodeResult.png" width="350"/>   |   
 
 ### Screens Gifs
 
