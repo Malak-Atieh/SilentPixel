@@ -37,6 +37,7 @@ class SteganographyDataset(Dataset):
         self.cache = {} 
         
         self.clean_files = list((self.data_dir / 'clean').glob('*.[pj][np]g'))
+        self.lsb_files = list((self.data_dir / 'lsb').glob('*.[pj][np]g'))
 
 
     def __len__(self):
