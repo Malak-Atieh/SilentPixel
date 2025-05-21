@@ -94,7 +94,8 @@ def build_model(num_classes=3, model_name="mobilenet_v3", freeze_features=True):
         model.fc = nn.Sequential(
             nn.Linear(in_features, 256),
             nn.ReLU(),
-
+            nn.Dropout(0.3),
+ 
     else:
         raise ValueError(f"Unknown model name: {model_name}")
     return model
