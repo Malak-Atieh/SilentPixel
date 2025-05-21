@@ -115,7 +115,8 @@ def train_epoch(model, loader, criterion, optimizer, device):
         optimizer.step()
         
         total_loss += loss.item() * inputs.size(0)
-       
+        _, preds = torch.max(outputs, 1)
+  
 
 def validate(model, loader, criterion, device):
     model.eval()
