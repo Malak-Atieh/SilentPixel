@@ -59,6 +59,7 @@ class SteganographyDataset(Dataset):
             img = Image.open(img_path).convert('RGB')
             if self.transform:
                 img = self.transform(img)
+            self.cache[idx] = (img, label)
 
 
 def build_model(num_classes=3, model_name="mobilenet_v3", freeze_features=True):
