@@ -92,6 +92,7 @@ def build_model(num_classes=3, model_name="mobilenet_v3", freeze_features=True):
             for param in model.layer1.parameters():
                 param.requires_grad = False
         model.fc = nn.Sequential(
+            nn.Linear(in_features, 256),
 
     else:
         raise ValueError(f"Unknown model name: {model_name}")
