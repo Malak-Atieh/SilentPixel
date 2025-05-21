@@ -129,7 +129,8 @@ def validate(model, loader, criterion, device):
     with torch.no_grad():
         for inputs, labels in loader:
             inputs, labels = inputs.to(device), labels.to(device)
-  
+            outputs = model(inputs)
+
 
 def plot_confusion_matrix(y_true, y_pred, class_names, output_dir):
     """Plot and save confusion matrix"""
