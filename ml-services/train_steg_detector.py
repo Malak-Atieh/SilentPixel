@@ -50,10 +50,7 @@ class SteganographyDataset(Dataset):
     def __len__(self):
         return len(self.files)
 
-    def __getitem__(self, idx):
-        if idx in self.cache:
-            return self.cache[idx]
-            
+
         img_path, label = self.files[idx]
         try:
             img = Image.open(img_path).convert('RGB')
