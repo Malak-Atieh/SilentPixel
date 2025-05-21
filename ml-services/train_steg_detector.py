@@ -76,6 +76,8 @@ def build_model(num_classes=3, model_name="mobilenet_v3", freeze_features=True):
             nn.Linear(in_features, 512),
             nn.Hardswish(),
             nn.Dropout(0.3),
+            nn.Linear(512, 256),
+            nn.Hardswish(),
 
     elif model_name == "efficientnet_b0":
         model = models.efficientnet_b0(weights='IMAGENET1K_V1')
