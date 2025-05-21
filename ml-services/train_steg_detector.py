@@ -99,6 +99,7 @@ def build_model(num_classes=3, model_name="mobilenet_v3", freeze_features=True):
         )
     else:
         raise ValueError(f"Unknown model name: {model_name}")
+    return model
 
 def train_epoch(model, loader, criterion, optimizer, device):
     model.train()
