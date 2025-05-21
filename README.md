@@ -52,7 +52,7 @@ Where you turn steath mode on
 
 | Reveal Result screen                    |
 | --------------------------------------- | 
-| <img src="./readme/decodeResult.png" width="350"/>   |   
+| <div align="center"><img src="./readme/decodeResult.png" width="350"/> </div>  |   
 
 ### Screens Gifs
 
@@ -62,7 +62,7 @@ Where you turn steath mode on
 
 | Reveal Message                         | 
 | -------------------------------------  | 
-| ![fsdaf](./readme/revealMessage.gif)   | 
+|  <div align="center"><img src="./readme/revealMessage.gif" width="350"/> </div> | 
 
 <br><br>
 
