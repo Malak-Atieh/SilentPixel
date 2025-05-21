@@ -60,6 +60,8 @@ class SteganographyDataset(Dataset):
             if self.transform:
                 img = self.transform(img)
             self.cache[idx] = (img, label)
+            return img, label
+        except Exception as e:
 
 
 def build_model(num_classes=3, model_name="mobilenet_v3", freeze_features=True):
