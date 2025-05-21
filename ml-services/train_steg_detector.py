@@ -31,7 +31,8 @@ def set_seed(seed=42):
     torch.backends.cudnn.benchmark = False
 
 class SteganographyDataset(Dataset):
-
+    def __init__(self, data_dir, transform=None):
+        self.data_dir = Path(data_dir)
 
     def __len__(self):
         return len(self.files)
