@@ -104,6 +104,9 @@ def build_model(num_classes=3, model_name="mobilenet_v3", freeze_features=True):
 def train_epoch(model, loader, criterion, optimizer, device):
     model.train()
     total_loss, correct = 0, 0
+    
+    for inputs, labels in loader:
+
 
 def validate(model, loader, criterion, device):
     model.eval()
