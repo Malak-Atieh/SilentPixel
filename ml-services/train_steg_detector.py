@@ -84,18 +84,7 @@ def build_model(num_classes=3, model_name="mobilenet_v3", freeze_features=True):
     elif model_name == "efficientnet_b0":
 
     elif model_name == "resnet18":
-        model = models.resnet18(weights='IMAGENET1K_V1')
-        in_features = model.fc.in_features
-        if freeze_features:
-            for param in model.conv1.parameters():
-                param.requires_grad = False
-            for param in model.layer1.parameters():
-                param.requires_grad = False
-        model.fc = nn.Sequential(
-            nn.Linear(in_features, 256),
-            nn.ReLU(),
-            nn.Dropout(0.3),
-            nn.Linear(256, num_classes)
+   nn.Linear(256, num_classes)
         )
     else:
         raise ValueError(f"Unknown model name: {model_name}")
