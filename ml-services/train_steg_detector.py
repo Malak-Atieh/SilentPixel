@@ -53,6 +53,8 @@ class SteganographyDataset(Dataset):
     def __getitem__(self, idx):
         if idx in self.cache:
             return self.cache[idx]
+            
+        img_path, label = self.files[idx]
 
 
 def build_model(num_classes=3, model_name="mobilenet_v3", freeze_features=True):
