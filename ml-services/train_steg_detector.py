@@ -56,7 +56,8 @@ class SteganographyDataset(Dataset):
             
         img_path, label = self.files[idx]
         try:
-
+            img = Image.open(img_path).convert('RGB')
+    
 
 def build_model(num_classes=3, model_name="mobilenet_v3", freeze_features=True):
     if model_name == "mobilenet_v3":
