@@ -3,7 +3,7 @@ import time
 import logging
 import argparse
 import numpy as np
-import torch
+from pathlib import Path
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import Dataset, DataLoader
