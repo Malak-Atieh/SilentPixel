@@ -102,6 +102,7 @@ def build_model(num_classes=3, model_name="mobilenet_v3", freeze_features=True):
     return model
 
 def train_epoch(model, loader, criterion, optimizer, device):
+    model.train()
 
 
 def validate(model, loader, criterion, device):
