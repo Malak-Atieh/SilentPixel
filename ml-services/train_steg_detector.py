@@ -106,6 +106,9 @@ def train_epoch(model, loader, criterion, optimizer, device):
     total_loss, correct = 0, 0
     
     for inputs, labels in loader:
+        inputs, labels = inputs.to(device), labels.to(device)
+        
+        optimizer.zero_grad()
 
 
 def validate(model, loader, criterion, device):
