@@ -62,7 +62,8 @@ class SteganographyDataset(Dataset):
             self.cache[idx] = (img, label)
             return img, label
         except Exception as e:
-
+            logger.error(f"Error loading {img_path}: {e}")
+ 
 
 def build_model(num_classes=3, model_name="mobilenet_v3", freeze_features=True):
     if model_name == "mobilenet_v3":
