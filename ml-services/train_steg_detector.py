@@ -50,17 +50,10 @@ class SteganographyDataset(Dataset):
     def __len__(self):
         return len(self.files)
 
+    def __getitem__(self, idx):
+        if idx in self.cache:
+            return self.cache[idx]
 
-        img_path, label = self.files[idx]
-        try:
-            img = Image.open(img_path).convert('RGB')
-            if self.transform:
-                img = self.transform(img)
-            self.cache[idx] = (img, label)
-            return img, label
-        except Exception as e:
-            logger.error(f"Error loading {img_path}: {e}")
-            return self[np.random.randint(len(self))] 
 
 def build_model(num_classes=3, model_name="mobilenet_v3", freeze_features=True):
     if model_name == "mobilenet_v3":
