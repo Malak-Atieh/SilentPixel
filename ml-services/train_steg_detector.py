@@ -88,8 +88,8 @@ def build_model(num_classes=3, model_name="mobilenet_v3", freeze_features=True):
         in_features = model.fc.in_features
         if freeze_features:
             for param in model.conv1.parameters():
+                param.requires_grad = False
 
-    else:
         raise ValueError(f"Unknown model name: {model_name}")
     return model
 
