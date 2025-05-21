@@ -121,6 +121,7 @@ def train_epoch(model, loader, criterion, optimizer, device):
     return total_loss / len(loader.dataset), correct.double() / len(loader.dataset)
 
 def validate(model, loader, criterion, device):
+    model.eval()
 
 
 def plot_confusion_matrix(y_true, y_pred, class_names, output_dir):
