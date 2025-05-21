@@ -31,21 +31,7 @@ def set_seed(seed=42):
     torch.backends.cudnn.benchmark = False
 
 class SteganographyDataset(Dataset):
-    def __init__(self, data_dir, transform=None):
-        self.data_dir = Path(data_dir)
-        self.transform = transform
-        self.cache = {} 
-        
-        self.clean_files = list((self.data_dir / 'clean').glob('*.[pj][np]g'))
-        self.lsb_files = list((self.data_dir / 'lsb').glob('*.[pj][np]g'))
-        self.dct_files = list((self.data_dir / 'dct').glob('*.[pj][np]g'))
-        
-        self.files = ([(f, 0) for f in self.clean_files] +
-                     [(f, 1) for f in self.lsb_files] +
-                     [(f, 2) for f in self.dct_files])
-        
-        logger.info(f"Dataset: {len(self.clean_files)} clean, "
-                   f"{len(self.lsb_files)} LSB, {len(self.dct_files)} DCT")
+
 
     def __len__(self):
         return len(self.files)
