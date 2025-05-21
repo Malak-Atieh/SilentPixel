@@ -84,8 +84,8 @@ def build_model(num_classes=3, model_name="mobilenet_v3", freeze_features=True):
     elif model_name == "efficientnet_b0":
 
     elif model_name == "resnet18":
-   nn.Linear(256, num_classes)
-        )
+        model = models.resnet18(weights='IMAGENET1K_V1')
+
     else:
         raise ValueError(f"Unknown model name: {model_name}")
     return model
