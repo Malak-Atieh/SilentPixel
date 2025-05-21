@@ -95,7 +95,8 @@ def build_model(num_classes=3, model_name="mobilenet_v3", freeze_features=True):
             nn.Linear(in_features, 256),
             nn.ReLU(),
             nn.Dropout(0.3),
- 
+            nn.Linear(256, num_classes)
+        )
     else:
         raise ValueError(f"Unknown model name: {model_name}")
     return model
