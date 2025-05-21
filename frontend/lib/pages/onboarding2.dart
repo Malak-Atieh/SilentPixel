@@ -58,11 +58,11 @@ class OnboardingScreenSecond extends StatelessWidget {
 
                 // Subtitle
                 const Text(
-                  'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+                  'Easily hide or reveal messages with just a few taps. Fast previews, powerful analysis, and complete privacy, all in one app.',
                   style: TextStyle(
                     fontFamily: 'Inter',
                     fontWeight: FontWeight.w500,
-                    fontSize: 16,
+                    fontSize: 18,
                     color: Color(0xFFF4F4F4),
                   ),
                 ),

@@ -82,17 +82,7 @@ def build_model(num_classes=3, model_name="mobilenet_v3", freeze_features=True):
             nn.Linear(256, num_classes)
         )
     elif model_name == "efficientnet_b0":
-        model = models.efficientnet_b0(weights='IMAGENET1K_V1')
-        in_features = model.classifier[1].in_features
-        if freeze_features:
-            for param in model.features.parameters():
-                param.requires_grad = False
-        model.classifier = nn.Sequential(
-            nn.Linear(in_features, 256),
-            nn.ReLU(),
-            nn.Dropout(0.3),
-            nn.Linear(256, num_classes)
-        )
+
     elif model_name == "resnet18":
         model = models.resnet18(weights='IMAGENET1K_V1')
         in_features = model.fc.in_features
