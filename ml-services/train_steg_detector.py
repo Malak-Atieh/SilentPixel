@@ -44,7 +44,8 @@ class SteganographyDataset(Dataset):
                      [(f, 1) for f in self.lsb_files] +
                      [(f, 2) for f in self.dct_files])
         
-
+        logger.info(f"Dataset: {len(self.clean_files)} clean, "
+                   f"{len(self.lsb_files)} LSB, {len(self.dct_files)} DCT")
 
     def __len__(self):
         return len(self.files)
