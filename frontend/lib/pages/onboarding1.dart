@@ -58,7 +58,7 @@ class OnboardingScreen extends StatelessWidget {
 
                 // Subtitle
                 const Text(
-                  'Hide messages inside any image you have, enforce a password and share it on any social platform you desire!',
+                  'Welcome to Silent Pixel, where your secrets stay hidden, securely embedded inside images.',
                   style: TextStyle(
                     fontFamily: 'Inter',
                     fontWeight: FontWeight.w500,

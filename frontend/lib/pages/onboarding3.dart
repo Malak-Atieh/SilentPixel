@@ -57,11 +57,11 @@ class OnboardingScreenThird extends StatelessWidget {
 
                 // Subtitle
                 const Text(
-                  'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+                  'Is it a clean post? Download and upload the image and our built-in AI analyzer will detect any stego content.',
                   style: TextStyle(
                     fontFamily: 'Inter',
                     fontWeight: FontWeight.w500,
-                    fontSize: 16,
+                    fontSize: 18,
                     color: Color(0xFFF4F4F4),
                   ),
                 ),
