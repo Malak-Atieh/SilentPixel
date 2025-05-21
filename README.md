@@ -37,17 +37,21 @@
 
 ### User Screens (Mobile)
 
+| Welcoming Onboarding screen             | Seconf onboarding screen              | 3rd onboarding screen                 |
+| --------------------------------------- | ------------------------------------- | ------------------------------------- |
+| ![Landing](./readme/onboard1.png)       | ![fsdaf](./readme/onboard2.png)       | ![fsdaf](./readme/onboard3.png)       |
+
 | Login screen                            | Register screen                       | Home screen                           |
 | --------------------------------------- | ------------------------------------- | ------------------------------------- |
 | ![Landing](./readme/Login.png)          | ![fsdaf](./readme/signUp.png)         | ![fsdaf](./readme/home.png)           |
 
 | Hide message screen                     | Hide Result screen                    | Reveal message screen                 |
 | --------------------------------------- | ------------------------------------- | ------------------------------------- |
-| ![Landing](./readme/hideMessage.png)    | ![fsdaf](./readme/EncodeResult.png)  | ![fsdaf](./readme/decode.png)         |
+| ![Landing](./readme/hideMessage.png)    | ![fsdaf](./readme/EncodeResult.png)   | ![fsdaf](./readme/decode.png)          |
 
-| Reveal Result screen                    |  screen                               |  screen                           |
-| --------------------------------------- | ------------------------------------- | ------------------------------------- |
-| ![Landing](./readme/decodeResult.png)   | ![fsdaf](./readme/demo/1440x1024.png) | ![fsdaf](./readme/demo/1440x1024.png) |
+| Reveal Result screen                    | |
+| --------------------------------------- | |
+| ![Landing](./readme/decodeResult.png)   | |  
 
 ### Screens Gifs
 
@@ -55,9 +59,9 @@
 | --------------------------------------- | ------------------------------------- | ------------------------------------- |
 |  ![fsdaf](./readme/onboarding.gif)      | ![Landing](./readme/homeScreen.gif)   | ![fsdaf](./readme/hideMessage.gif)    |
 
-| Reveal Message                         |  Screen                               |
-| -------------------------------------  | ------------------------------------- |
-| ![fsdaf](./readme/revealMessage.gif)   | ![fsdaf](./readme/demo/1440x1024.png) |
+| Reveal Message                         | 
+| -------------------------------------  | 
+| ![fsdaf](./readme/revealMessage.gif)   | 
 
 <br><br>
 
