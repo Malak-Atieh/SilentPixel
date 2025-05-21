@@ -66,20 +66,7 @@ class SteganographyDataset(Dataset):
             return self[np.random.randint(len(self))] 
 
 def build_model(num_classes=3, model_name="mobilenet_v3", freeze_features=True):
-    if model_name == "mobilenet_v3":
-        model = models.mobilenet_v3_small(weights='IMAGENET1K_V1')
-        in_features = 576
-        if freeze_features:
-            for param in model.features.parameters():
-                param.requires_grad = False
-        model.classifier = nn.Sequential(
-            nn.Linear(in_features, 512),
-            nn.Hardswish(),
-            nn.Dropout(0.3),
-            nn.Linear(512, 256),
-            nn.Hardswish(),
-            nn.Dropout(0.2),
-            nn.Linear(256, num_classes)
+
         )
     elif model_name == "efficientnet_b0":
         model = models.efficientnet_b0(weights='IMAGENET1K_V1')
