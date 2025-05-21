@@ -55,6 +55,7 @@ class SteganographyDataset(Dataset):
             return self.cache[idx]
             
         img_path, label = self.files[idx]
+        try:
 
 
 def build_model(num_classes=3, model_name="mobilenet_v3", freeze_features=True):
